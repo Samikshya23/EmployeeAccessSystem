@@ -9,20 +9,19 @@ namespace EmployeeAccessSystem.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
 
-        // Constructor
         public EmployeeController(IEmployeeRepository employeeRepository)
         {
             _employeeRepository = employeeRepository;
         }
 
-        // Show all employees
+    
         public async Task<IActionResult> Index()
         {
             var employees = await _employeeRepository.GetAllAsync();
             return View(employees);
         }
 
-        // Show one employee details
+  
         public async Task<IActionResult> Details(int id)
         {
             var employee = await _employeeRepository.GetByIdAsync(id);
@@ -32,22 +31,47 @@ namespace EmployeeAccessSystem.Controllers
             return View(employee);
         }
 
-        // Open create page
+     
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // Save new employee
+     
         [HttpPost]
         public async Task<IActionResult> Create(Employee employee)
         {
+         
             if (!ModelState.IsValid)
+            {
                 return View(employee);
+            }
 
-            await _employeeRepository.AddAsync(employee);
-            return RedirectToAction("Index");
+            try
+            {
+          
+                var existingEmployee = await _employeeRepository.GetByEmailAsync(employee.Email);
+                if (existingEmployee != null)
+                {
+                   
+                    ModelState.AddModelError("Email", "Email already exists");
+                    return View(employee);
+                }
+
+         
+                await _employeeRepository.AddAsync(employee);
+
+         
+                TempData["Success"] = "Employee added successfully!";
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+          
+                ModelState.AddModelError("", "Something went wrong while saving the employee. Please try again.");
+                return View(employee);
+            }
         }
     }
 }

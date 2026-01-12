@@ -7,12 +7,10 @@ using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly string _connectionString;
 
-        
         public EmployeeRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -20,58 +18,62 @@ namespace EmployeeAccessSystem.Repositories
 
         private SqlConnection GetConnection() => new SqlConnection(_connectionString);
 
-
+      
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
             using var conn = GetConnection();
-            await conn.OpenAsync();
-
             var sql = "SELECT EmployeeId, FullName, Email, Department FROM Employees";
-            var employees = await conn.QueryAsync<Employee>(sql);
-            return employees;
+            return await conn.QueryAsync<Employee>(sql);
         }
 
-
-        public async Task<Employee> GetByIdAsync(int id)
+        public async Task<Employee> GetByIdAsync(int employeeId)
         {
             using var conn = GetConnection();
-            await conn.OpenAsync();
+            var sql = "SELECT * FROM Employees WHERE EmployeeId = @Id";
+            return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Id = employeeId });
+        }
 
-            var sql = "SELECT EmployeeId, FullName, Email, Department FROM Employees WHERE EmployeeId = @Id";
-            var employee = await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Id = id });
-            return employee;
+       
+        public async Task<Employee> GetByEmailAsync(string email)
+        {
+            using var conn = GetConnection();
+            var sql = "SELECT * FROM Employees WHERE Email = @Email";
+            return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Email = email });
         }
 
         public async Task<int> AddAsync(Employee employee)
         {
             using var conn = GetConnection();
-            await conn.OpenAsync();
 
-            var sql = "INSERT INTO Employees (FullName, Email, Department) VALUES (@FullName, @Email, @Department)";
-            var result = await conn.ExecuteAsync(sql, employee);
-            return result; 
+            var existing = await GetByEmailAsync(employee.Email);
+            if (existing != null)
+            {
+                throw new System.Exception("Email already exists");
+            }
+
+            var sql = @"INSERT INTO Employees (FullName, Email, Department)
+                        VALUES (@FullName, @Email, @Department)";
+
+            return await conn.ExecuteAsync(sql, employee);
         }
-
 
         public async Task<int> UpdateAsync(Employee employee)
         {
             using var conn = GetConnection();
-            await conn.OpenAsync();
 
-            var sql = "UPDATE Employees SET FullName=@FullName, Email=@Email, Department=@Department WHERE EmployeeId=@EmployeeId";
-            var result = await conn.ExecuteAsync(sql, employee);
-            return result;
+            var sql = @"UPDATE Employees 
+                        SET FullName=@FullName, Email=@Email, Department=@Department
+                        WHERE EmployeeId=@EmployeeId";
+
+            return await conn.ExecuteAsync(sql, employee);
         }
 
 
-        public async Task<int> DeleteAsync(int id)
+        public async Task<int> DeleteAsync(int employeeId)
         {
             using var conn = GetConnection();
-            await conn.OpenAsync();
-
             var sql = "DELETE FROM Employees WHERE EmployeeId=@Id";
-            var result = await conn.ExecuteAsync(sql, new { Id = id });
-            return result;
+            return await conn.ExecuteAsync(sql, new { Id = employeeId });
         }
     }
 }
