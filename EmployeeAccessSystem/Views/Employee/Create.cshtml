@@ -1,0 +1,29 @@
+﻿@model EmployeeAccessSystem.Models.Employee
+
+@{
+    ViewData["Title"] = "Add Employee";
+}
+
+<h2>Add New Employee</h2>
+
+<form method="post" action="/Employee/Create">
+    <p>
+        <label>Full Name:</label><br />
+        <input type="text" name="FullName" value="@Model?.FullName" />
+    </p>
+    <p>
+        <label>Email:</label><br />
+        <input type="text" name="Email" value="@Model?.Email" />
+    </p>
+    <p>
+        <label>Department:</label><br />
+        <input type="text" name="Department" value="@Model?.Department" />
+    </p>
+    <p>
+        <input type="submit" value="Add Employee" />
+    </p>
+</form>
+
+<p>
+    <a href="/Employee/Index">Back to List</a>
+</p>
