@@ -1,57 +1,36 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.Employee>
 
-@{
-    ViewData["Title"] = "Employee List";
-}
+<div class="container mt-4">
 
-<div class="container mt-5">
-    <h2>Employee List</h2>
+    <h2 class="mb-3">Employee List</h2>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
+    <a asp-action="Create" class="btn btn-primary mb-3">
+        Add New Employee
+    </a>
 
-    <div class="mb-3">
-        <a asp-action="Create" class="btn btn-primary">Add New Employee</a>
-    </div>
-
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="table-light">
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
             <tr>
-                <th>#</th>
                 <th>Full Name</th>
                 <th>Email</th>
-                <th>Department</th>
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var emp in Model.Select((value, i) => new { value, i }))
-                {
-                    <tr>
-                        <td>@(emp.i + 1)</td> 
-                        <td>@emp.value.FullName</td>
-                        <td>@emp.value.Email</td>
-                        <td>@emp.value.Department</td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                <a asp-action="Details" asp-route-id="@emp.value.EmployeeId" class="btn btn-sm btn-info">View</a>
-                                <a asp-action="Edit" asp-route-id="@emp.value.EmployeeId" class="btn btn-sm btn-warning">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@emp.value.EmployeeId" class="btn btn-sm btn-danger">Delete</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            }
-            else
+            @foreach (var emp in Model)
             {
                 <tr>
-                    <td colspan="5" class="text-center">No employees found.</td>
+                    <td>@emp.FullName</td>
+                    <td>@emp.Email</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+
 </div>
