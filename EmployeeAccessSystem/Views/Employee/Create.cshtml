@@ -28,17 +28,22 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="Department" class="form-label"></label>
-            <input asp-for="Department" class="form-control" />
-            <span asp-validation-for="Department" class="text-danger"></span>
+            <label class="form-label">Department</label>
+
+            <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-select">
+                <option value="">-- Select Department --</option>
+            </select>
+
+            <span asp-validation-for="DepartmentId" class="text-danger"></span>
         </div>
+
 
         <button type="submit" class="btn btn-primary w-100">Add Employee</button>
     </form>
 
-    <p class="mt-3">
+    @* <p class="mt-3">
         <a asp-action="Index">Back to List</a>
-    </p>
+    </p> *@
 </div>
 
 @section Scripts {

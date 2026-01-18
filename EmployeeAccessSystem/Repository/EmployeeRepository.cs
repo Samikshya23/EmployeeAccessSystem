@@ -16,63 +16,87 @@ namespace EmployeeAccessSystem.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        private SqlConnection GetConnection() => new SqlConnection(_connectionString);
+        private SqlConnection GetConnection()
+        {
+            return new SqlConnection(_connectionString);
+        }
 
-      
+        // READ ALL
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
             using var conn = GetConnection();
-            var sql = "SELECT EmployeeId, FullName, Email, Department FROM Employees";
+
+            var sql = @"
+SELECT e.EmployeeId, e.FullName, e.Email, e.DepartmentId,
+       d.DepartmentName
+FROM dbo.Employees e
+INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId";
+
             return await conn.QueryAsync<Employee>(sql);
         }
 
+        // READ BY ID
         public async Task<Employee> GetByIdAsync(int employeeId)
         {
             using var conn = GetConnection();
-            var sql = "SELECT * FROM Employees WHERE EmployeeId = @Id";
+
+            var sql = @"
+SELECT e.EmployeeId, e.FullName, e.Email, e.DepartmentId,
+       d.DepartmentName
+FROM dbo.Employees e
+INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+WHERE e.EmployeeId = @Id";
+
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Id = employeeId });
         }
 
-       
+        // READ BY EMAIL
         public async Task<Employee> GetByEmailAsync(string email)
         {
             using var conn = GetConnection();
-            var sql = "SELECT * FROM Employees WHERE Email = @Email";
+
+            var sql = @"
+SELECT e.EmployeeId, e.FullName, e.Email, e.DepartmentId,
+       d.DepartmentName
+FROM dbo.Employees e
+INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+WHERE e.Email = @Email";
+
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Email = email });
         }
 
+        // ADD
         public async Task<int> AddAsync(Employee employee)
         {
             using var conn = GetConnection();
 
-            var existing = await GetByEmailAsync(employee.Email);
-            if (existing != null)
-            {
-                throw new System.Exception("Email already exists");
-            }
-
-            var sql = @"INSERT INTO Employees (FullName, Email, Department)
-                        VALUES (@FullName, @Email, @Department)";
+            var sql = @"INSERT INTO dbo.Employees (FullName, Email, DepartmentId)
+                        VALUES (@FullName, @Email, @DepartmentId)";
 
             return await conn.ExecuteAsync(sql, employee);
         }
 
+        // UPDATE  ⭐⭐⭐ THIS WAS FAILING BEFORE
         public async Task<int> UpdateAsync(Employee employee)
         {
             using var conn = GetConnection();
 
-            var sql = @"UPDATE Employees 
-                        SET FullName=@FullName, Email=@Email, Department=@Department
-                        WHERE EmployeeId=@EmployeeId";
+            var sql = @"UPDATE dbo.Employees
+                        SET FullName = @FullName,
+                            Email = @Email,
+                            DepartmentId = @DepartmentId
+                        WHERE EmployeeId = @EmployeeId";
 
             return await conn.ExecuteAsync(sql, employee);
         }
 
-
+        // DELETE
         public async Task<int> DeleteAsync(int employeeId)
         {
             using var conn = GetConnection();
-            var sql = "DELETE FROM Employees WHERE EmployeeId=@Id";
+
+            var sql = "DELETE FROM dbo.Employees WHERE EmployeeId = @Id";
+
             return await conn.ExecuteAsync(sql, new { Id = employeeId });
         }
     }
