@@ -52,7 +52,7 @@ namespace EmployeeAccessSystem.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+     
         public async Task<IActionResult> Edit(Employee employee)
         {
             if (!ModelState.IsValid)
@@ -87,7 +87,7 @@ namespace EmployeeAccessSystem.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+      
         public async Task<IActionResult> Create(Employee employee)
         {
             if (!ModelState.IsValid)
@@ -128,7 +128,7 @@ namespace EmployeeAccessSystem.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+      
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _employeeRepository.DeleteAsync(id);
