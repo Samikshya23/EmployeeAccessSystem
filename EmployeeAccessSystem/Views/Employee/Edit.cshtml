@@ -4,22 +4,22 @@
     ViewData["Title"] = "Edit Employee";
 }
 
-<div class="container mt-5">
-    <h2>Edit Employee</h2>
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Employee</h2>
 
     <form asp-action="Edit" method="post">
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <!-- IMPORTANT -->
+  
         <input type="hidden" asp-for="EmployeeId" />
 
+ 
         <div class="mb-3">
             <label asp-for="FullName" class="form-label"></label>
             <input asp-for="FullName" class="form-control" />
             <span asp-validation-for="FullName" class="text-danger"></span>
         </div>
 
+        
         <div class="mb-3">
             <label asp-for="Email" class="form-label"></label>
             <input asp-for="Email" class="form-control" />
@@ -27,23 +27,30 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Department</label>
+            <label asp-for="DepartmentId" class="form-label">Department</label>
             <select asp-for="DepartmentId"
-                    asp-items="ViewBag.Departments"
-                    class="form-select">
-                <option value="0" disabled>-- Select Department --</option>
+                    class="form-select"
+                    asp-items="ViewBag.Departments">
+                <option value="">-- Select Department --</option>
             </select>
             <span asp-validation-for="DepartmentId" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-warning w-100">
-            Update Employee
-        </button>
+     
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label">Category</label>
+            <select asp-for="CategoryId"
+                    class="form-select"
+                    asp-items="ViewBag.Categories">
+                <option value="">-- Select Category --</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Update</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
+        </div>
+
     </form>
-
-  
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

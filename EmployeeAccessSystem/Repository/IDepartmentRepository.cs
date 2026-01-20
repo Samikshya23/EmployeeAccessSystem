@@ -6,10 +6,10 @@ namespace EmployeeAccessSystem.Repositories
 {
     public interface IDepartmentRepository
     {
-        Task<IEnumerable<Department>> GetAllAsync();        // Get all departments
-        Task<Department> GetByIdAsync(int departmentId);    // Get one department by ID
-        Task<int> AddAsync(Department department);          // Add new department
-        Task<int> UpdateAsync(Department department);       // Update department
-        Task<int> DeleteAsync(int departmentId);            // Delete department
+        Task<IEnumerable<Department>> GetAllAsync();       
+        Task<Department> GetByIdAsync(int departmentId);    
+        Task<int> AddAsync(Department department);         
+        Task<int> UpdateAsync(Department department);       
+        Task<int> DeleteAsync(int departmentId);          
     }
 }

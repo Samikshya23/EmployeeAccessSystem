@@ -14,22 +14,23 @@
                 <th>Full Name</th>
                 <th>Email</th>
                 <th>Department</th>
+                <th>Category</th>
                 <th>Actions</th>
             </tr>
         </thead>
 
         <tbody>
-            @foreach (var emp in Model)
+            @foreach (var item in Model)
             {
                 <tr>
-                    <td>@emp.FullName</td>
-                    <td>@emp.Email</td>
-                    <td>@emp.DepartmentName</td>
+                    <td>@item.FullName</td>
+                    <td>@item.Email</td>
+                    <td>@item.DepartmentName</td>
+                    <td>@(item.CategoryName ?? "-")</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-info">Details</a>
-                        <a asp-action="Edit" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-danger">Delete</a>
-                        
+                        <a asp-action="Details" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-danger">Delete</a>
                     </td>
                 </tr>
             }
