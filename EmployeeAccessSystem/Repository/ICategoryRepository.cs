@@ -4,10 +4,7 @@ namespace EmployeeAccessSystem.Repositories
 {
     public interface ICategoryRepository
     {
-        Task<IEnumerable<Category>> GetAllAsync();
-        Task<Category?> GetByIdAsync(int id);
-        Task<int> AddAsync(Category category);
-        Task<int> UpdateAsync(Category category);
-        Task<int> DeleteAsync(int id);
+        List<Category> GetAll();
+        void ToggleActive(int id);
     }
 }

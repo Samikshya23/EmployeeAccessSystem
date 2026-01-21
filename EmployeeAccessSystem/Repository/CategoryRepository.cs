@@ -1,62 +1,39 @@
 ﻿using Dapper;
 using EmployeeAccessSystem.Models;
-
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace EmployeeAccessSystem.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly ICoreDbConnection _db;
+        private readonly string _connectionString;
 
-        public CategoryRepository(ICoreDbConnection db)
+        public CategoryRepository(IConfiguration configuration)
         {
-            _db = db;
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         private SqlConnection GetConnection()
         {
-            return new SqlConnection(_db.ConnectionString);
+            return new SqlConnection(_connectionString);
         }
 
-      
-        public async Task<IEnumerable<Category>> GetAllAsync()
+        public List<Category> GetAll()
         {
-            var sql = "SELECT CategoryId, CategoryName FROM Category";
-            using var connection = GetConnection();
-            return await connection.QueryAsync<Category>(sql);
+            using var conn = GetConnection();
+            string sql = "SELECT * FROM Categories ORDER BY CategoryId";
+            return conn.Query<Category>(sql).ToList();
         }
 
-        
-        public async Task<Category?> GetByIdAsync(int id)
+        public void ToggleActive(int id)
         {
-            var sql = "SELECT CategoryId, CategoryName FROM Category WHERE CategoryId = @Id";
-            using var connection = GetConnection();
-            return await connection.QueryFirstOrDefaultAsync<Category>(sql, new { Id = id });
-        }
-
- 
-        public async Task<int> AddAsync(Category category)
-        {
-            var sql = "INSERT INTO Category (CategoryName) VALUES (@CategoryName)";
-            using var connection = GetConnection();
-            return await connection.ExecuteAsync(sql, category);
-        }
-
-   
-        public async Task<int> UpdateAsync(Category category)
-        {
-            var sql = "UPDATE Category SET CategoryName = @CategoryName WHERE CategoryId = @CategoryId";
-            using var connection = GetConnection();
-            return await connection.ExecuteAsync(sql, category);
-        }
-
-      
-        public async Task<int> DeleteAsync(int id)
-        {
-            var sql = "DELETE FROM Category WHERE CategoryId = @Id";
-            using var connection = GetConnection();
-            return await connection.ExecuteAsync(sql, new { Id = id });
+            using var conn = GetConnection();
+            string sql = @"
+UPDATE Categories
+SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END
+WHERE CategoryId = @Id";
+            conn.Execute(sql, new { Id = id });
         }
     }
 }

@@ -10,14 +10,14 @@ namespace EmployeeAccessSystem.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDepartmentRepository _departmentRepository;
-        private readonly ICategoryRepository _categoryRepository;
+       
 
 
-        public EmployeeController(IEmployeeRepository employeeRepository,IDepartmentRepository departmentRepository, ICategoryRepository categoryRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository,IDepartmentRepository departmentRepository)
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
-            _categoryRepository = categoryRepository;
+        
         }
 
 
@@ -44,8 +44,7 @@ namespace EmployeeAccessSystem.Controllers
             var departments = await _departmentRepository.GetAllAsync();
             ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
 
-            var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", employee.CategoryId);
+           
 
             return View(employee);
         }
@@ -60,9 +59,7 @@ namespace EmployeeAccessSystem.Controllers
                 var departments = await _departmentRepository.GetAllAsync();
                 ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
 
-                var categories = await _categoryRepository.GetAllAsync();
-                ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", employee.CategoryId);
-
+             
                 return View(employee);
             }
 
@@ -78,9 +75,7 @@ namespace EmployeeAccessSystem.Controllers
             var departments = await _departmentRepository.GetAllAsync();
             ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
 
-            var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName");
-
+           
             return View(new Employee());
         }
 
@@ -95,9 +90,7 @@ namespace EmployeeAccessSystem.Controllers
                 var departments = await _departmentRepository.GetAllAsync();
                 ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
 
-                var categories = await _categoryRepository.GetAllAsync();
-                ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", employee.CategoryId);
-
+                
                 return View(employee);
             }
 
@@ -113,8 +106,7 @@ namespace EmployeeAccessSystem.Controllers
                 var departments = await _departmentRepository.GetAllAsync();
                 ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
 
-                var categories = await _categoryRepository.GetAllAsync();
-                ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", employee.CategoryId);
+               
 
                 return View(employee);
             }

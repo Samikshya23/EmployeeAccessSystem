@@ -15,6 +15,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<ICoreDbConnection, CoreDbConnection>();
 
+
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();

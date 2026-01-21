@@ -14,7 +14,7 @@
                 <th>Full Name</th>
                 <th>Email</th>
                 <th>Department</th>
-                <th>Category</th>
+            
                 <th>Actions</th>
             </tr>
         </thead>
@@ -26,7 +26,7 @@
                     <td>@item.FullName</td>
                     <td>@item.Email</td>
                     <td>@item.DepartmentName</td>
-                    <td>@(item.CategoryName ?? "-")</td>
+                
                     <td>
                         <a asp-action="Details" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-info">Details</a>
                         <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-warning">Edit</a>

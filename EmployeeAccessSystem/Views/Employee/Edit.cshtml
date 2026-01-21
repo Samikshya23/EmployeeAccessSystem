@@ -37,16 +37,7 @@
         </div>
 
      
-        <div class="mb-3">
-            <label asp-for="CategoryId" class="form-label">Category</label>
-            <select asp-for="CategoryId"
-                    class="form-select"
-                    asp-items="ViewBag.Categories">
-                <option value="">-- Select Category --</option>
-            </select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
-
+       
         <div class="mt-4">
             <button type="submit" class="btn btn-success">Update</button>
             <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>

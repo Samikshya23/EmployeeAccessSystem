@@ -1,24 +1,14 @@
 ﻿@model EmployeeAccessSystem.Models.Category
 
-@{
-    ViewData["Title"] = "Edit Category";
-}
+<h2>Edit Category</h2>
 
-<div class="container mt-4">
-    <h3 class="mb-3">Edit Category</h3>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="CategoryId" />
 
-    <form asp-action="Edit" method="post" class="card p-4 shadow-sm">
-        <input type="hidden" asp-for="CategoryId" />
+    <label>Category Name</label><br />
+    <input asp-for="CategoryName" /><br /><br />
 
-        <div class="mb-3">
-            <label asp-for="CategoryName" class="form-label">Category Name</label>
-            <input asp-for="CategoryName" class="form-control" />
-            <span asp-validation-for="CategoryName" class="text-danger"></span>
-        </div>
+    <button type="submit">Update</button>
+</form>
 
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-warning">Update</button>
-            <a asp-action="Index" class="btn btn-secondary">Back</a>
-        </div>
-    </form>
-</div>
+<a asp-action="Index">Back</a>
