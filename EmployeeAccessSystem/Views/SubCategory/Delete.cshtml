@@ -1,0 +1,26 @@
+﻿@model EmployeeAccessSystem.Models.SubCategory
+
+<h2>Delete SubCategory</h2>
+
+
+<table border="1">
+    <tr>
+        <td>ID</td>
+        <td>@Model.SubCategoryId</td>
+    </tr>
+    <tr>
+        <td>Server IP</td>
+        <td>@Model.ServerIP</td>
+    </tr>
+    <tr>
+        <td>Server Name</td>
+        <td>@Model.ServerName</td>
+    </tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" name="id" value="@Model.SubCategoryId" />
+
+    <button type="submit">Yes, Delete</button>
+    <a asp-action="Index">Cancel</a>
+</form>

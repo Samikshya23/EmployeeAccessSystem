@@ -1,10 +1,18 @@
-﻿using EmployeeAccessSystem.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
     public interface ICategoryRepository
     {
-        List<Category> GetAll();
-        void ToggleActive(int id);
+        Task<IEnumerable<Category>> GetAllAsync();    
+        Task<IEnumerable<Category>> GetActiveAsync();
+
+        Task<Category> GetByIdAsync(int id);
+        Task<int> AddAsync(Category category);
+        Task<int> UpdateAsync(Category category);
+        Task<int> DeleteAsync(int id);
+        Task ToggleAsync(int id);
     }
 }

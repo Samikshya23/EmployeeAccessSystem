@@ -1,27 +1,13 @@
 ﻿using EmployeeAccessSystem.Repositories; 
-using Microsoft.Extensions.Logging;
-
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-
-
-
 builder.Services.AddControllersWithViews();
-
-
 builder.Services.AddSingleton<ICoreDbConnection, CoreDbConnection>();
-
-
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-
-
 var app = builder.Build();
 
 
@@ -41,7 +27,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Employee}/{action=Index}/{id?}"
+    pattern: "{controller=Home}/{action=Index}/{id?}"
 );
 
 

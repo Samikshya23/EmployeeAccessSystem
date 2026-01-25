@@ -1,0 +1,45 @@
+﻿@model IEnumerable<EmployeeAccessSystem.Models.SubCategory>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>SubCategory List</h4>
+        <a asp-action="Create" class="btn btn-primary">+ Add SubCategory</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Category</th>
+                    <th>Server IP</th>
+                    <th>Server Name</th>
+                    <th style="width:160px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.SubCategoryId</td>
+                        <td>@s.CategoryName</td>
+                        <td>@s.ServerIP</td>
+                        <td>@s.ServerName</td>
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@s.SubCategoryId"
+                               class="btn btn-sm btn-warning me-1">
+                                Edit
+                            </a>
+                            <a asp-action="Delete"
+                               asp-route-id="@s.SubCategoryId"
+                               class="btn btn-sm btn-danger">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

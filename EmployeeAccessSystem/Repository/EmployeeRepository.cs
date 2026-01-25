@@ -26,15 +26,15 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             var sql = @"
-SELECT e.EmployeeId,
-       e.FullName,
-       e.Email,
-       e.DepartmentId,
-       d.DepartmentName
-FROM dbo.Employees e
-INNER JOIN dbo.Departments d
-    ON e.DepartmentId = d.DepartmentId
-ORDER BY e.EmployeeId DESC;";
+                    SELECT e.EmployeeId,
+                           e.FullName,
+                           e.Email,
+                           e.DepartmentId,
+                           d.DepartmentName
+                    FROM dbo.Employees e
+                    INNER JOIN dbo.Departments d
+                        ON e.DepartmentId = d.DepartmentId
+                    ORDER BY e.EmployeeId DESC;";
 
             return await conn.QueryAsync<Employee>(sql);
         }
@@ -44,15 +44,15 @@ ORDER BY e.EmployeeId DESC;";
             using var conn = GetConnection();
 
             var sql = @"
-SELECT e.EmployeeId,
-       e.FullName,
-       e.Email,
-       e.DepartmentId,
-       d.DepartmentName
-FROM dbo.Employees e
-INNER JOIN dbo.Departments d
-    ON e.DepartmentId = d.DepartmentId
-WHERE e.EmployeeId = @Id;";
+                    SELECT e.EmployeeId,
+                           e.FullName,
+                           e.Email,
+                           e.DepartmentId,
+                           d.DepartmentName
+                    FROM dbo.Employees e
+                    INNER JOIN dbo.Departments d
+                        ON e.DepartmentId = d.DepartmentId
+                    WHERE e.EmployeeId = @Id;";
 
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Id = employeeId });
         }
@@ -62,15 +62,15 @@ WHERE e.EmployeeId = @Id;";
             using var conn = GetConnection();
 
             var sql = @"
-SELECT e.EmployeeId,
-       e.FullName,
-       e.Email,
-       e.DepartmentId,
-       d.DepartmentName
-FROM dbo.Employees e
-INNER JOIN dbo.Departments d
-    ON e.DepartmentId = d.DepartmentId
-WHERE e.Email = @Email;";
+                    SELECT e.EmployeeId,
+                           e.FullName,
+                           e.Email,
+                           e.DepartmentId,
+                           d.DepartmentName
+                    FROM dbo.Employees e
+                    INNER JOIN dbo.Departments d
+                        ON e.DepartmentId = d.DepartmentId
+                    WHERE e.Email = @Email;";
 
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Email = email });
         }
@@ -80,8 +80,8 @@ WHERE e.Email = @Email;";
             using var conn = GetConnection();
 
             var sql = @"
-INSERT INTO dbo.Employees (FullName, Email, DepartmentId)
-VALUES (@FullName, @Email, @DepartmentId);";
+                    INSERT INTO dbo.Employees (FullName, Email, DepartmentId)
+                    VALUES (@FullName, @Email, @DepartmentId);";
 
             return await conn.ExecuteAsync(sql, employee);
         }
@@ -91,11 +91,11 @@ VALUES (@FullName, @Email, @DepartmentId);";
             using var conn = GetConnection();
 
             var sql = @"
-UPDATE dbo.Employees
-SET FullName = @FullName,
-    Email = @Email,
-    DepartmentId = @DepartmentId
-WHERE EmployeeId = @EmployeeId;";
+                    UPDATE dbo.Employees
+                    SET FullName = @FullName,
+                        Email = @Email,
+                        DepartmentId = @DepartmentId
+                    WHERE EmployeeId = @EmployeeId;";
 
             return await conn.ExecuteAsync(sql, employee);
         }

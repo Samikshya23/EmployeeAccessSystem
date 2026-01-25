@@ -2,10 +2,14 @@
 
 @{
     ViewData["Title"] = "Categories";
+    int sn = 1;
 }
 
 <div class="container mt-4">
-    <h3 class="mb-3">System Categories</h3>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">System Categories</h3>
+        <a class="btn btn-primary" asp-action="Create">+ Add Category</a>
+    </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
@@ -16,6 +20,7 @@
                             <th style="width:80px;">ID</th>
                             <th>Category Name</th>
                             <th style="width:150px;" class="text-center">Active</th>
+                            <th style="width:220px;" class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,6 +40,11 @@
                                                onchange="this.form.submit()" />
                                     </form>
                                 </td>
+
+                                <td class="text-center">
+                                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a>
+                                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -49,7 +59,6 @@
 </div>
 
 <style>
-    /* Make checkbox bigger like your image */
     .big-check {
         width: 28px;
         height: 28px;

@@ -1,0 +1,24 @@
+﻿@model EmployeeAccessSystem.Models.Category
+
+@{
+    ViewData["Title"] = "Delete Category";
+}
+
+<div class="container mt-4">
+    <h3>Delete Category</h3>
+
+    <div class="alert alert-warning mt-3">
+        Are you sure you want to delete this category?
+    </div>
+
+    <p><b>ID:</b> @Model.CategoryId</p>
+    <p><b>Name:</b> @Model.CategoryName</p>
+    <p><b>Active:</b> @(Model.IsActive ? "Yes" : "No")</p>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

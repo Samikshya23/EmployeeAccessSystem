@@ -17,7 +17,6 @@ namespace EmployeeAccessSystem.Controllers
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
-        
         }
 
 
@@ -85,31 +84,14 @@ namespace EmployeeAccessSystem.Controllers
       
         public async Task<IActionResult> Create(Employee employee)
         {
-            if (!ModelState.IsValid)
-            {
-                var departments = await _departmentRepository.GetAllAsync();
-                ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
-
-                
-                return View(employee);
-            }
-
-            try
+            if (ModelState.IsValid)
             {
                 await _employeeRepository.AddAsync(employee);
                 return RedirectToAction(nameof(Index));
+
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Database error: " + ex.Message);
+            return View(employee);
 
-                var departments = await _departmentRepository.GetAllAsync();
-                ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
-
-               
-
-                return View(employee);
-            }
         }
 
         public async Task<IActionResult> Delete(int id)

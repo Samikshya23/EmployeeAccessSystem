@@ -1,0 +1,29 @@
+﻿@model EmployeeAccessSystem.Models.SubCategory
+
+<h2>Edit SubCategory</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="SubCategoryId" />
+
+    <div class="mb-2">
+        <label>Category</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+    </div>
+
+    <div class="mb-2">
+        <label>Server IP</label>
+        <input asp-for="ServerIP" class="form-control" />
+        <span asp-validation-for="ServerIP" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label>Server Name</label>
+        <input asp-for="ServerName" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Update</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,28 +1,83 @@
-﻿using EmployeeAccessSystem.Repositories;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using EmployeeAccessSystem.Models;
+using EmployeeAccessSystem.Repositories;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EmployeeAccessSystem.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryRepository _repo;
 
-        public CategoryController(ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryRepository repo)
         {
-            _categoryRepository = categoryRepository;
+            _repo = repo;
         }
 
-        public IActionResult Index()
+    
+        public async Task<IActionResult> Index()
         {
-            var categories = _categoryRepository.GetAll();
-            return View(categories);
+            var data = await _repo.GetAllAsync();
+            return View(data.ToList());
         }
 
+       
         [HttpPost]
-        public IActionResult Toggle(int id)
+        public async Task<IActionResult> Toggle(int id)
         {
-            _categoryRepository.ToggleActive(id);
-            return RedirectToAction("Index");
+            await _repo.ToggleAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+      
+        [HttpPost]
+        public async Task<IActionResult> Create(Category category)
+        {
+            if (!ModelState.IsValid) return View(category);
+
+            await _repo.AddAsync(category);
+            return RedirectToAction(nameof(Index));
+        }
+
+   
+        public async Task<IActionResult> Edit(int id)
+        {
+            var category = await _repo.GetByIdAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+       
+        [HttpPost]
+        public async Task<IActionResult> Edit(Category category)
+        {
+            if (!ModelState.IsValid) return View(category);
+
+            await _repo.UpdateAsync(category);
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var category = await _repo.GetByIdAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+       
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int categoryId)
+        {
+            await _repo.DeleteAsync(categoryId);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
