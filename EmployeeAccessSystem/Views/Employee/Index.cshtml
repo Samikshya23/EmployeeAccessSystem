@@ -1,40 +1,63 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.Employee>
 
-<div class="container mt-4">
+@{
+    ViewData["Title"] = "Employee List";
+    int sn = 1;
+}
 
-    <h2 class="mb-3">Employee List</h2>
+<div class="row mt-3">
+    <div class="col-12">
 
-    <a asp-action="Create" class="btn btn-primary mb-3">
-        Add New Employee
-    </a>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Employee List</h5>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Department</th>
-            
-                <th>Actions</th>
-            </tr>
-        </thead>
+                <a asp-action="Create" class="btn btn-primary btn-sm">
+                    + Add Employee
+                </a>
+            </div>
 
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.FullName</td>
-                    <td>@item.Email</td>
-                    <td>@item.DepartmentName</td>
-                
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-info">Details</a>
-                        <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:70px;">SN</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th style="width:250px;" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
 
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@sn</td>
+                                    <td>@item.FullName</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.DepartmentName</td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@item.EmployeeId" class="btn btn-info btn-sm">
+                                            Details
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.EmployeeId" class="btn btn-danger btn-sm">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                sn++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 </div>

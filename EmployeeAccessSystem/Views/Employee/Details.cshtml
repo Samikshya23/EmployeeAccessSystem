@@ -4,14 +4,46 @@
     ViewData["Title"] = "Employee Details";
 }
 
-<h2>Employee Details</h2>
+<div class="row justify-content-center mt-3">
+    <div class="col-12 col-md-9 col-lg-7">
 
-<p><strong>ID:</strong> @Model.EmployeeId</p>
-<p><strong>Full Name:</strong> @Model.FullName</p>
-<p><strong>Email:</strong> @Model.Email</p>
-<p><strong>Department:</strong> @Model.DepartmentName</p>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Employee Details</h5>
+            </div>
 
-<p>
-    <a href="/Employee/Edit/@Model.EmployeeId">Edit</a> |
-    <a href="/Employee/Index">Back to List</a>
-</p>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th style="width:200px;">Employee ID</th>
+                        <td>@Model.EmployeeId</td>
+                    </tr>
+                    <tr>
+                        <th>Full Name</th>
+                        <td>@Model.FullName</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>@Model.Email</td>
+                    </tr>
+                    <tr>
+                        <th>Department</th>
+                        <td>@Model.DepartmentName</td>
+                    </tr>
+                </table>
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.EmployeeId" class="btn btn-warning">
+                        Edit
+                    </a>
+
+                    <a asp-action="Index" class="btn btn-secondary">
+                        Back
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

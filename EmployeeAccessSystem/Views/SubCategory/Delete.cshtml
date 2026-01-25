@@ -1,26 +1,50 @@
 ﻿@model EmployeeAccessSystem.Models.SubCategory
 
-<h2>Delete SubCategory</h2>
+@{
+    ViewData["Title"] = "Delete SubCategory";
+}
 
+<div class="row justify-content-center mt-3">
+    <div class="col-12 col-md-8 col-lg-6">
 
-<table border="1">
-    <tr>
-        <td>ID</td>
-        <td>@Model.SubCategoryId</td>
-    </tr>
-    <tr>
-        <td>Server IP</td>
-        <td>@Model.ServerIP</td>
-    </tr>
-    <tr>
-        <td>Server Name</td>
-        <td>@Model.ServerName</td>
-    </tr>
-</table>
+        <div class="card card-danger">
+            <div class="card-header">
+                <h5 class="mb-0">Delete SubCategory</h5>
+            </div>
 
-<form asp-action="Delete" method="post">
-    <input type="hidden" name="id" value="@Model.SubCategoryId" />
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    Are you sure you want to delete this SubCategory?
+                </div>
 
-    <button type="submit">Yes, Delete</button>
-    <a asp-action="Index">Cancel</a>
-</form>
+                <table class="table table-bordered">
+                    <tr>
+                        <th style="width:160px;">ID</th>
+                        <td>@Model.SubCategoryId</td>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <td>@Model.CategoryName</td>
+                    </tr>
+                    <tr>
+                        <th>Server IP</th>
+                        <td>@Model.ServerIP</td>
+                    </tr>
+                    <tr>
+                        <th> Name</th>
+                        <td>@(string.IsNullOrWhiteSpace(Model.ServerName) ? "-" : Model.ServerName)</td>
+                    </tr>
+                </table>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" name="id" value="@Model.SubCategoryId" />
+
+                    <button type="submit" class="btn btn-danger"> Delete</button>
+                    <a asp-action="Index" class="btn btn-secondary ml-2">Cancel</a>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>

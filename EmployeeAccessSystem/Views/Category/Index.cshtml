@@ -2,66 +2,81 @@
 
 @{
     ViewData["Title"] = "Categories";
-    int sn = 1;
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">System Categories</h3>
-        <a class="btn btn-primary" asp-action="Create">+ Add Category</a>
-    </div>
+@{
+    int i = 1;
+}
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width:80px;">ID</th>
-                            <th>Category Name</th>
-                            <th style="width:150px;" class="text-center">Active</th>
-                            <th style="width:220px;" class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@item.CategoryId</td>
-                                <td class="fw-semibold">@item.CategoryName</td>
 
-                                <td class="text-center">
-                                    <form asp-action="Toggle" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@item.CategoryId" />
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">System Categories</h3>
 
-                                        <input class="form-check-input big-check"
-                                               type="checkbox"
-                                               @(item.IsActive ? "checked" : "")
-                                               onchange="this.form.submit()" />
-                                    </form>
-                                </td>
-
-                                <td class="text-center">
-                                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a>
-                                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <small class="text-muted">
-                Tip: Click the checkbox to enable/disable a category.
-            </small>
+        <div class="card-tools">
+            <a asp-action="Create" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add Category
+            </a>
         </div>
     </div>
-</div>
 
-<style>
-    .big-check {
-        width: 28px;
-        height: 28px;
-        cursor: pointer;
-    }
-</style>
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th style="width:80px;">ID</th>
+                    <th>Category Name</th>
+                    <th style="width:120px;" class="text-center">Active</th>
+                    <th style="width:200px;" class="text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+
+                    {
+                        <tr>
+                            <td>@i</td>
+
+                            <td>@item.CategoryName</td>
+
+                            <td class="text-center">
+                                <form asp-action="Toggle" method="post">
+                                    <input type="hidden" name="id" value="@item.CategoryId" />
+                                    <input type="checkbox"
+                                           style="width:18px;height:18px;cursor:pointer;"
+                                           @(item.IsActive ? "checked" : "")
+                                           onchange="this.form.submit()" />
+                                </form>
+                            </td>
+
+                            <td class="text-center">
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.CategoryId"
+                                   class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@item.CategoryId"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                       
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

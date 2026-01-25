@@ -1,28 +1,51 @@
 ﻿@model EmployeeAccessSystem.Models.SubCategory
 
-<h2>Edit SubCategory</h2>
+@{
+    ViewData["Title"] = "Edit SubCategory";
+}
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="SubCategoryId" />
+<div class="row justify-content-center mt-3">
+    <div class="col-12 col-md-8 col-lg-6">
 
-    <div class="mb-2">
-        <label>Category</label>
-        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Edit SubCategory</h5>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="SubCategoryId" />
+
+                    <div asp-validation-summary="All" class="text-danger mb-2"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Server IP</label>
+                        <input asp-for="ServerIP" class="form-control" />
+                        <span asp-validation-for="ServerIP" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"> Name</label>
+                        <input asp-for="ServerName" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a asp-action="Index" class="btn btn-secondary ml-2">Back</a>
+                </form>
+            </div>
+
+        </div>
+
     </div>
-
-    <div class="mb-2">
-        <label>Server IP</label>
-        <input asp-for="ServerIP" class="form-control" />
-        <span asp-validation-for="ServerIP" class="text-danger"></span>
-    </div>
-
-    <div class="mb-2">
-        <label>Server Name</label>
-        <input asp-for="ServerName" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-success">Update</button>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
