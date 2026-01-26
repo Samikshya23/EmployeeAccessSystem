@@ -16,14 +16,10 @@ namespace EmployeeAccessSystem.Controllers
             _subRepo = subRepo;
             _catRepo = catRepo;
         }
-
-        // LIST
         public async Task<IActionResult> Index()
         {
             return View(await _subRepo.GetAllAsync());
         }
-
-        // CREATE - GET
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = new SelectList(
@@ -33,16 +29,12 @@ namespace EmployeeAccessSystem.Controllers
             );
             return View();
         }
-
-        // CREATE - POST
         [HttpPost]
         public async Task<IActionResult> Create(SubCategory subCategory)
         {
             await _subRepo.AddAsync(subCategory);
             return RedirectToAction(nameof(Index));
         }
-
-        // EDIT - GET
         public async Task<IActionResult> Edit(int id)
         {
             ViewBag.Categories = new SelectList(
@@ -52,22 +44,16 @@ namespace EmployeeAccessSystem.Controllers
             );
             return View(await _subRepo.GetByIdAsync(id));
         }
-
-        // EDIT - POST
         [HttpPost]
         public async Task<IActionResult> Edit(SubCategory subCategory)
         {
             await _subRepo.UpdateAsync(subCategory);
             return RedirectToAction(nameof(Index));
         }
-
-        // DELETE - GET
         public async Task<IActionResult> Delete(int id)
         {
             return View(await _subRepo.GetByIdAsync(id));
-        }
-
-        // DELETE - POST
+        } 
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

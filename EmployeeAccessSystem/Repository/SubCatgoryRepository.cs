@@ -18,7 +18,6 @@ namespace EmployeeAccessSystem.Repositories
 
         private SqlConnection GetConnection()
             => new SqlConnection(_connectionString);
-
         public async Task<IEnumerable<SubCategory>> GetAllAsync()
         {
             using var conn = GetConnection();
@@ -30,7 +29,8 @@ namespace EmployeeAccessSystem.Repositories
                     s.ServerName,
                     c.CategoryName
                 FROM dbo.SubCategories s
-                INNER JOIN dbo.Categories c ON c.CategoryId = s.CategoryId
+                INNER JOIN dbo.Categories c 
+                ON c.CategoryId = s.CategoryId
                 ORDER BY s.SubCategoryId DESC";
             return await conn.QueryAsync<SubCategory>(sql);
         }

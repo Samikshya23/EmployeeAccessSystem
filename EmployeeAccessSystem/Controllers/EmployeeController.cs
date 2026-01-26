@@ -43,8 +43,6 @@ namespace EmployeeAccessSystem.Controllers
             var departments = await _departmentRepository.GetAllAsync();
             ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
 
-           
-
             return View(employee);
         }
 
@@ -82,16 +80,22 @@ namespace EmployeeAccessSystem.Controllers
 
         [HttpPost]
       
+      
+        [HttpPost]
         public async Task<IActionResult> Create(Employee employee)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(employee);
+
+            int result = await _employeeRepository.AddAsync(employee);
+
+            if (result == -1)
             {
-                await _employeeRepository.AddAsync(employee);
-                return RedirectToAction(nameof(Index));
-
+                ModelState.AddModelError("Email", "Email is already used");
+                return View(employee);
             }
-            return View(employee);
 
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)

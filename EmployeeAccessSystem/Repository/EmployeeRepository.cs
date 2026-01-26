@@ -82,8 +82,15 @@ namespace EmployeeAccessSystem.Repositories
             var sql = @"
                     INSERT INTO dbo.Employees (FullName, Email, DepartmentId)
                     VALUES (@FullName, @Email, @DepartmentId);";
-
-            return await conn.ExecuteAsync(sql, employee);
+            try
+            {
+                return await conn.ExecuteAsync(sql, employee);
+            }
+            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+            {
+                return -1; 
+            }
+            
         }
 
         public async Task<int> UpdateAsync(Employee employee)
