@@ -22,12 +22,18 @@ namespace EmployeeAccessSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
             var employees = await _employeeRepository.GetAllAsync();
             return View(employees);
         }
 
         public async Task<IActionResult> Details(int id)
         {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
             var employee = await _employeeRepository.GetByIdAsync(id);
             if (employee == null) return NotFound();
             return View(employee);
@@ -37,6 +43,9 @@ namespace EmployeeAccessSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
             var employee = await _employeeRepository.GetByIdAsync(id);
             if (employee == null) return NotFound();
 
@@ -51,6 +60,9 @@ namespace EmployeeAccessSystem.Controllers
      
         public async Task<IActionResult> Edit(Employee employee)
         {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
             if (!ModelState.IsValid)
             {
                 var departments = await _departmentRepository.GetAllAsync();
@@ -69,21 +81,21 @@ namespace EmployeeAccessSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
             var departments = await _departmentRepository.GetAllAsync();
             ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
 
            
             return View(new Employee());
         }
-
-
-
-        [HttpPost]
-      
-      
         [HttpPost]
         public async Task<IActionResult> Create(Employee employee)
         {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
             if (!ModelState.IsValid)
                 return View(employee);
 
@@ -100,6 +112,9 @@ namespace EmployeeAccessSystem.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
             var employee = await _employeeRepository.GetByIdAsync(id);
             if (employee == null) return NotFound();
             return View(employee);
@@ -109,6 +124,7 @@ namespace EmployeeAccessSystem.Controllers
       
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
             await _employeeRepository.DeleteAsync(id);
             return RedirectToAction("Index");
         }

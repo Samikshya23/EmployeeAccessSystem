@@ -13,7 +13,7 @@ namespace EmployeeAccessSystem.Controllers
         {
             _departmentRepository = departmentRepository;
         }
-
+        
         public async Task<IActionResult> Index()
         {
             var departments = await _departmentRepository.GetAllAsync();
