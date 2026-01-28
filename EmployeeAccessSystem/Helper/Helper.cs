@@ -4,7 +4,7 @@ namespace EmployeeAccessSystem.Helpers
 {
     public static class Helper
     {
-        // Register: Create hash + salt
+      
         public static void CreatePasswordHash(string password, string secretKey, out byte[] hash, out byte[] salt)
         {
             // 1) random salt for every user
