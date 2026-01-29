@@ -20,3 +20,17 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* === COMPLETELY HIDE SCROLLBAR (AdminLTE + Browser) === */
+html, body,
+.content-wrapper {
+    overflow-y: scroll; /* allow scrolling */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE / old Edge */
+}
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    .content-wrapper::-webkit-scrollbar {
+        display: none; /* Chrome, Edge */
+    }

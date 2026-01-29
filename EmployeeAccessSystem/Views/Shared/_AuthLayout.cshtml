@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - EmployeeAccessSystem</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/adminlte/plugins/fontawesome-free/css/all.min.css" />
+
+    <!-- AdminLTE -->
+    <link rel="stylesheet" href="~/adminlte/dist/css/adminlte.min.css" />
+
+    <!-- Optional: Bootstrap (only if not already included by AdminLTE) -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body class="hold-transition">
+
+    @RenderBody()
+
+    <!-- jQuery -->
+    <script src="~/adminlte/plugins/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AdminLTE -->
+    <script src="~/adminlte/dist/js/adminlte.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

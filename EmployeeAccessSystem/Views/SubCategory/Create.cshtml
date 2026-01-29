@@ -1,7 +1,7 @@
 ﻿@model EmployeeAccessSystem.Models.SubCategory
 
 @{
-    ViewData["Title"] = "Add SubCategory";
+    ViewData["Title"] = "";
 }
 
 <div class="row justify-content-center mt-3">
@@ -14,7 +14,7 @@
 
             <div class="card-body">
                 <form asp-action="Create" method="post">
-                    <div asp-validation-summary="All" class="text-danger mb-2"></div>
+                    @* <div asp-validation-summary="All" class="text-danger mb-2"></div> *@
 
                     <div class="mb-3">
                         <label class="form-label">Category</label>
@@ -36,7 +36,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-success">Save</button>
-                    <a asp-action="Index" class="btn btn-secondary ml-2">Back</a>
+                    <a asp-action="Index" class="btn btn-secondary ml-2">Cancel</a>
                 </form>
             </div>
 

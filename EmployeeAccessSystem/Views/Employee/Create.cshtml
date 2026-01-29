@@ -1,22 +1,27 @@
 ﻿@model EmployeeAccessSystem.Models.Employee
 @{
-    ViewData["Title"] = "Add Employee";
+    ViewData["Title"] = "";
 }
 
-<div class="row justify-content-center mt-3">
-    <div class="col-md-8 col-lg-7">
-        <div class="card">
+<div class="row justify-content-center mt-4">
+    <!-- Made box wider -->
+    <div class="col-md-9 col-lg-8">
+        <div class="card shadow-sm">
             <div class="card-header">
                 <h5 class="mb-0">Add Employee</h5>
             </div>
 
             <div class="card-body">
+
                 @if (TempData["Success"] != null)
                 {
-                    <div class="alert alert-success">@TempData["Success"]</div>
+                    <div class="alert alert-success">
+                        @TempData["Success"]
+                    </div>
                 }
 
                 <form asp-action="Create" method="post">
+
                     <div class="mb-3">
                         <label asp-for="FullName" class="form-label"></label>
                         <input asp-for="FullName" class="form-control" />
@@ -27,20 +32,27 @@
                         <label asp-for="Email" class="form-label"></label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
-                    
-
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label class="form-label">Department</label>
-                        <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-control">
+                        <select asp-for="DepartmentId"
+                                asp-items="ViewBag.Departments"
+                                class="form-control">
                             <option value="">-- Select Department --</option>
                         </select>
                         <span asp-validation-for="DepartmentId" class="text-danger"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Add Employee</button>
-                    <a asp-action="Index" class="btn btn-secondary ml-2">Back</a>
+                    <!-- Buttons -->
+                    <button type="submit" class="btn btn-primary">
+                        Add Employee
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-secondary ms-2">
+                        Cancel
+                    </a>
+
                 </form>
             </div>
         </div>

@@ -126,7 +126,7 @@ namespace EmployeeAccessSystem.Controllers
             HttpContext.Session.SetString("FullName", account.FullName ?? "");
             HttpContext.Session.SetString("Email", account.Email ?? "");
 
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Employee");
         }
 
         public IActionResult Logout()

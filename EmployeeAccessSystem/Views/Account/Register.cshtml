@@ -1,67 +1,65 @@
 ﻿@{
     ViewData["Title"] = "Register";
-    Layout = "_Layout";
+    Layout = "_AuthLayout";
 }
 
-<div class="register-page">
-    <div class="register-card shadow-lg">
+<div class="register-bg">
+    <div class="register-container">
+        <div class="register-card">
 
-        <div class="text-center mb-4">
-            <h2 class="fw-bold text-uppercase mb-2">Create Account</h2>
-            <p class="text-muted mb-0">Please fill in the details below.</p>
+            <div class="text-center mb-4">
+                <h2 class="auth-title">Create Account</h2>
+                <p class="auth-subtitle">Please fill in the details below.</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Error</div>
+            }
+
+            <form asp-action="Register" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Full Name</label>
+                    <input name="fullName" class="form-control form-control-lg"
+                           placeholder="Enter your full name" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input name="email" type="email"
+                           class="form-control form-control-lg"
+                           placeholder="Enter your email" required />
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input name="password" type="password"
+                               class="form-control form-control-lg"
+                               placeholder="********" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Confirm Password</label>
+                        <input name="confirmPassword" type="password"
+                               class="form-control form-control-lg"
+                               placeholder="********" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-soft w-100 btn-lg">
+                    Register
+                </button>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted">Already have an account?</span>
+                    <a asp-action="Login" class="ms-1 fw-semibold link-soft">Login</a>
+                </div>
+
+            </form>
+
         </div>
-
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
-
-        <form asp-action="Register" method="post" class="mt-4">
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Full Name</label>
-                <input name="fullName"
-                       class="form-control form-control-lg rounded-3"
-                       placeholder="Enter your full name"
-                       required />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Email</label>
-                <input name="email" type="email"
-                       class="form-control form-control-lg rounded-3"
-                       placeholder="Enter your email"
-                       required />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Password</label>
-                <input name="password" type="password"
-                       class="form-control form-control-lg rounded-3"
-                       placeholder="**********"
-                       required />
-            </div>
-
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Confirm Password</label>
-                <input name="confirmPassword" type="password"
-                       class="form-control form-control-lg rounded-3"
-                       placeholder="**********"
-                       required />
-            </div>
-
-            <button type="submit"
-                    class="btn btn-primary btn-lg w-100 rounded-3 py-2 fw-semibold">
-                Register
-            </button>
-
-            <div class="text-center mt-4">
-                <span class="text-muted">Already have an account?</span>
-                <a asp-action="Login" class="ms-1 fw-semibold login-link">
-                    Login
-                </a>
-            </div>
-        </form>
     </div>
 </div>
 
@@ -71,41 +69,103 @@
         margin: 0;
     }
 
-    .register-page {
-        min-height: 100vh;
-        background: #0b1b3a; /* navy blue */
+    body {
+        overflow: hidden;
+    }
+
+    .register-bg {
+        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 20px;
-        overflow: hidden; /* removes scrollbar */
+        padding: 18px;
+        background: radial-gradient(circle at 20% 20%, #EAF6FF 0%, #F7FBFF 55%, #FFFFFF 100%);
+    }
+
+    .register-container {
+        width: 100%;
+        max-width: 720px;
+        display: flex;
+        justify-content: center;
     }
 
     .register-card {
         width: 100%;
-        max-width: 560px;
         background: #ffffff;
         border-radius: 18px;
-        padding: 40px 36px;
-        border: 1px solid rgba(0,0,0,.06);
+        padding: 34px 36px;
+        border: 1px solid #D7E3EF;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.10);
+    }
+
+    .auth-title {
+        font-size: 30px;
+        font-weight: 800;
+        margin-bottom: 6px;
+        color: #1f2d3d;
+    }
+
+    .auth-subtitle {
+        font-size: 14px;
+        color: #728090;
+        margin: 0;
     }
 
     .form-control {
-        border: 1px solid #d9d9d9;
+        border-radius: 12px;
+        border: 1px solid #D7E3EF;
+        background: #F7FBFF;
+        height: 46px;
         box-shadow: none !important;
     }
 
         .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 .2rem rgba(13,110,253,.15) !important;
+            background: #ffffff;
+            border-color: #2B7BBB;
+            box-shadow: 0 0 0 3px rgba(43,123,187,0.18);
         }
 
-    .login-link {
-        text-decoration: none;
-        color: #0d6efd;
+    .btn-primary-soft {
+        background: linear-gradient(135deg, #2B7BBB, #1E5E92);
+        color: #ffffff;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 16px;
+        font-weight: 800;
+        transition: all 0.2s ease;
     }
 
-        .login-link:hover {
+        .btn-primary-soft:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(43,123,187,0.30);
+            color: #ffffff;
+        }
+
+    .link-soft {
+        color: #2B7BBB;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .link-soft:hover {
             text-decoration: underline;
         }
+
+    @@media (max-width: 768px) {
+        body
+
+    {
+        overflow: auto;
+    }
+
+    .register-bg {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .register-card {
+        padding: 26px 22px;
+    }
+
+    }
 </style>

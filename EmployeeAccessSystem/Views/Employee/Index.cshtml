@@ -1,32 +1,38 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.Employee>
 
 @{
-    ViewData["Title"] = "Employee List";
+    ViewData["Title"] = "";  
     int sn = 1;
 }
 
 <div class="row mt-3">
     <div class="col-12">
 
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Employee List</h5>
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <div class="row align-items-center w-100">
+                    <div class="col">
+                        <h5 class="mb-0">Employee List</h5>
+                    </div>
 
-                <a asp-action="Create" class="btn btn-primary btn-sm">
-                    + Add Employee
-                </a>
+                    <div class="col-auto">
+                        <a asp-action="Create" class="btn btn-primary btn-sm rounded-pill px-4">
+                            + Add Employee
+                        </a>
+                    </div>
+                </div>
             </div>
 
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th style="width:70px;">SN</th>
                                 <th>Full Name</th>
                                 <th>Email</th>
                                 <th>Department</th>
-                                <th style="width:250px;" class="text-center">Actions</th>
+                                <th style="width:260px;" class="text-center">Actions</th>
                             </tr>
                         </thead>
 
@@ -38,14 +44,20 @@
                                     <td>@item.FullName</td>
                                     <td>@item.Email</td>
                                     <td>@item.DepartmentName</td>
+
                                     <td class="text-center">
-                                        <a asp-action="Details" asp-route-id="@item.EmployeeId" class="btn btn-info btn-sm">
+                                        <a asp-action="Details" asp-route-id="@item.EmployeeId"
+                                           class="btn btn-info btn-sm rounded-pill px-3">
                                             Details
                                         </a>
-                                        <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-warning btn-sm">
+
+                                        <a asp-action="Edit" asp-route-id="@item.EmployeeId"
+                                           class="btn btn-warning btn-sm rounded-pill px-3 mx-1">
                                             Edit
                                         </a>
-                                        <a asp-action="Delete" asp-route-id="@item.EmployeeId" class="btn btn-danger btn-sm">
+
+                                        <a asp-action="Delete" asp-route-id="@item.EmployeeId"
+                                           class="btn btn-danger btn-sm rounded-pill px-3">
                                             Delete
                                         </a>
                                     </td>

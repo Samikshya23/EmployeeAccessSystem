@@ -1,58 +1,78 @@
 ﻿@{
     ViewData["Title"] = "Login";
-    Layout = "_Layout";
+    Layout = "_AuthLayout";
 }
 
-<div class="login-page">
-    <div class="login-card shadow-lg">
+<div class="login-bg">
+    <div class="login-container">
 
-        <div class="text-center mb-4">
-            <h2 class="fw-bold text-uppercase mb-2">Welcome Back</h2>
-            <p class="text-muted mb-0">Welcome back! Please enter your details.</p>
+        <div class="login-form-side">
+            <div class="login-card">
+
+                <div class="text-center mb-3">
+                    <h2 class="auth-title">Welcome Back</h2>
+                    <p class="auth-subtitle">Please enter your details to sign in.</p>
+                </div>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form asp-action="Login" method="post" class="mt-3">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input name="email" type="email"
+                               class="form-control form-control-lg"
+                               placeholder="Enter your email" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input name="password" type="password"
+                               class="form-control form-control-lg"
+                               placeholder="********" required />
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+
+                        <a asp-action="ForgotPassword" class="link-soft">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-soft w-100 btn-lg">
+                        Sign in
+                    </button>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted">Don’t have an account?</span>
+                        <a class="ms-1 fw-semibold link-soft" asp-action="Register">Register</a>
+                    </div>
+
+                </form>
+            </div>
         </div>
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
+     
+        <div class="login-image-side d-none d-lg-flex">
+            <div class="image-inner">
+                <h3 class="image-title">Employee Access System</h3>
+                <p class="image-subtitle">Secure, fast and simple access for office use.</p>
 
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
-
-        <form asp-action="Login" method="post" class="mt-4">
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Email</label>
-                <input name="email" type="email"
-                       class="form-control form-control-lg rounded-3"
-                       placeholder="Enter your email" required />
+           
+                <img src="~/images/emp1.png" class="login-illustration" alt="Office illustration" />
             </div>
+        </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Password</label>
-                <input name="password" type="password"
-                       class="form-control form-control-lg rounded-3"
-                       placeholder="**********" required />
-            </div>
-
-            <div class="form-check mb-4">
-                <input class="form-check-input" type="checkbox" id="rememberMe">
-                <label class="form-check-label" for="rememberMe">
-                    Remember me
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 py-2 fw-semibold">
-                Sign in
-            </button>
-
-            <div class="text-center mt-4">
-                <span class="text-muted">Don’t have an account?</span>
-                <a class="ms-1 fw-semibold login-link" asp-action="Register">Register</a>
-            </div>
-        </form>
     </div>
 </div>
 
@@ -62,41 +82,195 @@
         margin: 0;
     }
 
-    .login-page {
-        min-height: 100vh;
-        background: #0b1b3a; /* navy blue */
+    body {
+        overflow: hidden;
+    }
+
+
+    .login-bg {
+        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 20px; /* prevents overflow on small screens */
-        overflow: hidden; /* removes scrollbar */
+        padding: 18px;
+        background: radial-gradient(circle at 20% 20%, #EAF6FF 0%, #F7FBFF 55%, #FFFFFF 100%);
+    }
+
+
+    .login-container {
+        width: 100%;
+        max-width: 1050px;
+        height: 520px; 
+        display: flex;
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.55);
+        border: 1px solid rgba(30, 90, 140, 0.10);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.10);
+        backdrop-filter: blur(10px);
+    }
+
+    .login-form-side {
+        width: 50%;
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+        padding: 24px;
+        background: rgba(255,255,255,0.70);
     }
 
     .login-card {
         width: 100%;
-        max-width: 520px;
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 40px 36px;
-        border: 1px solid rgba(0,0,0,.06);
+        max-width: 440px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 28px 28px;
+        border: 1px solid #D7E3EF;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+    }
+
+    .auth-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 6px;
+        color: #1f2d3d;
+    }
+
+    .auth-subtitle {
+        font-size: 14px;
+        color: #728090;
+        margin: 0;
     }
 
     .form-control {
-        border: 1px solid #d9d9d9;
+        border-radius: 12px;
+        border: 1px solid #D7E3EF;
+        background: #F7FBFF;
+        height: 46px;
         box-shadow: none !important;
     }
 
         .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 .2rem rgba(13,110,253,.15) !important;
+            background: #fff;
+            border-color: #2B7BBB;
+            box-shadow: 0 0 0 3px rgba(43,123,187,0.18) !important;
         }
 
-    .login-link {
+  
+    .link-soft {
+        color: #2B7BBB;
         text-decoration: none;
-        color: #0d6efd;
+        font-size: 14px;
+        font-weight: 600; 
     }
 
-        .login-link:hover {
+        .link-soft:hover {
             text-decoration: underline;
         }
+
+    /* Button */
+    .btn-primary-soft {
+        background: linear-gradient(135deg, #2B7BBB, #1E5E92);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 16px;
+        font-weight: 800;
+        transition: all 0.2s ease;
+    }
+
+        .btn-primary-soft:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(43,123,187,0.30);
+            color: #fff;
+        }
+
+   
+    .login-image-side {
+        width: 50%;
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+        padding: 20px; 
+        background: linear-gradient(135deg, rgba(43,123,187,0.10), rgba(43,123,187,0.02));
+    }
+
+    .image-inner {
+        text-align: center;
+        max-width: 380px; 
+    }
+
+    .image-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #1f2d3d;
+        margin-bottom: 8px;
+    }
+
+    .image-subtitle {
+        font-size: 14px;
+        color: #728090;
+        margin-bottom: 16px;
+    }
+
+    .login-illustration {
+        width: 100%;
+        max-width: 380px; 
+        height: auto;
+        display: block;
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+        margin: 0 auto;
+    }
+
+
+    /* RESPONSIVE */
+    @@media (max-width: 991px) {
+        body
+
+    {
+        overflow: auto;
+    }
+
+    .login-bg {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .login-container {
+        height: auto;
+        flex-direction: column;
+    }
+
+    .login-form-side {
+        width: 100%;
+    }
+
+    .login-image-side {
+        display: none !important;
+    }
+
+    .login-card {
+        max-width: 520px;
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .login-form-side
+
+    {
+        padding: 18px;
+    }
+
+    .login-card {
+        padding: 22px 20px;
+    }
+
+    .auth-title {
+        font-size: 26px;
+    }
+
+    }
 </style>
