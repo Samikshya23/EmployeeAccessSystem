@@ -1,86 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
-using EmployeeAccessSystem.Helpers;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
+using EmployeeAccessSystem.Services;
 
 namespace EmployeeAccessSystem.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IAccountRepository _accountRepo;
-        private readonly IConfiguration _config;
+        private readonly IAccountService _accountService;
+        private readonly IDepartmentRepository _departmentRepo;
 
-        public AccountController(IAccountRepository accountRepo, IConfiguration config)
+        public AccountController(
+            IAccountService accountService,
+            IDepartmentRepository departmentRepo)
         {
-            _accountRepo = accountRepo;
-            _config = config;
+            _accountService = accountService;
+            _departmentRepo = departmentRepo;
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            var departments = await _departmentRepo.GetAllAsync();
+            ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string fullName, string email, string password, string confirmPassword)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
-          
-            if (string.IsNullOrWhiteSpace(fullName))
+            var departments = await _departmentRepo.GetAllAsync();
+            ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", model.DepartmentId);
+
+            string error = await _accountService.RegisterAsync(model);
+
+            if (!string.IsNullOrEmpty(error))
             {
-                ViewBag.Error = "Full Name should not be empty";
-                return View();
+                ViewBag.Error = error;
+                return View(model);
             }
-
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                ViewBag.Error = "Email should not be empty";
-                return View();
-            }
-
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                ViewBag.Error = "Password should not be empty";
-                return View();
-            }
-
-            if (password != confirmPassword)
-            {
-                ViewBag.Error = "Password and Confirm Password do not match";
-                return View();
-            }
-
-           
-            fullName = fullName.Trim();
-            email = email.Trim().ToLower();
-
-           
-            var existing = await _accountRepo.GetByEmailAsync(email);
-            if (existing != null)
-            {
-                ViewBag.Error = "Email already registered";
-                return View();
-            }
-
-            
-            string key = _config["Security:PasswordKey"];
-            Helper.CreatePasswordHash(password, key, out byte[] hash, out byte[] salt);
-            var account = new Account
-            {
-                FullName = fullName,
-                Email = email,
-                PasswordHash = hash,
-                PasswordSalt = salt
-            };
-
-            await _accountRepo.CreateAsync(account);
 
             TempData["Success"] = "Registration successful. Please login.";
             return RedirectToAction("Login");
         }
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -88,38 +53,22 @@ namespace EmployeeAccessSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login(LoginModel model)
         {
-   
-            if (string.IsNullOrWhiteSpace(email))
+            string error = await _accountService.LoginAsync(model);
+
+            if (!string.IsNullOrEmpty(error))
             {
-                ViewBag.Error = "Email should not be empty";
-                return View();
+                ViewBag.Error = error;
+                return View(model);
             }
 
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                ViewBag.Error = "Password should not be empty";
-                return View();
-            }
+            Account account = await _accountService.GetAccountByEmailAsync(model.Email);
 
-            email = email.Trim().ToLower();
-
-       
-            var account = await _accountRepo.GetByEmailAsync(email);
             if (account == null)
             {
-                ViewBag.Error = "Account not found";
-                return View();
-            }
-
-            string key = _config["Security:PasswordKey"];
-            bool ok = Helper.VerifyPassword(password, key, account.PasswordHash, account.PasswordSalt);
-
-            if (!ok)
-            {
-                ViewBag.Error = "Invalid password";
-                return View();
+                ViewBag.Error = "Account not registered";
+                return View(model);
             }
 
             HttpContext.Session.SetInt32("AccountId", account.AccountId);

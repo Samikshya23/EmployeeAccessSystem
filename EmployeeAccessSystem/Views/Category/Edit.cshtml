@@ -4,44 +4,101 @@
     ViewData["Title"] = "";
 }
 
-<div class="row justify-content-center mt-3">
-    <div class="col-12 col-md-8 col-lg-6">
+<section class="content edit-content">
+    <div class="container-fluid edit-container">
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Edit Category</h5>
+        <div class="card edit-card">
+            <div class="card-header bg-white">
+                <h3 class="card-title mb-0">Edit Category</h3>
             </div>
 
             <div class="card-body">
+
                 <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="CategoryId" />
 
-                    <div asp-validation-summary="All" class="text-danger mb-2"></div>
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                     <div class="mb-3">
-                        <label asp-for="CategoryName" class="form-label"></label>
+                        <label asp-for="CategoryName" class="form-label fw-semibold"></label>
                         <input asp-for="CategoryName" class="form-control" />
                         <span asp-validation-for="CategoryName" class="text-danger"></span>
                     </div>
 
                     <div class="form-check mb-3">
                         <input class="form-check-input" asp-for="IsActive" />
-                        <label class="form-check-label" asp-for="IsActive">
+                        <label class="form-check-label fw-semibold" asp-for="IsActive">
                             Is Active
                         </label>
                     </div>
+                    <div class="edit-actions">
+                        <button type="submit" class="btn btn-warning btn-pill-sm">
+                            Update
+                        </button>
 
-                    <button type="submit" class="btn btn-primary">
-                        Update
-                    </button>
-
-                    <a asp-action="Index" class="btn btn-secondary ml-2">
-                        Back
-                    </a>
+                        <a asp-action="Index" class="btn btn-pill-sm btn-back">
+                            Back
+                        </a>
+                    </div>
                 </form>
-            </div>
 
+            </div>
         </div>
 
     </div>
-</div>
+</section>
+
+@section Styles {
+    <style>
+        .edit-content {
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+        }
+
+        .edit-container {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        .edit-card {
+            border-radius: 14px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+            .edit-card .card-body {
+                padding: 22px 24px;
+            }
+        .edit-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .btn-pill-sm {
+            border-radius: 999px;
+            padding: 6px 18px; 
+            font-size: 14px; 
+            font-weight: 500;
+            min-width: 90px;
+            border: 2px solid transparent;
+            box-shadow: none;
+        }
+
+        .btn-back {
+            background-color: #fff;
+            color: #6c757d;
+            border-color: #6c757d;
+        }
+
+            .btn-back:hover {
+                background-color: #f4f6f9;
+                color: #6c757d;
+                border-color: #6c757d;
+            }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

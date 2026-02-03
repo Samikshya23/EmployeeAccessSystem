@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace EmployeeAccessSystem.Views.Employee
 {
-    public class DetailsModel : PageModel
+    public class FileNameModel : PageModel
     {
         public void OnGet()
         {
+            Console.WriteLine("kdkjdjddjks");
         }
     }
 }

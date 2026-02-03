@@ -12,9 +12,15 @@ namespace EmployeeAccessSystem.Models
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Enter a valid email address")]
         public string Email { get; set; } = "";
+
+        [Required(ErrorMessage = "Department is required")]
         public int DepartmentId { get; set; }
+
         public string? DepartmentName { get; set; }
 
- 
+        // ✅ ADD THIS
+        public int AccountId { get; set; }
+        public bool IsActive { get; set; }
+
     }
 }

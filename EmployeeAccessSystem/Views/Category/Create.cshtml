@@ -4,43 +4,81 @@
     ViewData["Title"] = "";
 }
 
-<div class="row justify-content-center mt-3">
-    <div class="col-12 col-md-8 col-lg-6">
+<section class="content pt-3">
+    <div class="container-fluid">
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Add Category</h5>
-            </div>
+        <div class="row">
+            <div class="col-12">
 
-            <div class="card-body">
-                <form asp-action="Create" method="post">
-
-                    <div asp-validation-summary="All" class="text-danger mb-2"></div>
-
-                    <div class="mb-3">
-                        <label asp-for="CategoryName" class="form-label"></label>
-                        <input asp-for="CategoryName" class="form-control" />
-                        <span asp-validation-for="CategoryName" class="text-danger"></span>
+                <div class="card category-full-card">
+                    <div class="card-header bg-white">
+                        <h3 class="card-title mb-0">Add Category</h3>
                     </div>
 
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" asp-for="IsActive" />
-                        <label class="form-check-label" asp-for="IsActive">
-                            Is Active
-                        </label>
+                    <div class="card-body">
+                        <form asp-action="Create" method="post">
+
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Category Name</label>
+                                <input asp-for="CategoryName"
+                                       class="form-control form-control-lg"
+                                       placeholder="Enter category name" />
+                                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" asp-for="IsActive" />
+                                <label class="form-check-label fw-semibold">
+                                    Is Active
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-smx">
+                                    Back
+                                </a>
+
+                                <button type="submit" class="btn btn-success btn-smx">
+                                    Save
+                                </button>
+                            </div>
+
+                        </form>
                     </div>
+                </div>
 
-                    <button type="submit" class="btn btn-success">
-                        Save
-                    </button>
-
-                    <a asp-action="Index" class="btn btn-secondary ml-2">
-                        Back
-                    </a>
-                </form>
             </div>
-
         </div>
 
     </div>
-</div>
+</section>
+
+@section Styles {
+    <style>
+        .category-full-card {
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-smx {
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 90px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

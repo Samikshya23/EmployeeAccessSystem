@@ -25,7 +25,16 @@ namespace EmployeeAccessSystem.Controllers
             return View(data.ToList());
         }
 
-       
+        public async Task<IActionResult> Index1()
+        {
+            if (HttpContext.Session.GetInt32("AccountId") == null)
+                return RedirectToAction("Login", "Account");
+
+            var data = await _repo.GetAllAsync();
+            return View(data.ToList());
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> Toggle(int id)
         {

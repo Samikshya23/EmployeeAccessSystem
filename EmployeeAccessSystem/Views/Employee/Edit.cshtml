@@ -4,54 +4,110 @@
     ViewData["Title"] = "";
 }
 
-<div class="row justify-content-center mt-3">
-    <div class="col-12 col-md-9 col-lg-7">
+<section class="content details-content">
+    <div class="container-fluid details-container">
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Edit Employee</h5>
+        <div class="card details-card">
+            <div class="card-header bg-white">
+                <h3 class="card-title mb-0">Edit Employee</h3>
             </div>
 
             <div class="card-body">
+
                 <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="EmployeeId" />
 
                     <div class="mb-3">
-                        <label asp-for="FullName" class="form-label"></label>
+                        <label asp-for="FullName" class="form-label fw-semibold"></label>
                         <input asp-for="FullName" class="form-control" />
                         <span asp-validation-for="FullName" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label"></label>
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Department</label>
-                        <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-control">
+                        <label class="form-label fw-semibold">Department</label>
+                        <select asp-for="DepartmentId"
+                                asp-items="ViewBag.Departments"
+                                class="form-control">
                             <option value="">-- Select Department --</option>
                         </select>
                         <span asp-validation-for="DepartmentId" class="text-danger"></span>
                     </div>
 
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-success">
+                    <div class="details-actions">
+                        <button type="submit"
+                                class="btn btn-warning btn-pill">
                             Update
                         </button>
 
-                        <a asp-action="Index" class="btn btn-secondary">
+                        <a asp-action="Index"
+                           class="btn btn-pill btn-back">
                             Back
                         </a>
                     </div>
-                </form>
-            </div>
 
+                </form>
+
+            </div>
         </div>
 
     </div>
-</div>
+</section>
+
+@section Styles {
+    <style>
+        .details-content {
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+        }
+
+        .details-container {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        .details-card {
+            border-radius: 14px;
+            margin-bottom: 8px;
+        }
+
+            .details-card .card-body {
+                padding: 22px 24px;
+            }
+        .details-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 18px;
+            margin-top: 22px;
+        }
+
+        .btn-pill {
+            border-radius: 999px;
+            padding: 10px 28px;
+            font-size: 16px;
+            font-weight: 500;
+            border: 2px solid transparent;
+            box-shadow: none;
+        }
+
+        .btn-back {
+            background-color: #fff;
+            color: #6c757d;
+            border-color: #6c757d;
+        }
+
+            .btn-back:hover {
+                background-color: #f4f6f9;
+                color: #6c757d;
+                border-color: #6c757d;
+            }
+    </style>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

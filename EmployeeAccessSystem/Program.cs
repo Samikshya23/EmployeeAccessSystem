@@ -1,4 +1,6 @@
-﻿using EmployeeAccessSystem.Repositories; 
+﻿using EmployeeAccessSystem.Repositories;
+using EmployeeAccessSystem.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -6,7 +8,7 @@ builder.Services.AddSingleton<ICoreDbConnection, CoreDbConnection>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddSession();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();

@@ -3,15 +3,22 @@
     Layout = "_AuthLayout";
 }
 
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <div class="login-bg">
     <div class="login-container">
+
+        <div class="login-image-side d-none d-lg-flex">
+            <img src="~/images/emp1.png" class="login-illustration" alt="Login Image" />
+        </div>
 
         <div class="login-form-side">
             <div class="login-card">
 
-                <div class="text-center mb-3">
-                    <h2 class="auth-title">Welcome Back</h2>
-                    <p class="auth-subtitle">Please enter your details to sign in.</p>
+                <div class="text-center mb-4">
+                    <h2 class="auth-title">Admin Login</h2>
+                    <p class="auth-subtitle">Please sign in to continue</p>
                 </div>
 
                 @if (TempData["Success"] != null)
@@ -24,52 +31,43 @@
                     <div class="alert alert-danger">@ViewBag.Error</div>
                 }
 
-                <form asp-action="Login" method="post" class="mt-3">
+                <form asp-action="Login" method="post">
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Email</label>
+                        <label class="form-label">Email</label>
                         <input name="email" type="email"
-                               class="form-control form-control-lg"
-                               placeholder="Enter your email" required />
+                               class="form-control"
+                               placeholder="Enter your email"
+                               required />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Password</label>
+                        <label class="form-label">Password</label>
                         <input name="password" type="password"
-                               class="form-control form-control-lg"
-                               placeholder="********" required />
+                               class="form-control"
+                               placeholder="Enter your password"
+                               required />
                     </div>
 
-                    <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
                             <label class="form-check-label" for="rememberMe">Remember me</label>
                         </div>
-
                         <a asp-action="ForgotPassword" class="link-soft">Forgot password?</a>
                     </div>
 
-                    <button type="submit" class="btn btn-primary-soft w-100 btn-lg">
-                        Sign in
+                    <button type="submit" class="btn btn-primary-soft w-100">
+                        Login
                     </button>
 
                     <div class="text-center mt-3">
                         <span class="text-muted">Don’t have an account?</span>
-                        <a class="ms-1 fw-semibold link-soft" asp-action="Register">Register</a>
+                        <a asp-action="Register" class="link-soft fw-semibold ms-1">Register</a>
                     </div>
 
                 </form>
-            </div>
-        </div>
 
-     
-        <div class="login-image-side d-none d-lg-flex">
-            <div class="image-inner">
-                <h3 class="image-title">Employee Access System</h3>
-                <p class="image-subtitle">Secure, fast and simple access for office use.</p>
-
-           
-                <img src="~/images/emp1.png" class="login-illustration" alt="Office illustration" />
             </div>
         </div>
 
@@ -80,196 +78,122 @@
     html, body {
         height: 100%;
         margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: #f4f8fd;
     }
-
-    body {
-        overflow: hidden;
-    }
-
 
     .login-bg {
-        height: 100vh;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 18px;
-        background: radial-gradient(circle at 20% 20%, #EAF6FF 0%, #F7FBFF 55%, #FFFFFF 100%);
+        padding: 20px;
     }
-
 
     .login-container {
         width: 100%;
-        max-width: 1050px;
-        height: 520px; 
+        max-width: 1000px;
+        min-height: 480px;
         display: flex;
-        border-radius: 18px;
+        background: #ffffff;
+        border-radius: 14px;
         overflow: hidden;
-        background: rgba(255,255,255,0.55);
-        border: 1px solid rgba(30, 90, 140, 0.10);
-        box-shadow: 0 25px 60px rgba(0,0,0,0.10);
-        backdrop-filter: blur(10px);
+        border: 1px solid #e3eaf2;
+        box-shadow: 0 20px 40px rgba(0, 40, 100, 0.08);
+    }
+    .login-image-side {
+        width: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fbff;
     }
 
+    .login-illustration {
+        width: 80%;
+        max-width: 360px;
+        height: auto;
+    }
     .login-form-side {
         width: 50%;
         display: flex;
-        align-items: center; 
+        align-items: center;
         justify-content: center;
-        padding: 24px;
-        background: rgba(255,255,255,0.70);
+        padding: 32px;
     }
 
     .login-card {
         width: 100%;
-        max-width: 440px;
-        background: #fff;
-        border-radius: 16px;
-        padding: 28px 28px;
-        border: 1px solid #D7E3EF;
-        box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+        max-width: 420px;
     }
 
     .auth-title {
         font-size: 28px;
-        font-weight: 800;
-        margin-bottom: 6px;
-        color: #1f2d3d;
+        font-weight: 700;
+        color: #1e293b;
     }
 
     .auth-subtitle {
         font-size: 14px;
-        color: #728090;
-        margin: 0;
+        color: #64748b;
     }
 
     .form-control {
-        border-radius: 12px;
-        border: 1px solid #D7E3EF;
-        background: #F7FBFF;
-        height: 46px;
-        box-shadow: none !important;
+        height: 44px;
+        border-radius: 8px;
+        border: 1px solid #dbe5f1;
+        padding: 0 12px;
+        font-size: 14px;
     }
 
         .form-control:focus {
-            background: #fff;
-            border-color: #2B7BBB;
-            box-shadow: 0 0 0 3px rgba(43,123,187,0.18) !important;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         }
 
-  
+    .btn-primary-soft {
+        height: 40px; 
+        background-color: #2563eb; 
+        border: 1px solid #2563eb;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: none; 
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+        .btn-primary-soft:hover {
+            background-color: #1e4fd6;
+            border-color: #1e4fd6;
+        }
+
+        .btn-primary-soft:focus {
+            box-shadow: none;
+        }
     .link-soft {
-        color: #2B7BBB;
+        color: #2563eb;
         text-decoration: none;
         font-size: 14px;
-        font-weight: 600; 
     }
 
         .link-soft:hover {
             text-decoration: underline;
         }
 
-    /* Button */
-    .btn-primary-soft {
-        background: linear-gradient(135deg, #2B7BBB, #1E5E92);
-        color: #fff;
-        border: none;
-        border-radius: 999px;
-        padding: 14px 16px;
-        font-weight: 800;
-        transition: all 0.2s ease;
-    }
-
-        .btn-primary-soft:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(43,123,187,0.30);
-            color: #fff;
-        }
-
-   
-    .login-image-side {
-        width: 50%;
-        display: flex;
-        align-items: center; 
-        justify-content: center;
-        padding: 20px; 
-        background: linear-gradient(135deg, rgba(43,123,187,0.10), rgba(43,123,187,0.02));
-    }
-
-    .image-inner {
-        text-align: center;
-        max-width: 380px; 
-    }
-
-    .image-title {
-        font-size: 22px;
-        font-weight: 800;
-        color: #1f2d3d;
-        margin-bottom: 8px;
-    }
-
-    .image-subtitle {
-        font-size: 14px;
-        color: #728090;
-        margin-bottom: 16px;
-    }
-
-    .login-illustration {
-        width: 100%;
-        max-width: 380px; 
-        height: auto;
-        display: block;
-        background: transparent;
-        padding: 0;
-        border-radius: 0;
-        margin: 0 auto;
-    }
-
-
-    /* RESPONSIVE */
     @@media (max-width: 991px) {
-        body
+        .login-container
 
     {
-        overflow: auto;
-    }
-
-    .login-bg {
-        height: auto;
-        min-height: 100vh;
-    }
-
-    .login-container {
-        height: auto;
         flex-direction: column;
+    }
+
+    .login-image-side {
+        display: none;
     }
 
     .login-form-side {
         width: 100%;
-    }
-
-    .login-image-side {
-        display: none !important;
-    }
-
-    .login-card {
-        max-width: 520px;
-    }
-
-    }
-
-    @@media (max-width: 576px) {
-        .login-form-side
-
-    {
-        padding: 18px;
-    }
-
-    .login-card {
-        padding: 22px 20px;
-    }
-
-    .auth-title {
-        font-size: 26px;
     }
 
     }

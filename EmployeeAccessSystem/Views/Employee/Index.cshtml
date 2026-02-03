@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.Employee>
 
 @{
-    ViewData["Title"] = "";  
+    ViewData["Title"] = "";
     int sn = 1;
 }
 
@@ -10,29 +10,20 @@
 
         <div class="card shadow-sm">
             <div class="card-header">
-                <div class="row align-items-center w-100">
-                    <div class="col">
-                        <h5 class="mb-0">Employee List</h5>
-                    </div>
-
-                    <div class="col-auto">
-                        <a asp-action="Create" class="btn btn-primary btn-sm rounded-pill px-4">
-                            + Add Employee
-                        </a>
-                    </div>
-                </div>
+                <h5 class="mb-0">Employee List</h5>
             </div>
 
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle mb-0">
+                    <table class="table table-sm table-bordered table-hover align-middle mb-0 employee-table">
                         <thead class="table-light">
                             <tr>
                                 <th style="width:70px;">SN</th>
-                                <th>Full Name</th>
+                                <th style="width:220px;">Full Name</th>
                                 <th>Email</th>
-                                <th>Department</th>
-                                <th style="width:260px;" class="text-center">Actions</th>
+                                <th style="width:140px;">Department</th>
+                                <th style="width:90px;" class="text-center">Active</th>
+                                <th style="width:300px;" class="text-center">Actions</th>
                             </tr>
                         </thead>
 
@@ -42,26 +33,46 @@
                                 <tr>
                                     <td>@sn</td>
                                     <td>@item.FullName</td>
-                                    <td>@item.Email</td>
+                                    <td class="text-nowrap">@item.Email</td>
                                     <td>@item.DepartmentName</td>
 
+                              
                                     <td class="text-center">
-                                        <a asp-action="Details" asp-route-id="@item.EmployeeId"
-                                           class="btn btn-info btn-sm rounded-pill px-3">
-                                            Details
-                                        </a>
+                                        <form asp-action="Toggle" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@item.EmployeeId" />
+                                            <button type="submit"
+                                                    class="tick-btn"
+                                                    title="@(item.IsActive ? "Click to deactivate" : "Click to activate")">
+                                                <span class="tick-box @(item.IsActive ? "tick-on" : "tick-off")">
+                                                    @if (item.IsActive)
+                                                    {
+                                                        @Html.Raw("&#10003;")
+                                                    }
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </td>
 
-                                        <a asp-action="Edit" asp-route-id="@item.EmployeeId"
-                                           class="btn btn-warning btn-sm rounded-pill px-3 mx-1">
-                                            Edit
-                                        </a>
+                                    <td class="text-center">
+                                        <div class="action-row">
+                                            <a asp-action="Details" asp-route-id="@item.EmployeeId"
+                                               class="btn btn-info btn-sm rounded-pill px-3">
+                                                Details
+                                            </a>
 
-                                        <a asp-action="Delete" asp-route-id="@item.EmployeeId"
-                                           class="btn btn-danger btn-sm rounded-pill px-3">
-                                            Delete
-                                        </a>
+                                            <a asp-action="Edit" asp-route-id="@item.EmployeeId"
+                                               class="btn btn-warning btn-sm rounded-pill px-3">
+                                                Edit
+                                            </a>
+
+                                            <a asp-action="Delete" asp-route-id="@item.EmployeeId"
+                                               class="btn btn-danger btn-sm rounded-pill px-3">
+                                                Delete
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
+
                                 sn++;
                             }
                         </tbody>
@@ -73,3 +84,58 @@
 
     </div>
 </div>
+
+<style>
+
+    .employee-table td, .employee-table th {
+        padding: .7rem .8rem;
+        vertical-align: middle;
+    }
+
+  
+    .tick-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .tick-box {
+        display: inline-flex;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        border: 2px solid #adb5bd;
+        color: transparent;
+    }
+
+    .tick-on {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: #fff;
+    }
+
+    .tick-off {
+        background-color: #fff;
+        border-color: #adb5bd;
+        color: transparent;
+    }
+
+    .tick-btn:hover .tick-box {
+        box-shadow: 0 0 0 3px rgba(40,167,69,.2);
+    }
+
+    
+    .action-row {
+        display: flex;
+        gap: .5rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: nowrap; 
+        white-space: nowrap; 
+    }
+</style>

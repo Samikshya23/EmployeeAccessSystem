@@ -26,15 +26,16 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             var sql = @"
-                    SELECT e.EmployeeId,
-                           e.FullName,
-                           e.Email,
-                           e.DepartmentId,
-                           d.DepartmentName
-                    FROM dbo.Employees e
-                    INNER JOIN dbo.Departments d
-                        ON e.DepartmentId = d.DepartmentId
-                    ORDER BY e.EmployeeId DESC;";
+                SELECT e.EmployeeId,
+                       e.FullName,
+                       e.Email,
+                       e.DepartmentId,
+                       e.AccountId,
+                       d.DepartmentName,
+                       e.IsActive
+                FROM dbo.Employees e
+                INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+                ORDER BY e.EmployeeId DESC;";
 
             return await conn.QueryAsync<Employee>(sql);
         }
@@ -44,15 +45,16 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             var sql = @"
-                    SELECT e.EmployeeId,
-                           e.FullName,
-                           e.Email,
-                           e.DepartmentId,
-                           d.DepartmentName
-                    FROM dbo.Employees e
-                    INNER JOIN dbo.Departments d
-                        ON e.DepartmentId = d.DepartmentId
-                    WHERE e.EmployeeId = @Id;";
+                SELECT e.EmployeeId,
+                       e.FullName,
+                       e.Email,
+                       e.DepartmentId,
+                       e.AccountId,
+                       d.DepartmentName,
+                       e.IsActive
+                FROM dbo.Employees e
+                INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+                WHERE e.EmployeeId = @Id;";
 
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Id = employeeId });
         }
@@ -62,15 +64,16 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             var sql = @"
-                    SELECT e.EmployeeId,
-                           e.FullName,
-                           e.Email,
-                           e.DepartmentId,
-                           d.DepartmentName
-                    FROM dbo.Employees e
-                    INNER JOIN dbo.Departments d
-                        ON e.DepartmentId = d.DepartmentId
-                    WHERE e.Email = @Email;";
+                SELECT e.EmployeeId,
+                       e.FullName,
+                       e.Email,
+                       e.DepartmentId,
+                       e.AccountId,
+                       d.DepartmentName,
+                       e.IsActive
+                FROM dbo.Employees e
+                INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+                WHERE e.Email = @Email;";
 
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Email = email });
         }
@@ -79,9 +82,11 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
+          
             var sql = @"
-                    INSERT INTO dbo.Employees (FullName, Email, DepartmentId)
-                    VALUES (@FullName, @Email, @DepartmentId);";
+                INSERT INTO dbo.Employees (FullName, Email, DepartmentId, AccountId, IsActive)
+                VALUES (@FullName, @Email, @DepartmentId, @AccountId, @IsActive);";
+
             try
             {
                 return await conn.ExecuteAsync(sql, employee);
@@ -90,7 +95,6 @@ namespace EmployeeAccessSystem.Repositories
             {
                 return -1; 
             }
-            
         }
 
         public async Task<int> UpdateAsync(Employee employee)
@@ -98,11 +102,12 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             var sql = @"
-                    UPDATE dbo.Employees
-                    SET FullName = @FullName,
-                        Email = @Email,
-                        DepartmentId = @DepartmentId
-                    WHERE EmployeeId = @EmployeeId;";
+                UPDATE dbo.Employees
+                SET FullName = @FullName,
+                    Email = @Email,
+                    DepartmentId = @DepartmentId,
+                    IsActive = @IsActive
+                WHERE EmployeeId = @EmployeeId;";
 
             return await conn.ExecuteAsync(sql, employee);
         }
@@ -112,8 +117,19 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             var sql = "DELETE FROM dbo.Employees WHERE EmployeeId = @Id";
-
             return await conn.ExecuteAsync(sql, new { Id = employeeId });
+        }
+
+        public async Task ToggleAsync(int employeeId)
+        {
+            using var conn = GetConnection();
+
+            var sql = @"
+                UPDATE dbo.Employees
+                SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END
+                WHERE EmployeeId = @Id;";
+
+            await conn.ExecuteAsync(sql, new { Id = employeeId });
         }
     }
 }
