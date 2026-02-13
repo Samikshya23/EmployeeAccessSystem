@@ -46,7 +46,6 @@ namespace EmployeeAccessSystem.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-
             if (HttpContext.Session.GetInt32("AccountId") == null)
                 return RedirectToAction("Login", "Account");
 

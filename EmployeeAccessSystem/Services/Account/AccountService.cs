@@ -83,7 +83,6 @@ namespace EmployeeAccessSystem.Services
 
             return ""; 
         }
-
         public async Task<string> LoginAsync(LoginModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Email))
