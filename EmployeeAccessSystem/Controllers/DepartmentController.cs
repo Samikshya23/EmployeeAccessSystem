@@ -1,57 +1,61 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using EmployeeAccessSystem.Models;
-using EmployeeAccessSystem.Repositories;
+﻿using EmployeeAccessSystem.Models;
+using EmployeeAccessSystem.Services;
+
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace EmployeeAccessSystem.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        private readonly IDepartmentService _service;
+
+        public DepartmentController(IDepartmentService service)
         {
-            _departmentRepository = departmentRepository;
+            _service = service;
         }
+
         public async Task<IActionResult> Index()
         {
-            var departments = await _departmentRepository.GetAllAsync();
+            var departments = await _service.GetAllAsync();
             return View(departments);
         }
-        [HttpGet]
+
         public IActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(Department department)
         {
-            await _departmentRepository.AddAsync(department);
+            await _service.AddAsync(department);
             return RedirectToAction("Index");
         }
-        [HttpGet]
+
         public async Task<IActionResult> Edit(int id)
         {
-            var dept = await _departmentRepository.GetByIdAsync(id);
-            if (dept == null) return NotFound();
-            return View(dept);
+            var department = await _service.GetByIdAsync(id);
+            return View(department);
         }
+
         [HttpPost]
         public async Task<IActionResult> Edit(Department department)
         {
-            await _departmentRepository.UpdateAsync(department);
+            await _service.UpdateAsync(department);
             return RedirectToAction("Index");
         }
-        [HttpGet]
+
         public async Task<IActionResult> Delete(int id)
         {
-            var dept = await _departmentRepository.GetByIdAsync(id);
-            if (dept == null) return NotFound();
-            return View(dept);
+            var department = await _service.GetByIdAsync(id);
+            return View(department);
         }
+
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _departmentRepository.DeleteAsync(id);
+            await _service.DeleteAsync(id);
             return RedirectToAction("Index");
         }
     }

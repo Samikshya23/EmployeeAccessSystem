@@ -9,4 +9,4 @@ namespace EmployeeAccessSystem.Services
         Task<string?> LoginAsync(LoginModel model);
         Task<Account?> GetAccountByEmailAsync(string email);
     }
-}
+} 
