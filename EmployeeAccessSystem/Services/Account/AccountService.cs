@@ -11,7 +11,6 @@ namespace EmployeeAccessSystem.Services
         private readonly IAccountRepository _accountRepo;
         private readonly IEmployeeRepository _employeeRepo;
         private readonly IConfiguration _config;
-
         public AccountService(IAccountRepository accountRepo, IEmployeeRepository employeeRepo, IConfiguration config)
         {
             _accountRepo = accountRepo;
@@ -32,12 +31,10 @@ namespace EmployeeAccessSystem.Services
                 return "Please select a department";
             }
 
-            if (model.Password != model.ConfirmPassword)
-            {
-                return "Passwords do not match";
-            }
-
-          
+            //if (model.Password != model.ConfirmPassword)
+            //{
+            //    return "Passwords do not match";
+            //}
             model.FullName = model.FullName.Trim();
             model.Email = model.Email.Trim().ToLower();
 
@@ -47,8 +44,6 @@ namespace EmployeeAccessSystem.Services
             {
                 return "Email already registered";
             }
-
-     
             string key = _config["Security:PasswordKey"];
             Helper.CreatePasswordHash(model.Password, key, out byte[] hash, out byte[] salt);
 
@@ -71,7 +66,6 @@ namespace EmployeeAccessSystem.Services
                 DepartmentId = model.DepartmentId,
                 AccountId = accountId
             };
-
             int empResult = await _employeeRepo.AddAsync(employee);
 
         
@@ -120,7 +114,6 @@ namespace EmployeeAccessSystem.Services
 
             return ""; 
         }
-
         public async Task<Account> GetAccountByEmailAsync(string email)
         {
             email = (email ?? "").Trim().ToLower();

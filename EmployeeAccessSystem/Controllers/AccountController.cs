@@ -30,8 +30,12 @@ namespace EmployeeAccessSystem.Controllers
         {
             var departments = await _departmentRepo.GetAllAsync();
             ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", model.DepartmentId);
-            string error = await _accountService.RegisterAsync(model);
 
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            string error = await _accountService.RegisterAsync(model);
             if (!string.IsNullOrEmpty(error))
             {
                 ViewBag.Error = error;
@@ -48,6 +52,10 @@ namespace EmployeeAccessSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             string error = await _accountService.LoginAsync(model);
             if (!string.IsNullOrEmpty(error))
             {
@@ -55,11 +63,7 @@ namespace EmployeeAccessSystem.Controllers
                 return View(model);
             }
             Account account = await _accountService.GetAccountByEmailAsync(model.Email);
-            if (account == null)
-            {
-                ViewBag.Error = "Account not registered";
-                return View(model);
-            }
+          
             HttpContext.Session.SetInt32("AccountId", account.AccountId);
             HttpContext.Session.SetString("FullName", account.FullName ?? "");
             HttpContext.Session.SetString("Email", account.Email ?? "");

@@ -13,47 +13,37 @@ namespace EmployeeAccessSystem.Services
         public CategoryService(ICategoryRepository repo)
         {
             _repo = repo;
-
         }
+
         public async Task<List<Category>> GetAllAsync()
         {
             var data = await _repo.GetAllAsync();
             return data.ToList();
         }
 
-        public async Task<Category?> GetByIdAsync(int id)
+        public Task<Category?> GetByIdAsync(int id)
         {
-            return await _repo.GetByIdAsync(id);
+            return _repo.GetByIdAsync(id);
         }
 
-        public async Task<string> AddAsync(Category category)
+        public Task AddAsync(Category category)
         {
-            if (category == null) return "Invalid data.";
-            if (string.IsNullOrWhiteSpace(category.CategoryName))
-                return "Category name is required.";
-
-            await _repo.AddAsync(category);
-            return "";
+            return _repo.AddAsync(category);
         }
 
-        public async Task<string> UpdateAsync(Category category)
+        public Task UpdateAsync(Category category)
         {
-            if (category == null) return "Invalid data.";
-            if (string.IsNullOrWhiteSpace(category.CategoryName))
-                return "Category name is required.";
-
-            await _repo.UpdateAsync(category);
-            return "";
+            return _repo.UpdateAsync(category);
         }
 
-        public async Task DeleteAsync(int id)
+        public Task DeleteAsync(int id)
         {
-            await _repo.DeleteAsync(id);
+            return _repo.DeleteAsync(id);
         }
 
-        public async Task ToggleAsync(int id)
+        public Task ToggleAsync(int id)
         {
-            await _repo.ToggleAsync(id);
+            return _repo.ToggleAsync(id);
         }
     }
 }

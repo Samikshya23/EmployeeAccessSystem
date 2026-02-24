@@ -17,8 +17,6 @@ namespace EmployeeAccessSystem.Models
         public int DepartmentId { get; set; }
 
         public string? DepartmentName { get; set; }
-
-        // ✅ ADD THIS
         public int AccountId { get; set; }
         public bool IsActive { get; set; }
 

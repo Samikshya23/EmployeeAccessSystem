@@ -8,7 +8,6 @@ namespace EmployeeAccessSystem.Models
 
         [Required(ErrorMessage = "Category Name is required")]
         public string CategoryName { get; set; } = "";
-
         public bool IsActive { get; set; }
     }
 }

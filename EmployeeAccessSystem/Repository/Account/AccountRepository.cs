@@ -13,13 +13,11 @@ namespace EmployeeAccessSystem.Repositories
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-
         private SqlConnection GetConnection()
         {
             SqlConnection conn = new SqlConnection(_connectionString);
             return conn;
         }
-
         public async Task<int> CreateAsync(Account account)
         {
             using var conn = GetConnection();

@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Services;
-using System.Linq;
 using System.Threading.Tasks;
-
 namespace EmployeeAccessSystem.Controllers
 {
     public class CategoryController : Controller
@@ -20,15 +18,7 @@ namespace EmployeeAccessSystem.Controllers
                 return RedirectToAction("Login", "Account");
 
             var data = await _service.GetAllAsync();
-            return View(data.ToList());
-        }
-        public async Task<IActionResult> Index1()
-        {
-            if (HttpContext.Session.GetInt32("AccountId") == null)
-                return RedirectToAction("Login", "Account");
-
-            var data = await _service.GetAllAsync();
-            return View(data.ToList());
+            return View(data);
         }
         [HttpPost]
         public async Task<IActionResult> Toggle(int id)
@@ -39,7 +29,6 @@ namespace EmployeeAccessSystem.Controllers
             await _service.ToggleAsync(id);
             return RedirectToAction(nameof(Index));
         }
-
         public IActionResult Create()
         {
             if (HttpContext.Session.GetInt32("AccountId") == null)

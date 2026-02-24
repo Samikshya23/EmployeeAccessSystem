@@ -1,4 +1,5 @@
-﻿namespace EmployeeAccessSystem.Models
+﻿
+namespace EmployeeAccessSystem.Models
 {
     public class Department
     {
