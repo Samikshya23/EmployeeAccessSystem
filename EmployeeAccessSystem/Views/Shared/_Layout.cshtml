@@ -12,17 +12,13 @@
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EmployeeAccessSystem.styles.css" asp-append-version="true" />
-
     <link rel="stylesheet" href="~/adminlte/plugins/fontawesome-free/css/all.min.css" />
     <link rel="stylesheet" href="~/adminlte/dist/css/adminlte.min.css" />
-
     @RenderSection("Styles", required: false)
 </head>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
-
-        <!-- NAVBAR -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
 
             <ul class="navbar-nav">
@@ -64,7 +60,6 @@
 
         </nav>
 
-        <!-- SIDEBAR -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a asp-controller="Home" asp-action="Index" class="brand-link">
                 <img src="~/adminlte/dist/img/AdminLTELogo.png"
@@ -80,8 +75,6 @@
                         data-widget="treeview"
                         role="menu"
                         data-accordion="false">
-
-                        <!-- ✅ Home in sidebar -->
                         <li class="nav-item">
                             <a asp-controller="Home" asp-action="Index" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
@@ -102,22 +95,23 @@
                                 <p>Category</p>
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a asp-controller="SubCategory" asp-action="Index" class="nav-link">
                                 <i class="nav-icon fas fa-list"></i>
                                 <p>Sub Category</p>
                             </a>
                         </li>
-
+                        <li class="nav-item">
+                            <a asp-controller="AccessManagement" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-key"></i>
+                                <p>Access Management</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
         </aside>
-
-       
         <div class="content-wrapper">
-
             <div class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-2">
@@ -145,9 +139,7 @@
                 <b>AdminLTE</b> 3.2.0
             </div>
         </footer>
-
     </div>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/adminlte/dist/js/adminlte.min.js"></script>

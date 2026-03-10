@@ -8,5 +8,6 @@ namespace EmployeeAccessSystem.Services
         Task<string?> RegisterAsync(RegisterModel model);
         Task<string?> LoginAsync(LoginModel model);
         Task<Account?> GetAccountByEmailAsync(string email);
+
     }
 } 

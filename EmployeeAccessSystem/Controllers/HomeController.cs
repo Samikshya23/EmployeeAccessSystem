@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using EmployeeAccessSystem.Models;
 using Microsoft.AspNetCore.Mvc;
-
 namespace EmployeeAccessSystem.Controllers
 {
     public class HomeController : Controller
@@ -13,7 +12,7 @@ namespace EmployeeAccessSystem.Controllers
         }
         public IActionResult Index()
         {
-            _logger.LogInformation("Home page opened at {Time}", DateTime.Now);
+            _logger.LogInformation("Home page opened at " + DateTime.Now);
             return View();
         }
         public IActionResult Privacy()

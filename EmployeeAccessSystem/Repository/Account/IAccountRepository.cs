@@ -11,6 +11,6 @@ namespace EmployeeAccessSystem.Repositories
         Task<Account?> GetByIdAsync(int id);         
         Task<int> UpdateAsync(Account account);       
         Task<int> DeleteAsync(int accountId);
-     
+        Task<int> AssignRoleAsync(int accountId, int roleId);
     }
 }
