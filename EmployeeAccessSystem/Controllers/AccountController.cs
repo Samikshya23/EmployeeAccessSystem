@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
 using EmployeeAccessSystem.Services;
@@ -12,7 +14,6 @@ namespace EmployeeAccessSystem.Controllers
         private readonly IAccountService _accountService;
         private readonly IDepartmentRepository _departmentRepo;
         private readonly ILogger<AccountController> _logger;
-
         public AccountController(
             IAccountService accountService,
             IDepartmentRepository departmentRepo,
@@ -22,97 +23,127 @@ namespace EmployeeAccessSystem.Controllers
             _departmentRepo = departmentRepo;
             _logger = logger;
         }
-
         [HttpGet]
         public async Task<IActionResult> Register()
         {
             _logger.LogInformation("Register page opened.");
-
             var departments = await _departmentRepo.GetAllAsync();
             ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName");
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            _logger.LogInformation("Register submitted. Email: " + model.Email);
+            _logger.LogInformation("Register submitted. Email: {Email}", model.Email);
 
             var departments = await _departmentRepo.GetAllAsync();
             ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", model.DepartmentId);
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Register validation failed. Email: " + model.Email);
+                _logger.LogWarning("Register validation failed. Email: {Email}", model.Email);
                 return View(model);
             }
-
             string error = await _accountService.RegisterAsync(model);
+
             if (!string.IsNullOrEmpty(error))
             {
-                _logger.LogWarning("Register failed. Email: " + model.Email + " Error: " + error);
+                _logger.LogWarning("Register failed. Email: {Email}, Error: {Error}", model.Email, error);
                 ViewBag.Error = error;
                 return View(model);
             }
-
-            _logger.LogInformation("Registration successful. Email: " + model.Email);
-
+            _logger.LogInformation("Registration successful. Email: {Email}", model.Email);
             TempData["Success"] = "Registration successful. Please login.";
             return RedirectToAction("Login");
         }
-
         [HttpGet]
         public IActionResult Login()
         {
             _logger.LogInformation("Login page opened.");
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            _logger.LogInformation("Login submitted. Email: " + model.Email);
+            _logger.LogInformation("Login submitted. Email: {Email}", model.Email);
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Login validation failed. Email: " + model.Email);
+                _logger.LogWarning("Login validation failed. Email: {Email}", model.Email);
                 return View(model);
             }
-
             string error = await _accountService.LoginAsync(model);
+
             if (!string.IsNullOrEmpty(error))
             {
-                _logger.LogWarning("Login failed. Email: " + model.Email + " Error: " + error);
+                _logger.LogWarning("Login failed. Email: {Email}, Error: {Error}", model.Email, error);
                 ViewBag.Error = error;
                 return View(model);
             }
+            Account? account = await _accountService.GetAccountByEmailAsync(model.Email);
 
-            Account account = await _accountService.GetAccountByEmailAsync(model.Email);
+            if (account == null)
+            {
+                _logger.LogWarning("Account not found after successful login. Email: {Email}", model.Email);
+                ViewBag.Error = "Account not found.";
+                return View(model);
+            }
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, account.AccountId.ToString()),
+                new Claim(ClaimTypes.Name, account.FullName ?? ""),
+                new Claim(ClaimTypes.Email, account.Email ?? ""),
+                new Claim(ClaimTypes.Role, account.RoleName ?? "")
+            };
 
-            HttpContext.Session.SetInt32("AccountId", account.AccountId);
-            HttpContext.Session.SetString("FullName", account.FullName ?? "");
-            HttpContext.Session.SetString("Email", account.Email ?? "");
-            HttpContext.Session.SetString("RoleName", account.RoleName ?? "");
+            var claimsIdentity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
 
-            _logger.LogInformation("Login successful. AccountId: " + account.AccountId + " Email: " + model.Email + " Role: " + account.RoleName);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true
+            };
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                claimsPrincipal,
+                authProperties);
+
+            _logger.LogInformation(
+                "Login successful. AccountId: {AccountId}, Email: {Email}, Role: {Role}",
+                account.AccountId,
+                account.Email,
+                account.RoleName);
 
             if (account.RoleName == "Admin")
             {
                 return RedirectToAction("Index", "Employee");
+            }
+            else if (account.RoleName == "Employee")
+            {
+                return RedirectToAction("Index", "EmployeeDashboard");
             }
             else
             {
                 return RedirectToAction("Index", "Home");
             }
         }
-
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            string email = HttpContext.Session.GetString("Email") ?? "";
+            string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
 
-            _logger.LogInformation("Logout clicked. Email: " + email);
-            HttpContext.Session.Clear();
+            _logger.LogInformation("Logout clicked. Email: {Email}", email);
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
             return RedirectToAction("Index", "Home");
+        }
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

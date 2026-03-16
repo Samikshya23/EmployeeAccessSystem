@@ -1,14 +1,9 @@
-﻿@using Microsoft.AspNetCore.Http
-@{
+﻿@{
     Layout = "_PublicLayout";
     ViewData["Title"] = "Home";
-
-    var isLoggedIn = Context.Session.GetInt32("AccountId") != null;
 }
 <div class="home-section d-flex align-items-center">
-
     <div class="container">
-
         <div class="row justify-content-center text-center">
             <div class="col-lg-8">
                 <h1 class="main-title mb-3">
@@ -18,30 +13,18 @@
                     A simple and secure system to manage employees,
                     categories, subcategories, and access permissions.
                 </p>
-                @if (!isLoggedIn)
-                {
-                    <div class="d-flex justify-content-center gap-3 flex-wrap">
-                        <a asp-controller="Account"
-                           asp-action="Login"
-                           class="btn btn-dark btn-lg px-4">
-                            Login
-                        </a>
-                        <a asp-controller="Account"
-                           asp-action="Register"
-                           class="btn btn-outline-dark btn-lg px-4">
-                            Register
-                        </a>
-
-                    </div>
-                }
-                else
-                {
-                    <a asp-controller="Employee"
-                       asp-action="Index"
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a asp-controller="Account"
+                       asp-action="Login"
                        class="btn btn-dark btn-lg px-4">
-                        Go to Dashboard
+                        Login
                     </a>
-                }
+                    <a asp-controller="Account"
+                       asp-action="Register"
+                       class="btn btn-outline-dark btn-lg px-4">
+                        Register
+                    </a>
+                </div>
             </div>
         </div>
     </div>

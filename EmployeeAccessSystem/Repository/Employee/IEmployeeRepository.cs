@@ -9,7 +9,7 @@ namespace EmployeeAccessSystem.Repositories
         Task<IEnumerable<Employee>> GetAllAsync();
         Task<Employee> GetByIdAsync(int employeeId);
         Task<Employee> GetByEmailAsync(string email);
-
+        Task<IEnumerable<Employee>> GetSupervisorsAsync();
         Task<int> AddAsync(Employee employee);
         Task<int> UpdateAsync(Employee employee);
         Task<int> DeleteAsync(int employeeId);

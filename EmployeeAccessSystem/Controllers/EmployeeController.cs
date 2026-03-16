@@ -1,94 +1,151 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
-using Microsoft.AspNetCore.Http;
+using EmployeeAccessSystem.Services;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EmployeeAccessSystem.Controllers
 {
-   public class EmployeeController : Controller
+    [Authorize]
+    public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEmployeeService _employeeService;
         private readonly IDepartmentRepository _departmentRepository;
-        private readonly IAccountRepository _accountRepository;
+
         public EmployeeController(
-            IEmployeeRepository employeeRepository,
-            IDepartmentRepository departmentRepository,
-            IAccountRepository accountRepository)
+            IEmployeeService employeeService,
+            IDepartmentRepository departmentRepository)
         {
-            _employeeRepository = employeeRepository;
+            _employeeService = employeeService;
             _departmentRepository = departmentRepository;
-            _accountRepository = accountRepository;
         }
-        private bool IsLoggedIn() => HttpContext.Session.GetInt32("AccountId") != null;
-        private IActionResult GoLogin() => RedirectToAction("Login", "Account");
+
         public async Task<IActionResult> Index()
         {
-            if (!IsLoggedIn()) return GoLogin();
-
-            var employees = await _employeeRepository.GetAllAsync();
+            var employees = await _employeeService.GetAllAsync();
             return View(employees);
         }
+
         public async Task<IActionResult> Details(int id)
         {
-            if (!IsLoggedIn()) return GoLogin();
-            var employee = await _employeeRepository.GetByIdAsync(id);
-            if (employee == null) return NotFound();
+            var employee = await _employeeService.GetByIdAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
             return View(employee);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            if (!IsLoggedIn()) return GoLogin();
-            var employee = await _employeeRepository.GetByIdAsync(id);
-            if (employee == null) return NotFound();
-            var departments = await _departmentRepository.GetAllAsync();
-            ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
+            var employee = await _employeeService.GetByIdAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            await LoadDropdowns(employee.DepartmentId, employee.Role, employee.EmployeeId, employee.SupervisorEmployeeId);
+
             return View(employee);
         }
+
         [HttpPost]
         public async Task<IActionResult> Edit(Employee employee)
         {
-            if (!IsLoggedIn()) return GoLogin();
+            await LoadDropdowns(employee.DepartmentId, employee.Role, employee.EmployeeId, employee.SupervisorEmployeeId);
+
             if (!ModelState.IsValid)
             {
-                var departments = await _departmentRepository.GetAllAsync();
-                ViewBag.Departments = new SelectList(departments, "DepartmentId", "DepartmentName", employee.DepartmentId);
-                return View(employee); 
+                return View(employee);
             }
-            await _employeeRepository.UpdateAsync(employee);
-            return RedirectToAction(nameof(Index));
+
+            string error = await _employeeService.UpdateAsync(employee);
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                ViewBag.Error = error;
+                return View(employee);
+            }
+
+            return RedirectToAction("Index");
         }
+
         [HttpGet]
         public IActionResult Create()
         {
             return RedirectToAction("Register", "Account");
         }
+
         [HttpPost]
         public async Task<IActionResult> Toggle(int id)
         {
-            if (!IsLoggedIn()) return GoLogin();
-            await _employeeRepository.ToggleAsync(id);
-            return RedirectToAction(nameof(Index));
+            await _employeeService.ToggleAsync(id);
+            return RedirectToAction("Index");
         }
+
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            if (!IsLoggedIn()) return GoLogin();
-            var employee = await _employeeRepository.GetByIdAsync(id);
-            if (employee == null) return NotFound();
+            var employee = await _employeeService.GetByIdAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
             return View(employee);
         }
-        [HttpPost, ActionName("Delete")]
+
+        [HttpPost]
+        [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!IsLoggedIn()) return GoLogin();
+            string error = await _employeeService.DeleteAsync(id);
 
-            var employee = await _employeeRepository.GetByIdAsync(id);
-            if (employee == null) return NotFound();
+            if (!string.IsNullOrEmpty(error))
+            {
+                return NotFound();
+            }
 
-            await _accountRepository.DeleteAsync(employee.AccountId);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
+        }
+
+        private async Task LoadDropdowns(int selectedDepartmentId, string selectedRole, int currentEmployeeId, int? selectedSupervisorId)
+        {
+            var departments = await _departmentRepository.GetAllAsync();
+
+            ViewBag.Departments = new SelectList(
+                departments,
+                "DepartmentId",
+                "DepartmentName",
+                selectedDepartmentId
+            );
+
+            ViewBag.Roles = new SelectList(
+                new List<string> { "Admin", "Employee", "Supervisor" },
+                selectedRole
+            );
+
+            var supervisors = await _employeeService.GetSupervisorsAsync();
+
+            var filteredSupervisors = supervisors
+                .Where(x => x.EmployeeId != currentEmployeeId)
+                .ToList();
+
+            ViewBag.Supervisors = new SelectList(
+                filteredSupervisors,
+                "EmployeeId",
+                "FullName",
+                selectedSupervisorId
+            );
         }
     }
 }

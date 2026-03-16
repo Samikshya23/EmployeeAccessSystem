@@ -17,8 +17,16 @@ namespace EmployeeAccessSystem.Models
         public int DepartmentId { get; set; }
 
         public string? DepartmentName { get; set; }
+
         public int AccountId { get; set; }
+
         public bool IsActive { get; set; }
 
+        [Required(ErrorMessage = "Role is required")]
+        public string Role { get; set; } = "";
+
+        public int? SupervisorEmployeeId { get; set; }
+
+        public string? SupervisorName { get; set; }
     }
 }

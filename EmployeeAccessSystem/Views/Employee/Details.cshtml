@@ -31,6 +31,27 @@
                         <th>Department</th>
                         <td>@Model.DepartmentName</td>
                     </tr>
+                    <tr>
+                        <th>Role</th>
+                        <td>@Model.Role</td>
+                    </tr>
+                    <tr>
+                        <th>Supervisor</th>
+                        <td>@(string.IsNullOrWhiteSpace(Model.SupervisorName) ? "-" : Model.SupervisorName)</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                    </tr>
                 </table>
 
                 <div class="details-actions">
@@ -58,6 +79,7 @@
             padding-top: 4px !important;
             padding-bottom: 4px !important;
         }
+
         .details-container {
             padding-top: 0 !important;
             padding-bottom: 0 !important;
@@ -72,10 +94,12 @@
             .details-card .card-body {
                 padding: 22px 24px;
             }
+
         .table th {
             background-color: #f8f9fa;
             font-weight: 600;
         }
+
         .details-actions {
             display: flex;
             justify-content: flex-end;

@@ -1,0 +1,172 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<style>
+    .welcome-card,
+    .info-card,
+    .action-card,
+    .request-card {
+        border-radius: 18px;
+        border: 1px solid #ececec;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+        background: #ffffff;
+    }
+
+    .welcome-card {
+        padding: 32px;
+        margin-bottom: 24px;
+    }
+
+        .welcome-card h2 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #14213d;
+        }
+
+        .welcome-card p {
+            font-size: 18px;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+    .info-card .card-header,
+    .action-card .card-header,
+    .request-card .card-header {
+        background: #ffffff;
+        border-bottom: 1px solid #f1f1f1;
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .info-card .card-body p {
+        font-size: 17px;
+        margin-bottom: 16px;
+    }
+
+    .empty-text {
+        color: #8a8f98;
+        font-size: 16px;
+    }
+
+    .action-item {
+        border-radius: 14px;
+        padding: 22px 15px;
+        text-align: center;
+        border: 1px solid #ececec;
+        background: #ffffff;
+        transition: 0.25s ease;
+        height: 100%;
+    }
+
+        .action-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+            background: #f9fbff;
+        }
+
+    .action-icon {
+        font-size: 28px;
+        margin-bottom: 12px;
+        color: #5a67d8;
+    }
+
+    .action-title {
+        font-weight: 600;
+        font-size: 17px;
+        color: #14213d;
+    }
+
+    .action-link {
+        text-decoration: none !important;
+    }
+</style>
+
+<div class="container-fluid pt-3">
+
+    <div class="welcome-card">
+        <h2>Hello, @User.Identity?.Name</h2>
+        <p>Welcome to the Employee Access System.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card info-card h-100">
+                <div class="card-header">
+                    My Information
+                </div>
+                <div class="card-body p-4">
+                    <p><strong>Name:</strong> @User.Identity?.Name</p>
+                    <p><strong>Email:</strong> @User.FindFirst(ClaimTypes.Email)?.Value</p>
+                    <p><strong>Department:</strong> IT</p>
+                    <p class="mb-0"><strong>Status:</strong> Active</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card action-card h-100">
+                <div class="card-header">
+                    Quick Actions
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a href="/EmployeeDashboard/MyProfile" class="action-link">
+                                <div class="action-item">
+                                    <div class="action-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="action-title">
+                                        My Profile
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <a href="/EmployeeDashboard/CreateRequest" class="action-link">
+                                <div class="action-item">
+                                    <div class="action-icon">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </div>
+                                    <div class="action-title">
+                                        Create Request
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <a href="/EmployeeDashboard/MyRequests" class="action-link">
+                                <div class="action-item">
+                                    <div class="action-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div class="action-title">
+                                        My Requests
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card request-card">
+        <div class="card-header">
+            Recent Requests
+        </div>
+        <div class="card-body p-4">
+            <p class="empty-text mb-0">No requests submitted yet.</p>
+        </div>
+    </div>
+
+</div>

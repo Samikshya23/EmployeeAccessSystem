@@ -32,9 +32,15 @@ namespace EmployeeAccessSystem.Repositories
                        e.DepartmentId,
                        e.AccountId,
                        d.DepartmentName,
-                       e.IsActive
+                       e.IsActive,
+                       e.SupervisorEmployeeId,
+                       ISNULL(s.FullName, '') AS SupervisorName,
+                       ISNULL(r.RoleName, '') AS Role
                 FROM dbo.Employees e
                 INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+                LEFT JOIN dbo.Employees s ON e.SupervisorEmployeeId = s.EmployeeId
+                LEFT JOIN dbo.UserRoles ur ON e.AccountId = ur.AccountId
+                LEFT JOIN dbo.Roles r ON ur.RoleId = r.RoleId
                 ORDER BY e.EmployeeId DESC;";
 
             return await conn.QueryAsync<Employee>(sql);
@@ -51,9 +57,15 @@ namespace EmployeeAccessSystem.Repositories
                        e.DepartmentId,
                        e.AccountId,
                        d.DepartmentName,
-                       e.IsActive
+                       e.IsActive,
+                       e.SupervisorEmployeeId,
+                       ISNULL(s.FullName, '') AS SupervisorName,
+                       ISNULL(r.RoleName, '') AS Role
                 FROM dbo.Employees e
                 INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+                LEFT JOIN dbo.Employees s ON e.SupervisorEmployeeId = s.EmployeeId
+                LEFT JOIN dbo.UserRoles ur ON e.AccountId = ur.AccountId
+                LEFT JOIN dbo.Roles r ON ur.RoleId = r.RoleId
                 WHERE e.EmployeeId = @Id;";
 
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Id = employeeId });
@@ -70,22 +82,59 @@ namespace EmployeeAccessSystem.Repositories
                        e.DepartmentId,
                        e.AccountId,
                        d.DepartmentName,
-                       e.IsActive
+                       e.IsActive,
+                       e.SupervisorEmployeeId,
+                       ISNULL(s.FullName, '') AS SupervisorName,
+                       ISNULL(r.RoleName, '') AS Role
                 FROM dbo.Employees e
                 INNER JOIN dbo.Departments d ON e.DepartmentId = d.DepartmentId
+                LEFT JOIN dbo.Employees s ON e.SupervisorEmployeeId = s.EmployeeId
+                LEFT JOIN dbo.UserRoles ur ON e.AccountId = ur.AccountId
+                LEFT JOIN dbo.Roles r ON ur.RoleId = r.RoleId
                 WHERE e.Email = @Email;";
 
             return await conn.QueryFirstOrDefaultAsync<Employee>(sql, new { Email = email });
+        }
+
+        public async Task<IEnumerable<Employee>> GetSupervisorsAsync()
+        {
+            using var conn = GetConnection();
+
+            var sql = @"
+                SELECT e.EmployeeId,
+                       e.FullName
+                FROM dbo.Employees e
+                INNER JOIN dbo.UserRoles ur ON e.AccountId = ur.AccountId
+                INNER JOIN dbo.Roles r ON ur.RoleId = r.RoleId
+                WHERE r.RoleName = 'Supervisor'
+                ORDER BY e.FullName;";
+
+            return await conn.QueryAsync<Employee>(sql);
         }
 
         public async Task<int> AddAsync(Employee employee)
         {
             using var conn = GetConnection();
 
-          
             var sql = @"
-                INSERT INTO dbo.Employees (FullName, Email, DepartmentId, AccountId, IsActive)
-                VALUES (@FullName, @Email, @DepartmentId, @AccountId, @IsActive);";
+                INSERT INTO dbo.Employees
+                (
+                    FullName,
+                    Email,
+                    DepartmentId,
+                    AccountId,
+                    IsActive,
+                    SupervisorEmployeeId
+                )
+                VALUES
+                (
+                    @FullName,
+                    @Email,
+                    @DepartmentId,
+                    @AccountId,
+                    @IsActive,
+                    @SupervisorEmployeeId
+                );";
 
             try
             {
@@ -93,7 +142,7 @@ namespace EmployeeAccessSystem.Repositories
             }
             catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
             {
-                return -1; 
+                return -1;
             }
         }
 
@@ -106,7 +155,8 @@ namespace EmployeeAccessSystem.Repositories
                 SET FullName = @FullName,
                     Email = @Email,
                     DepartmentId = @DepartmentId,
-                    IsActive = @IsActive
+                    IsActive = @IsActive,
+                    SupervisorEmployeeId = @SupervisorEmployeeId
                 WHERE EmployeeId = @EmployeeId;";
 
             return await conn.ExecuteAsync(sql, employee);
@@ -116,7 +166,14 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            var sql = "DELETE FROM dbo.Employees WHERE EmployeeId = @Id";
+            var clearSql = @"
+                UPDATE dbo.Employees
+                SET SupervisorEmployeeId = NULL
+                WHERE SupervisorEmployeeId = @Id;";
+
+            await conn.ExecuteAsync(clearSql, new { Id = employeeId });
+
+            var sql = "DELETE FROM dbo.Employees WHERE EmployeeId = @Id;";
             return await conn.ExecuteAsync(sql, new { Id = employeeId });
         }
 

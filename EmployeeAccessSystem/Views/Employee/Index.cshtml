@@ -1,18 +1,14 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.Employee>
-
 @{
     ViewData["Title"] = "";
     int sn = 1;
 }
-
 <div class="row mt-3">
     <div class="col-12">
-
         <div class="card shadow-sm">
             <div class="card-header">
                 <h5 class="mb-0">Employee List</h5>
             </div>
-
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered table-hover align-middle mb-0 employee-table">
@@ -22,11 +18,12 @@
                                 <th style="width:220px;">Full Name</th>
                                 <th>Email</th>
                                 <th style="width:140px;">Department</th>
-                                @* <th style="width:90px;" class="text-center">Active</th> *@
+                                <th style="width:130px;">Role</th>
+                                <th style="width:170px;">Supervisor</th>
+                                @* <th style="width:100px;" class="text-center">Status</th> *@
                                 <th style="width:300px;" class="text-center">Actions</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             @foreach (var item in Model)
                             {
@@ -35,22 +32,19 @@
                                     <td>@item.FullName</td>
                                     <td class="text-nowrap">@item.Email</td>
                                     <td>@item.DepartmentName</td>
-
-                              
-    @*                                 <td class="text-center">
-                                        <form asp-action="Toggle" method="post" class="d-inline">
-                                            <input type="hidden" name="id" value="@item.EmployeeId" />
-                                            <button type="submit"
-                                                    class="tick-btn"
-                                                    title="@(item.IsActive ? "Click to deactivate" : "Click to activate")">
-                                                <span class="tick-box @(item.IsActive ? "tick-on" : "tick-off")">
-                                                    @if (item.IsActive)
-                                                    {
-                                                        @Html.Raw("&#10003;")
-                                                    }
-                                                </span>
-                                            </button>
-                                        </form>
+                                    <td>@item.Role</td>
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(item.SupervisorName) ? "-" : item.SupervisorName)
+                                    </td>
+                                    @* <td class="text-center">
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
                                     </td> *@
 
                                     <td class="text-center">
@@ -84,22 +78,17 @@
 
     </div>
 </div>
-
 <style>
-
     .employee-table td, .employee-table th {
         padding: .7rem .8rem;
         vertical-align: middle;
     }
-
-  
     .tick-btn {
         background: none;
         border: none;
         padding: 0;
         cursor: pointer;
     }
-
     .tick-box {
         display: inline-flex;
         width: 28px;
@@ -112,30 +101,25 @@
         border: 2px solid #adb5bd;
         color: transparent;
     }
-
     .tick-on {
         background-color: #28a745;
         border-color: #28a745;
         color: #fff;
     }
-
     .tick-off {
         background-color: #fff;
         border-color: #adb5bd;
         color: transparent;
     }
-
     .tick-btn:hover .tick-box {
         box-shadow: 0 0 0 3px rgba(40,167,69,.2);
     }
-
-    
     .action-row {
         display: flex;
         gap: .5rem;
         justify-content: center;
         align-items: center;
-        flex-wrap: nowrap; 
-        white-space: nowrap; 
+        flex-wrap: nowrap;
+        white-space: nowrap;
     }
 </style>
