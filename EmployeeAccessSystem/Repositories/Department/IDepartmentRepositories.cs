@@ -4,7 +4,7 @@ using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    public interface IDepartmentRepository
+    public interface IDepartmentRepositories
     {
         Task<IEnumerable<Department>> GetAllAsync();       
         Task<Department> GetByIdAsync(int departmentId);    

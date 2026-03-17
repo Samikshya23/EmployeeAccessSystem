@@ -7,11 +7,11 @@ using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    public class SubCategoryRepository : ISubCategoryRepository
+    public class SubCategoryRepositories : ISubCategoryRepositories
     {
         private readonly string _connectionString;
 
-        public SubCategoryRepository(IConfiguration configuration)
+        public SubCategoryRepositories(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }

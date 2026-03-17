@@ -1,0 +1,211 @@
+﻿@model EmployeeAccessSystem.Models.AccessRequest
+
+@{
+    ViewData["Title"] = "";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<style>
+    .request-overlay {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 15px;
+    }
+
+    .request-modal {
+        width: 100%;
+        max-width: 640px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+    }
+
+    .request-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid #edf0f2;
+    }
+
+        .request-header h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+    .request-body {
+        padding: 22px 28px 26px 28px;
+    }
+
+    .request-input {
+        height: 48px;
+        border-radius: 10px;
+        border: 1.5px solid #5b8def;
+        box-shadow: none;
+        font-size: 16px;
+    }
+
+    .request-textarea {
+        border-radius: 10px;
+        border: 1.5px solid #5b8def;
+        box-shadow: none;
+        font-size: 16px;
+        resize: vertical;
+        min-height: 110px;
+    }
+
+        .request-input:focus,
+        .request-textarea:focus {
+            border-color: #3d7bfd;
+            box-shadow: 0 0 0 0.15rem rgba(61,123,253,0.15);
+        }
+
+    .request-footer {
+        border-top: 1px solid #edf0f2;
+        padding: 20px 28px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn-close-custom {
+        background: #6c757d;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        font-size: 16px;
+        text-decoration: none;
+    }
+
+    .btn-submit-custom {
+        background: #0d6efd;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        font-size: 16px;
+    }
+
+    .field-space {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="request-overlay">
+    <div class="request-modal">
+
+        <div class="request-header">
+            <h3>Access Request</h3>
+        </div>
+
+        <form asp-action="CreateRequest" method="post">
+            <div class="request-body">
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">
+                        @ViewBag.Error
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["Success"]
+                    </div>
+                }
+
+                <div class="field-space">
+                    <input asp-for="AssetTag" class="form-control request-input" placeholder="Enter asset tag" />
+                    <span asp-validation-for="AssetTag" class="text-danger"></span>
+                </div>
+
+                <div class="field-space">
+                    <select asp-for="CategoryId" class="form-control request-input" id="categoryDropdown">
+                        <option value="">Category</option>
+                        @foreach (var item in ViewBag.Categories)
+                        {
+                            <option value="@item.CategoryId">@item.CategoryName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="field-space">
+                    <select asp-for="SubCategoryId" class="form-control request-input" id="subCategoryDropdown">
+                        <option value="">Server</option>
+                        @foreach (var item in ViewBag.SubCategories)
+                        {
+                            <option value="@item.SubCategoryId" data-category="@item.CategoryId">
+                                @item.ServerName
+                            </option>
+                        }
+                    </select>
+                    <span asp-validation-for="SubCategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="field-space">
+                    <input asp-for="IPAddress" class="form-control request-input" placeholder="IP Address" />
+                    <span asp-validation-for="IPAddress" class="text-danger"></span>
+                </div>
+
+                <div class="field-space">
+                    <select asp-for="Duration" class="form-control request-input">
+                        <option value="">Duration</option>
+                        <option value="1 Day">1 Day</option>
+                        <option value="3 Days">3 Days</option>
+                        <option value="1 Week">1 Week</option>
+                        <option value="2 Weeks">2 Weeks</option>
+                        <option value="1 Month">1 Month</option>
+                        <option value="Permanent">Permanent</option>
+                    </select>
+                    <span asp-validation-for="Duration" class="text-danger"></span>
+                </div>
+
+                <div class="field-space">
+                    <textarea asp-for="RequestReason"
+                              class="form-control request-textarea"
+                              placeholder="Justification"></textarea>
+                    <span asp-validation-for="RequestReason" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="request-footer">
+                <a asp-action="Index" class="btn-close-custom">Close</a>
+                <button type="submit" class="btn-submit-custom">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.getElementById("categoryDropdown").addEventListener("change", function () {
+            var selectedCategory = this.value;
+            var subDropdown = document.getElementById("subCategoryDropdown");
+
+            for (var i = 0; i < subDropdown.options.length; i++) {
+                var option = subDropdown.options[i];
+                var categoryId = option.getAttribute("data-category");
+
+                if (!categoryId) {
+                    continue;
+                }
+
+                if (categoryId == selectedCategory) {
+                    option.style.display = "block";
+                } else {
+                    option.style.display = "none";
+                }
+            }
+
+            subDropdown.value = "";
+        });
+    </script>
+}

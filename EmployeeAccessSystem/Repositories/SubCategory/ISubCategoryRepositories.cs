@@ -4,7 +4,7 @@ using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    public interface ISubCategoryRepository
+    public interface ISubCategoryRepositories
     {
         Task<IEnumerable<SubCategory>> GetAllAsync();
         Task<SubCategory> GetByIdAsync(int id);

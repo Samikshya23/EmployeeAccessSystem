@@ -1,0 +1,66 @@
+﻿@model IEnumerable<EmployeeAccessSystem.Models.AccessRequest>
+
+@{
+    ViewData["Title"] = "";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+    int sn = 1;
+}
+
+<div class="container-fluid pt-3">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">My Requests</h4>
+        </div>
+
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    No requests submitted yet.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>SN</th>
+                                <th>Asset Tag</th>
+                                <th>Category</th>
+                                <th>Server</th>
+                                <th>IP Address</th>
+                                <th>Duration</th>
+                                <th>Justification</th>
+                                <th>Supervisor Status</th>
+                                <th>Admin Status</th>
+                                <th>Final Status</th>
+                                <th>Request Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@sn</td>
+                                    <td>@item.AssetTag</td>
+                                    <td>@item.CategoryName</td>
+                                    <td>@item.ServerName</td>
+                                    <td>@item.IPAddress</td>
+                                    <td>@item.Duration</td>
+                                    <td>@item.RequestReason</td>
+                                    <td>@item.SupervisorStatus</td>
+                                    <td>@item.AdminStatus</td>
+                                    <td>@item.FinalStatus</td>
+                                    <td>@item.RequestDate</td>
+                                </tr>
+
+                                sn++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

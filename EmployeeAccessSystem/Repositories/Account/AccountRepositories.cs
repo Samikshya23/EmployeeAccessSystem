@@ -5,11 +5,11 @@ using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepositories : IAccountRepositories
     {
         private readonly string _connectionString;
 
-        public AccountRepository(IConfiguration configuration)
+        public AccountRepositories(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }

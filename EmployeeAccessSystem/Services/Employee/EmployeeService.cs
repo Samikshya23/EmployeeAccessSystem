@@ -7,10 +7,10 @@ namespace EmployeeAccessSystem.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IEmployeeRepository _employeeRepo;
-        private readonly IAccountRepository _accountRepo;
+        private readonly IEmployeeRepositories _employeeRepo;
+        private readonly IAccountRepositories _accountRepo;
 
-        public EmployeeService(IEmployeeRepository employeeRepo, IAccountRepository accountRepo)
+        public EmployeeService(IEmployeeRepositories employeeRepo, IAccountRepositories accountRepo)
         {
             _employeeRepo = employeeRepo;
             _accountRepo = accountRepo;

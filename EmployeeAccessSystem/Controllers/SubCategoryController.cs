@@ -11,13 +11,13 @@ namespace EmployeeAccessSystem.Controllers
     [Authorize]
     public class SubCategoryController : Controller
     {
-        private readonly ISubCategoryRepository _subRepo;
-        private readonly ICategoryRepository _catRepo;
+        private readonly ISubCategoryRepositories _subRepo;
+        private readonly ICategoryRepositories _catRepo;
         private readonly ISubCategoryService _subService;
 
         public SubCategoryController(
-            ISubCategoryRepository subRepo,
-            ICategoryRepository catRepo,
+            ISubCategoryRepositories subRepo,
+            ICategoryRepositories catRepo,
             ISubCategoryService subService)
         {
             _subRepo = subRepo;

@@ -6,18 +6,15 @@ namespace EmployeeAccessSystem.Services
 {
     public class SubCategoryService : ISubCategoryService
     {
-        private readonly ISubCategoryRepository _subRepo;
-
-        public SubCategoryService(ISubCategoryRepository subRepo)
+        private readonly ISubCategoryRepositories _subRepo;
+        public SubCategoryService(ISubCategoryRepositories subRepo)
         {
             _subRepo = subRepo;
         }
-
         public async Task CreateAsync(SubCategory model)
         {
             await _subRepo.AddAsync(model);
         }
-
         public async Task UpdateAsync(SubCategory model)
         {
             await _subRepo.UpdateAsync(model);

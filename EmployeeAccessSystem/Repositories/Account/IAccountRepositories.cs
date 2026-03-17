@@ -3,7 +3,7 @@ using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    public interface IAccountRepository
+    public interface IAccountRepositories
     {
         Task<int> CreateAsync(Account account);
         Task<Account?> GetByEmailAsync(string email);

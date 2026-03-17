@@ -8,10 +8,10 @@ namespace EmployeeAccessSystem.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly IAccountRepository _accountRepo;
-        private readonly IEmployeeRepository _employeeRepo;
+        private readonly IAccountRepositories _accountRepo;
+        private readonly IEmployeeRepositories _employeeRepo;
         private readonly IConfiguration _config;
-        public AccountService( IAccountRepository accountRepo, IEmployeeRepository employeeRepo, IConfiguration config)
+        public AccountService( IAccountRepositories accountRepo, IEmployeeRepositories employeeRepo, IConfiguration config)
         {
             _accountRepo = accountRepo;
             _employeeRepo = employeeRepo;

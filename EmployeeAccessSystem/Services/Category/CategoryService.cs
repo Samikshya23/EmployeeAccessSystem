@@ -8,9 +8,9 @@ namespace EmployeeAccessSystem.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ICategoryRepository _repo;
+        private readonly ICategoryRepositories _repo;
 
-        public CategoryService(ICategoryRepository repo)
+        public CategoryService(ICategoryRepositories repo)
         {
             _repo = repo;
         }

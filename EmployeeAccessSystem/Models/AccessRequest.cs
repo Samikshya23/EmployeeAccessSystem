@@ -1,4 +1,6 @@
-﻿namespace EmployeeAccessSystem.Models
+﻿using System;
+
+namespace EmployeeAccessSystem.Models
 {
     public class AccessRequest
     {
@@ -9,6 +11,12 @@
         public int CategoryId { get; set; }
 
         public int SubCategoryId { get; set; }
+
+        public string? AssetTag { get; set; }
+
+        public string? IPAddress { get; set; }
+
+        public string? Duration { get; set; }
 
         public string? RequestReason { get; set; }
 
@@ -31,5 +39,9 @@
         public DateTime? AdminActionDate { get; set; }
 
         public string FinalStatus { get; set; } = "Pending";
+
+        public string? CategoryName { get; set; }
+
+        public string? ServerName { get; set; }
     }
 }

@@ -7,9 +7,9 @@ namespace EmployeeAccessSystem.Services
 {
     public class DepartmentService : IDepartmentService
     {
-        private readonly IDepartmentRepository _repository;
+        private readonly IDepartmentRepositories _repository;
 
-        public DepartmentService(IDepartmentRepository repository)
+        public DepartmentService(IDepartmentRepositories repository)
         {
             _repository = repository;
         }

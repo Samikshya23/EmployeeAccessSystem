@@ -5,15 +5,20 @@ namespace EmployeeAccessSystem.Services
 {
     public class AccessRequestService : IAccessRequestService
     {
-        private readonly IAccessRequestRepository _accessRequestRepository;
+        private readonly IAccessRequestRepositories _accessRequestRepository;
 
-        public AccessRequestService(IAccessRequestRepository accessRequestRepository)
+        public AccessRequestService(IAccessRequestRepositories accessRequestRepository)
         {
             _accessRequestRepository = accessRequestRepository;
         }
 
         public async Task<string> CreateRequestAsync(AccessRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.AssetTag))
+            {
+                return "Please enter asset tag";
+            }
+
             if (request.CategoryId <= 0)
             {
                 return "Please select category";
@@ -21,14 +26,27 @@ namespace EmployeeAccessSystem.Services
 
             if (request.SubCategoryId <= 0)
             {
-                return "Please select sub category";
+                return "Please select server";
+            }
+
+            if (string.IsNullOrWhiteSpace(request.IPAddress))
+            {
+                return "Please enter IP address";
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Duration))
+            {
+                return "Please select duration";
             }
 
             if (string.IsNullOrWhiteSpace(request.RequestReason))
             {
-                return "Please enter request reason";
+                return "Please enter justification";
             }
 
+            request.AssetTag = request.AssetTag.Trim();
+            request.IPAddress = request.IPAddress.Trim();
+            request.Duration = request.Duration.Trim();
             request.RequestReason = request.RequestReason.Trim();
 
             int result = await _accessRequestRepository.CreateRequestAsync(request);

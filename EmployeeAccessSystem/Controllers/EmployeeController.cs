@@ -14,11 +14,11 @@ namespace EmployeeAccessSystem.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IDepartmentRepositories _departmentRepository;
 
         public EmployeeController(
             IEmployeeService employeeService,
-            IDepartmentRepository departmentRepository)
+            IDepartmentRepositories departmentRepository)
         {
             _employeeService = employeeService;
             _departmentRepository = departmentRepository;

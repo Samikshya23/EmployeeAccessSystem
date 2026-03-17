@@ -12,11 +12,11 @@ namespace EmployeeAccessSystem.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        private readonly IDepartmentRepository _departmentRepo;
+        private readonly IDepartmentRepositories _departmentRepo;
         private readonly ILogger<AccountController> _logger;
         public AccountController(
             IAccountService accountService,
-            IDepartmentRepository departmentRepo,
+            IDepartmentRepositories departmentRepo,
             ILogger<AccountController> logger)
         {
             _accountService = accountService;

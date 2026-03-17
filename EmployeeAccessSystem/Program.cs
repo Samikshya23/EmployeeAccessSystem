@@ -2,7 +2,6 @@
 using EmployeeAccessSystem.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
-
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
@@ -12,19 +11,16 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddSingleton<ICoreDbConnection, CoreDbConnection>();
 
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-builder.Services.AddScoped<IAccessRequestRepository, AccessRequestRepository>();
+builder.Services.AddScoped<ICategoryRepositories, CategoryRepositories>();
+builder.Services.AddScoped<ISubCategoryRepositories, SubCategoryRepositories>();
+builder.Services.AddScoped<IAccountRepositories, AccountRepositories>();
+builder.Services.AddScoped<IEmployeeRepositories, EmployeeRepositories>();
+builder.Services.AddScoped<IDepartmentRepositories, DepartmentRepositories>();
+builder.Services.AddScoped<IAccessRequestRepositories, AccessRequestRepositories>();
 
-
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountService, AccountService>(); 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
@@ -47,12 +43,9 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
