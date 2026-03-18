@@ -1,0 +1,198 @@
+﻿@model IEnumerable<EmployeeAccessSystem.Models.AccessRequest>
+
+@{
+    ViewData["Title"] = "Supervisor Requests";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+    int sn = 1;
+}
+
+<style>
+    .supervisor-page {
+        min-height: calc(100vh - 80px);
+        background: #f4f6f9;
+        padding: 30px 20px;
+    }
+
+    .supervisor-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.08);
+        padding: 28px;
+        border: 1px solid #edf0f3;
+    }
+
+    .supervisor-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .supervisor-subtitle {
+        color: #6b7280;
+        margin-bottom: 24px;
+        font-size: 15px;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .status-pill {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fff7ed;
+        color: #c2410c;
+    }
+
+    .status-approved {
+        background: #ecfdf3;
+        color: #027a48;
+    }
+
+    .status-rejected {
+        background: #fef2f2;
+        color: #b42318;
+    }
+
+    .comment-box {
+        width: 180px;
+        min-height: 42px;
+        border-radius: 12px;
+        border: 1px solid #dbe1e8;
+        padding: 8px 10px;
+        resize: vertical;
+        margin-bottom: 8px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn-approve-custom {
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .btn-reject-custom {
+        background: #dc2626;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="supervisor-page">
+    <div class="supervisor-card">
+        <div class="supervisor-title">Supervisor Request Review</div>
+        <div class="supervisor-subtitle">
+            Review access requests submitted by employees under your supervision.
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info mb-0">
+                No requests found for your team.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>Employee</th>
+                            <th>Asset Tag</th>
+                            <th>Category</th>
+                            <th>Server</th>
+                            <th>Server IP</th>
+                            <th>Duration</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Comment & Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var statusClass = item.SupervisorStatus == "Approved"
+                                ? "status-approved"
+                                : item.SupervisorStatus == "Rejected"
+                                    ? "status-rejected"
+                                    : "status-pending";
+
+                            <tr>
+                                <td>@sn</td>
+                                <td>@item.EmployeeName</td>
+                                <td>@item.AssetTag</td>
+                                <td>@item.CategoryName</td>
+                                <td>@item.ServerName</td>
+                                <td>@item.ServerIP</td>
+                                <td>@item.Duration</td>
+                                <td>@item.RequestReason</td>
+                                <td>
+                                    <span class="status-pill @statusClass">@item.SupervisorStatus</span>
+                                </td>
+                                <td>
+                                    @if (item.SupervisorStatus == "Pending")
+                                    {
+                                        <form asp-action="ApproveRequest" method="post" class="mb-2">
+                                            <input type="hidden" name="requestId" value="@item.RequestId" />
+                                            <textarea name="comment" class="comment-box" placeholder="Write comment (optional)"></textarea>
+                                            <div class="action-buttons">
+                                                <button type="submit" class="btn-approve-custom">Approve</button>
+                                            </div>
+                                        </form>
+
+                                        <form asp-action="RejectRequest" method="post">
+                                            <input type="hidden" name="requestId" value="@item.RequestId" />
+                                            <textarea name="comment" class="comment-box" placeholder="Write comment (optional)"></textarea>
+                                            <div class="action-buttons">
+                                                <button type="submit" class="btn-reject-custom">Reject</button>
+                                            </div>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <div>@(string.IsNullOrWhiteSpace(item.SupervisorComment) ? "-" : item.SupervisorComment)</div>
+                                    }
+                                </td>
+                            </tr>
+
+                            sn++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

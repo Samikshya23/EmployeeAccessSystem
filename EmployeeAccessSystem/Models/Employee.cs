@@ -5,28 +5,19 @@ namespace EmployeeAccessSystem.Models
     public class Employee
     {
         public int EmployeeId { get; set; }
-
         [Required(ErrorMessage = "Full Name is required")]
         public string FullName { get; set; } = "";
-
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Enter a valid email address")]
         public string Email { get; set; } = "";
-
         [Required(ErrorMessage = "Department is required")]
         public int DepartmentId { get; set; }
-
         public string? DepartmentName { get; set; }
-
         public int AccountId { get; set; }
-
         public bool IsActive { get; set; }
-
         [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = "";
-
         public int? SupervisorEmployeeId { get; set; }
-
         public string? SupervisorName { get; set; }
     }
 }

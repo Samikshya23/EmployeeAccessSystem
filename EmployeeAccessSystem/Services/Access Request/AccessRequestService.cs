@@ -29,11 +29,6 @@ namespace EmployeeAccessSystem.Services
                 return "Please select server";
             }
 
-            if (string.IsNullOrWhiteSpace(request.IPAddress))
-            {
-                return "Please enter IP address";
-            }
-
             if (string.IsNullOrWhiteSpace(request.Duration))
             {
                 return "Please select duration";
@@ -45,7 +40,6 @@ namespace EmployeeAccessSystem.Services
             }
 
             request.AssetTag = request.AssetTag.Trim();
-            request.IPAddress = request.IPAddress.Trim();
             request.Duration = request.Duration.Trim();
             request.RequestReason = request.RequestReason.Trim();
 

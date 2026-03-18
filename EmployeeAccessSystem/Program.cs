@@ -19,6 +19,7 @@ builder.Services.AddScoped<IAccountRepositories, AccountRepositories>();
 builder.Services.AddScoped<IEmployeeRepositories, EmployeeRepositories>();
 builder.Services.AddScoped<IDepartmentRepositories, DepartmentRepositories>();
 builder.Services.AddScoped<IAccessRequestRepositories, AccessRequestRepositories>();
+builder.Services.AddScoped<ISupervisorRepositories, SupervisorRepositories>();
 
 builder.Services.AddScoped<IAccountService, AccountService>(); 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -26,6 +27,8 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 builder.Services.AddScoped<IAccessRequestService, AccessRequestService>();
+builder.Services.AddScoped<ISupervisorService, SupervisorService>();
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

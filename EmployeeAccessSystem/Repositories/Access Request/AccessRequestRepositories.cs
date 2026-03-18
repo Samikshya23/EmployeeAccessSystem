@@ -29,7 +29,6 @@ namespace EmployeeAccessSystem.Repositories
                     CategoryId,
                     SubCategoryId,
                     AssetTag,
-                    IPAddress,
                     Duration,
                     RequestReason
                 )
@@ -39,7 +38,6 @@ namespace EmployeeAccessSystem.Repositories
                     @CategoryId,
                     @SubCategoryId,
                     @AssetTag,
-                    @IPAddress,
                     @Duration,
                     @RequestReason
                 )";
@@ -52,33 +50,32 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             string sql = @"
-                SELECT
-                    ar.RequestId,
-                    ar.EmployeeId,
-                    ar.CategoryId,
-                    ar.SubCategoryId,
-                    ar.AssetTag,
-                    ar.IPAddress,
-                    ar.Duration,
-                    ar.RequestReason,
-                    ar.RequestDate,
-                    ar.SupervisorStatus,
-                    ar.SupervisorComment,
-                    ar.SupervisorActionByEmployeeId,
-                    ar.SupervisorActionDate,
-                    ar.AdminStatus,
-                    ar.AdminComment,
-                    ar.AdminActionByEmployeeId,
-                    ar.AdminActionDate,
-                    ar.FinalStatus,
-                    c.CategoryName,
-                    s.ServerName
-                FROM AccessRequests ar
-                INNER JOIN Categories c ON ar.CategoryId = c.CategoryId
-                INNER JOIN SubCategories s ON ar.SubCategoryId = s.SubCategoryId
-                WHERE ar.EmployeeId = @EmployeeId
-                ORDER BY ar.RequestId DESC";
-
+    SELECT
+        ar.RequestId,
+        ar.EmployeeId,
+        ar.CategoryId,
+        ar.SubCategoryId,
+        ar.AssetTag,
+        ar.Duration,
+        ar.RequestReason,
+        ar.RequestDate,
+        ar.SupervisorStatus,
+        ar.SupervisorComment,
+        ar.SupervisorActionByEmployeeId,
+        ar.SupervisorActionDate,
+        ar.AdminStatus,
+        ar.AdminComment,
+        ar.AdminActionByEmployeeId,
+        ar.AdminActionDate,
+        ar.FinalStatus,
+        c.CategoryName,
+        s.ServerName,
+        s.ServerIP
+    FROM AccessRequests ar
+    INNER JOIN Categories c ON ar.CategoryId = c.CategoryId
+    INNER JOIN SubCategories s ON ar.SubCategoryId = s.SubCategoryId
+    WHERE ar.EmployeeId = @EmployeeId
+    ORDER BY ar.RequestId DESC";
             return await conn.QueryAsync<AccessRequest>(sql, new { EmployeeId = employeeId });
         }
     }

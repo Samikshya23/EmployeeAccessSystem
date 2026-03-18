@@ -1,51 +1,60 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using EmployeeAccessSystem.Models;
-using EmployeeAccessSystem.Services;
+﻿using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EmployeeAccessSystem.Controllers
 {
     public class EmployeeDashboardController : Controller
     {
-        private readonly IAccessRequestService _accessRequestService;
-        private readonly ICategoryRepositories _categoryRepository;
-        private readonly ISubCategoryRepositories _subCategoryRepository;
-        private readonly IEmployeeRepositories _employeeRepository;
+        private readonly IAccessRequestRepositories _accessRequestRepositories;
+        private readonly ICategoryRepositories _categoryRepositories;
+        private readonly ISubCategoryRepositories _subCategoryRepositories;
+        private readonly IEmployeeRepositories _employeeRepositories;
+
         public EmployeeDashboardController(
-            IAccessRequestService accessRequestService,
-            ICategoryRepositories categoryRepository,
-            ISubCategoryRepositories subCategoryRepository,
-            IEmployeeRepositories employeeRepository)
+            IAccessRequestRepositories accessRequestRepositories,
+            ICategoryRepositories categoryRepositories,
+            ISubCategoryRepositories subCategoryRepositories,
+            IEmployeeRepositories employeeRepositories)
         {
-            _accessRequestService = accessRequestService;
-            _categoryRepository = categoryRepository;
-            _subCategoryRepository = subCategoryRepository;
-            _employeeRepository = employeeRepository;
+            _accessRequestRepositories = accessRequestRepositories;
+            _categoryRepositories = categoryRepositories;
+            _subCategoryRepositories = subCategoryRepositories;
+            _employeeRepositories = employeeRepositories;
         }
         public IActionResult Index()
         {
             return View();
         }
-        public IActionResult MyProfile()
+
+        public async Task<IActionResult> MyProfile()
         {
-            return View();
+            string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+            var employee = await _employeeRepositories.GetByEmailAsync(email);
+
+            if (employee == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            return View(employee);
         }
         [HttpGet]
         public async Task<IActionResult> CreateRequest()
         {
-            ViewBag.Categories = await _categoryRepository.GetAllAsync();
-            ViewBag.SubCategories = await _subCategoryRepository.GetAllAsync();
+            ViewBag.Categories = await _categoryRepositories.GetAllAsync();
+            ViewBag.SubCategories = await _subCategoryRepositories.GetAllAsync();
+
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> CreateRequest(AccessRequest request)
         {
-            ViewBag.Categories = await _categoryRepository.GetAllAsync();
-            ViewBag.SubCategories = await _subCategoryRepository.GetAllAsync();
+            ViewBag.Categories = await _categoryRepositories.GetAllAsync();
+            ViewBag.SubCategories = await _subCategoryRepositories.GetAllAsync();
 
             string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
-            var employee = await _employeeRepository.GetByEmailAsync(email);
+            var employee = await _employeeRepositories.GetByEmailAsync(email);
 
             if (employee == null)
             {
@@ -54,26 +63,23 @@ namespace EmployeeAccessSystem.Controllers
             }
             request.EmployeeId = employee.EmployeeId;
 
-            string error = await _accessRequestService.CreateRequestAsync(request);
+            await _accessRequestRepositories.CreateRequestAsync(request);
 
-            if (!string.IsNullOrEmpty(error))
-            {
-                ViewBag.Error = error;
-                return View(request);
-            }
             TempData["Success"] = "Request submitted successfully";
             return RedirectToAction("MyRequests");
         }
+
         public async Task<IActionResult> MyRequests()
         {
             string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
-            var employee = await _employeeRepository.GetByEmailAsync(email);
+            var employee = await _employeeRepositories.GetByEmailAsync(email);
 
             if (employee == null)
             {
                 return View(new List<AccessRequest>());
             }
-            var requests = await _accessRequestService.GetEmployeeRequestsAsync(employee.EmployeeId);
+
+            var requests = await _accessRequestRepositories.GetEmployeeRequestsAsync(employee.EmployeeId);
             return View(requests);
         }
     }
