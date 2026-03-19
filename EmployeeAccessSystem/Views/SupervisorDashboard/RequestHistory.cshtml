@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.AccessRequest>
 
 @{
-    ViewData["Title"] = "Pending Requests";
+    ViewData["Title"] = "Request History";
     Layout = "~/Views/Shared/_SupervisorLayout.cshtml";
     int sn = 1;
     string currentSearch = ViewBag.Search ?? "";
-    string currentStatus = ViewBag.Status ?? "Pending";
+    string currentStatus = ViewBag.Status ?? "All";
 }
 
 <style>
@@ -50,12 +50,6 @@
         font-size: 14px;
         outline: none;
     }
-
-        .toolbar-input:focus,
-        .toolbar-select:focus {
-            border-color: #94a3b8;
-            box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.15);
-        }
 
     .search-btn {
         background: #0f172a;
@@ -104,25 +98,12 @@
         margin-top: 2px;
     }
 
-    .reason-text {
-        max-width: 180px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: #334155;
-    }
-
     .status-badge {
         display: inline-block;
         padding: 6px 14px;
         border-radius: 999px;
         font-size: 13px;
         font-weight: 600;
-    }
-
-    .pending {
-        background: #fff7ed;
-        color: #c2410c;
     }
 
     .approved {
@@ -135,62 +116,8 @@
         color: #b91c1c;
     }
 
-    .action-cell {
-        min-width: 260px;
-    }
-
-    .action-form {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .comment-input {
-        width: 150px;
-        height: 36px;
-        border: 1px solid #dbe3ef;
-        border-radius: 10px;
-        padding: 6px 10px;
-        font-size: 14px;
-        outline: none;
-    }
-
-        .comment-input:focus {
-            border-color: #94a3b8;
-            box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.15);
-        }
-
-    .icon-btn {
-        width: 38px;
-        height: 38px;
-        border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .approve-btn {
-        background: #198754;
-        color: white;
-    }
-
-    .reject-btn {
-        background: #ef4444;
-        color: white;
-    }
-
-        .approve-btn:hover,
-        .reject-btn:hover,
-        .search-btn:hover {
-            opacity: 0.92;
-        }
-
     .saved-comment {
-        max-width: 200px;
+        max-width: 220px;
         color: #64748b;
         font-size: 14px;
         white-space: normal;
@@ -209,21 +136,11 @@
 
 <div class="page-card">
     <div class="page-subtitle">
-        Review access requests submitted by employees under your supervision.
+        View approved and rejected requests with supervisor comments.
     </div>
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
-
     <div class="toolbar-row">
-        <form method="get" id="filterForm" class="toolbar-form">
+        <form method="get" id="historyForm" class="toolbar-form">
             <div class="toolbar-left">
                 <input type="text"
                        name="search"
@@ -233,14 +150,14 @@
 
                 <select name="status"
                         class="toolbar-select"
-                        onchange="document.getElementById('filterForm').submit();">
-                    @if (currentStatus == "Pending")
+                        onchange="document.getElementById('historyForm').submit();">
+                    @if (currentStatus == "All")
                     {
-                        <option value="Pending" selected>Pending</option>
+                        <option value="All" selected>All</option>
                     }
                     else
                     {
-                        <option value="Pending">Pending</option>
+                        <option value="All">All</option>
                     }
 
                     @if (currentStatus == "Approved")
@@ -260,15 +177,6 @@
                     {
                         <option value="Rejected">Rejected</option>
                     }
-
-                    @if (currentStatus == "All")
-                    {
-                        <option value="All" selected>All Status</option>
-                    }
-                    else
-                    {
-                        <option value="All">All Status</option>
-                    }
                 </select>
             </div>
 
@@ -279,7 +187,7 @@
     @if (Model == null || !Model.Any())
     {
         <div class="empty-box">
-            No requests found.
+            No reviewed requests found.
         </div>
     }
     else
@@ -295,69 +203,41 @@
                         <th>Duration</th>
                         <th>Reason</th>
                         <th>Status</th>
-                        <th>Action / Comment</th>
+                        <th>Comment</th>
+                        <th>Action Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        var statusClass = item.SupervisorStatus == "Approved"
-                        ? "approved"
-                        : item.SupervisorStatus == "Rejected"
-                        ? "rejected"
-                        : "pending";
+                        var statusClass = item.SupervisorStatus == "Approved" ? "approved" : "rejected";
 
                         <tr>
                             <td>@sn</td>
-                            <td>
-                                <div class="employee-name">@item.EmployeeName</div>
-                            </td>
+                            <td><div class="employee-name">@item.EmployeeName</div></td>
                             <td>@item.CategoryName</td>
                             <td>
                                 <div>@item.ServerName</div>
                                 <div class="server-ip">@item.ServerIP</div>
                             </td>
                             <td>@item.Duration</td>
-                            <td>
-                                <div class="reason-text" title="@item.RequestReason">
-                                    @item.RequestReason
-                                </div>
-                            </td>
+                            <td>@item.RequestReason</td>
                             <td>
                                 <span class="status-badge @statusClass">@item.SupervisorStatus</span>
                             </td>
-                            <td class="action-cell">
-                                @if (item.SupervisorStatus == "Pending")
-                                {
-                                    <form method="post" class="action-form">
-                                        <input type="hidden" name="requestId" value="@item.RequestId" />
-                                        <input type="text" name="comment" class="comment-input" placeholder="Comment" />
-                                            
-                                        <button type="submit"
-                                                formaction="@Url.Action("ApproveRequest", "SupervisorDashboard")"
-                                                class="icon-btn approve-btn"
-                                                title="Approve">
-                                            ✓
-                                        </button>
-
-                                        <button type="submit"
-                                                formaction="@Url.Action("RejectRequest", "SupervisorDashboard")"
-                                                class="icon-btn reject-btn"
-                                                title="Reject">
-                                            ✕
-                                        </button>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <div class="saved-comment">
-                                        @(string.IsNullOrWhiteSpace(item.SupervisorComment) ? "-" : item.SupervisorComment)
-                                    </div>
-                                }
+                            <td>
+                                <div class="saved-comment">
+                                    @(string.IsNullOrWhiteSpace(item.SupervisorComment) ? "-" : item.SupervisorComment)
+                                </div>
                             </td>
-                        </tr>
+                            <td>
+                                @(item.SupervisorActionDate.HasValue
+                                                        ? item.SupervisorActionDate.Value.ToString("yyyy-MM-dd hh:mm tt")
+                                                        : "-")
+                    </td>
+                </tr>
 
-                        sn++;
+                                sn++;
                     }
                 </tbody>
             </table>

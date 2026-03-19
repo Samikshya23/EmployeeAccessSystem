@@ -1,125 +1,355 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.Employee>
 @{
-    ViewData["Title"] = "";
+
     int sn = 1;
+    var search = ViewBag.Search as string;
 }
-<div class="row mt-3">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0">Employee List</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered table-hover align-middle mb-0 employee-table">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width:70px;">SN</th>
-                                <th style="width:220px;">Full Name</th>
-                                <th>Email</th>
-                                <th style="width:140px;">Department</th>
-                                <th style="width:130px;">Role</th>
-                                <th style="width:170px;">Supervisor</th>
-                                @* <th style="width:100px;" class="text-center">Status</th> *@
-                                <th style="width:300px;" class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>@sn</td>
-                                    <td>@item.FullName</td>
-                                    <td class="text-nowrap">@item.Email</td>
-                                    <td>@item.DepartmentName</td>
-                                    <td>@item.Role</td>
-                                    <td>
-                                        @(string.IsNullOrWhiteSpace(item.SupervisorName) ? "-" : item.SupervisorName)
-                                    </td>
-                                    @* <td class="text-center">
-                                        @if (item.IsActive)
-                                        {
-                                            <span class="badge bg-success">Active</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">Inactive</span>
-                                        }
-                                    </td> *@
 
-                                    <td class="text-center">
-                                        <div class="action-row">
-                                            <a asp-action="Details" asp-route-id="@item.EmployeeId"
-                                               class="btn btn-info btn-sm rounded-pill px-3">
-                                                Details
-                                            </a>
+<div class="employee-page-wrapper">
+    <div class="employee-list-card">
 
-                                            <a asp-action="Edit" asp-route-id="@item.EmployeeId"
-                                               class="btn btn-warning btn-sm rounded-pill px-3">
-                                                Edit
-                                            </a>
+        <div class="employee-list-header">
+            <h3>Employee List</h3>
 
-                                            <a asp-action="Delete" asp-route-id="@item.EmployeeId"
-                                               class="btn btn-danger btn-sm rounded-pill px-3">
-                                                Delete
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                sn++;
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+            <form method="get" asp-action="Index" class="employee-search-bar">
+                <input type="text"
+                       name="search"
+                       value="@search"
+                       placeholder="Search employee by name" />
+                <button type="submit" class="btn-search">Search</button>
+                <a asp-action="Index" class="btn-clear">Clear</a>
+            </form>
         </div>
 
+        <div class="employee-table-wrap">
+            <table class="employee-modern-table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Name of Employee</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Supervisor</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@sn</td>
+                                <td class="emp-name">@item.FullName</td>
+                                <td>@item.Email</td>
+                                <td>@item.DepartmentName</td>
+                                <td>
+                                    @if (item.Role == "Admin")
+                                    {
+                                        <span class="status-badge badge-admin">Admin</span>
+                                    }
+                                    else if (item.Role == "Supervisor")
+                                    {
+                                        <span class="status-badge badge-supervisor">Supervisor</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge badge-employee">Employee</span>
+                                    }
+                                </td>
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(item.SupervisorName) ? "-" : item.SupervisorName)
+                                </td>
+                                <td class="text-center">
+                                    <div class="action-buttons">
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.EmployeeId"
+                                           class="mini-btn btn-view"
+                                           title="Details">
+                                            View
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.EmployeeId"
+                                           class="mini-btn btn-edit"
+                                           title="Edit">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.EmployeeId"
+                                           class="mini-btn btn-delete"
+                                           title="Delete">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            sn++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="no-data">No employees found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
 <style>
-    .employee-table td, .employee-table th {
-        padding: .7rem .8rem;
-        vertical-align: middle;
+    .employee-page-wrapper {
+        padding: 28px;
+        background: #f5f7fb;
+        min-height: 100vh;
     }
-    .tick-btn {
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
+
+    .employee-list-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
-    .tick-box {
+
+    .employee-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+        .employee-list-header h3 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+    .employee-search-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+        .employee-search-bar input {
+            width: 320px;
+            max-width: 100%;
+            height: 46px;
+            border: 1px solid #d9e2ec;
+            border-radius: 14px;
+            padding: 0 16px;
+            font-size: 0.95rem;
+            outline: none;
+            background: #fff;
+        }
+
+            .employee-search-bar input:focus {
+                border-color: #0f172a;
+                box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.06);
+            }
+
+    .btn-search,
+    .btn-clear {
+        height: 46px;
+        padding: 0 20px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
         display: inline-flex;
-        width: 28px;
-        height: 28px;
-        border-radius: 4px;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
-        border: 2px solid #adb5bd;
-        color: transparent;
+        border: none;
+        transition: 0.2s ease;
     }
-    .tick-on {
-        background-color: #28a745;
-        border-color: #28a745;
+
+    .btn-search {
+        background: #0b1533;
         color: #fff;
     }
-    .tick-off {
-        background-color: #fff;
-        border-color: #adb5bd;
-        color: transparent;
+
+        .btn-search:hover {
+            background: #162347;
+        }
+
+    .btn-clear {
+        background: #edf2f7;
+        color: #0f172a;
     }
-    .tick-btn:hover .tick-box {
-        box-shadow: 0 0 0 3px rgba(40,167,69,.2);
+
+        .btn-clear:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+    .employee-table-wrap {
+        overflow-x: auto;
     }
-    .action-row {
+
+    .employee-modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .employee-modern-table thead th {
+            background: #eef2f6;
+            color: #334155;
+            font-size: 0.92rem;
+            font-weight: 700;
+            padding: 16px 14px;
+            white-space: nowrap;
+        }
+
+            .employee-modern-table thead th:first-child {
+                border-top-left-radius: 14px;
+                border-bottom-left-radius: 14px;
+            }
+
+            .employee-modern-table thead th:last-child {
+                border-top-right-radius: 14px;
+                border-bottom-right-radius: 14px;
+            }
+
+        .employee-modern-table tbody tr {
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(15, 23, 42, 0.03);
+        }
+
+        .employee-modern-table tbody td {
+            padding: 18px 14px;
+            vertical-align: middle;
+            color: #334155;
+            font-size: 0.94rem;
+            border-top: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+            .employee-modern-table tbody td:first-child {
+                border-left: 1px solid #f1f5f9;
+                border-top-left-radius: 14px;
+                border-bottom-left-radius: 14px;
+                width: 70px;
+                text-align: center;
+            }
+
+            .employee-modern-table tbody td:last-child {
+                border-right: 1px solid #f1f5f9;
+                border-top-right-radius: 14px;
+                border-bottom-right-radius: 14px;
+            }
+
+    .emp-name {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        min-width: 96px;
+        text-align: center;
+    }
+
+    .badge-admin {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .badge-supervisor {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .badge-employee {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .action-buttons {
         display: flex;
-        gap: .5rem;
+        gap: 8px;
         justify-content: center;
         align-items: center;
         flex-wrap: nowrap;
-        white-space: nowrap;
+    }
+
+    .mini-btn {
+        min-width: 70px;
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.86rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s ease;
+    }
+
+    .btn-view {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+        .btn-view:hover {
+            background: #bae6fd;
+            color: #0369a1;
+        }
+
+    .btn-edit {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+        .btn-edit:hover {
+            background: #fde68a;
+            color: #b45309;
+        }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+        .btn-delete:hover {
+            background: #fecaca;
+            color: #dc2626;
+        }
+
+    .no-data {
+        text-align: center;
+        padding: 28px !important;
+        color: #64748b;
+        font-weight: 500;
+        border-radius: 14px;
+        background: #fff;
+    }
+
+    @@media (max-width: 992px) {
+        .employee-list-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .employee-search-bar {
+            width: 100%;
+        }
+
+            .employee-search-bar input {
+                width: 100%;
+            }
     }
 </style>

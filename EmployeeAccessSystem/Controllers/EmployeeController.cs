@@ -24,12 +24,23 @@ namespace EmployeeAccessSystem.Controllers
             _departmentRepository = departmentRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search)
         {
             var employees = await _employeeService.GetAllAsync();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim().ToLower();
+
+                employees = employees.Where(e =>
+                    (!string.IsNullOrEmpty(e.FullName) && e.FullName.ToLower().Contains(search)) ||
+                    (!string.IsNullOrEmpty(e.Email) && e.Email.ToLower().Contains(search))
+                );
+            }
+
+            ViewBag.Search = search;
             return View(employees);
         }
-
         public async Task<IActionResult> Details(int id)
         {
             var employee = await _employeeService.GetByIdAsync(id);
