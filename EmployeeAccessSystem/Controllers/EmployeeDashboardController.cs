@@ -23,11 +23,18 @@ namespace EmployeeAccessSystem.Controllers
             _subCategoryRepositories = subCategoryRepositories;
             _employeeRepositories = employeeRepositories;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+            var employee = await _employeeRepositories.GetByEmailAsync(email);
 
+            if (employee == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View(employee);
+        }
         public async Task<IActionResult> MyProfile()
         {
             string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";

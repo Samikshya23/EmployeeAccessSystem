@@ -172,11 +172,9 @@ namespace EmployeeAccessSystem.Repositories
                 WHERE SupervisorEmployeeId = @Id;";
 
             await conn.ExecuteAsync(clearSql, new { Id = employeeId });
-
             var sql = "DELETE FROM dbo.Employees WHERE EmployeeId = @Id;";
             return await conn.ExecuteAsync(sql, new { Id = employeeId });
         }
-
         public async Task ToggleAsync(int employeeId)
         {
             using var conn = GetConnection();
