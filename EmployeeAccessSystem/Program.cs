@@ -1,5 +1,7 @@
 ﻿using EmployeeAccessSystem.Repositories;
+
 using EmployeeAccessSystem.Services;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +22,12 @@ builder.Services.AddScoped<IEmployeeRepositories, EmployeeRepositories>();
 builder.Services.AddScoped<IDepartmentRepositories, DepartmentRepositories>();
 builder.Services.AddScoped<IAccessRequestRepositories, AccessRequestRepositories>();
 builder.Services.AddScoped<ISupervisorRepositories, SupervisorRepositories>();
+builder.Services.AddScoped<IProductSetupRepositories, ProductSetupRepositories>();
+builder.Services.AddScoped<ISMCProductRepository, SMCProductRepository>();
 
+
+builder.Services.AddScoped<ISMCProductService, SMCProductService>();
+builder.Services.AddScoped<IProductSetupService, ProductSetupService>();
 builder.Services.AddScoped<IAccountService, AccountService>(); 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();

@@ -1,4 +1,4 @@
-﻿@model List<EmployeeAccessSystem.Models.Category>
+﻿@model List<EmployeeAccessSystem.Models.ProductSetup>
 
 @{
     ViewData["Title"] = "";
@@ -10,9 +10,9 @@
 
         <div class="card shadow-sm category-card">
             <div class="card-header bg-white category-header">
-                <h3 class="card-title mb-0">System Categories</h3>
+                <h3 class="card-title mb-0">Product Setup</h3>
                 <a asp-action="Create" class="btn btn-primary btn-sm btn-pill add-btn">
-                    Add Category
+                    Add Product Setup
                 </a>
             </div>
 
@@ -21,7 +21,7 @@
                     <thead>
                         <tr>
                             <th style="width:80px;">ID</th>
-                            <th>Category Name</th>
+                            <th>Product Name</th>
                             <th style="width:220px;" class="text-center">Actions</th>
                         </tr>
                     </thead>
@@ -31,19 +31,18 @@
                         {
                             <tr>
                                 <td>@i</td>
-                                <td>@item.CategoryName</td>
+                                <td>@item.ProductName</td>
 
                                 <td class="text-center">
-                                   
                                     <div class="action-buttons">
                                         <a asp-action="Edit"
-                                           asp-route-id="@item.CategoryId"
+                                           asp-route-id="@item.ProductId"
                                            class="btn btn-warning btn-sm btn-pill">
                                             Edit
                                         </a>
 
                                         <a asp-action="Delete"
-                                           asp-route-id="@item.CategoryId"
+                                           asp-route-id="@item.ProductId"
                                            class="btn btn-danger btn-sm btn-pill">
                                             Delete
                                         </a>
@@ -66,10 +65,12 @@
             border-radius: 14px;
             overflow: hidden;
         }
+
         .category-header {
             display: flex;
             align-items: center;
         }
+
         .add-btn {
             margin-left: auto;
         }
@@ -80,9 +81,10 @@
             font-weight: 500;
             box-shadow: none;
         }
+
         .action-buttons {
             display: inline-flex;
-            gap: 12px; 
+            gap: 12px;
         }
 
         .table thead th {

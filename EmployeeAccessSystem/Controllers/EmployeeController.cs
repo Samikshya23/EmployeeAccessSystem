@@ -5,7 +5,6 @@ using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
 using EmployeeAccessSystem.Services;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EmployeeAccessSystem.Controllers
@@ -17,25 +16,30 @@ namespace EmployeeAccessSystem.Controllers
         private readonly IDepartmentRepositories _departmentRepository;
 
         public EmployeeController(
-            IEmployeeService employeeService,
-            IDepartmentRepositories departmentRepository)
+            IEmployeeService employeeService, IDepartmentRepositories departmentRepository)
         {
             _employeeService = employeeService;
             _departmentRepository = departmentRepository;
         }
-
         public async Task<IActionResult> Index(string search)
         {
             var employees = await _employeeService.GetAllAsync();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            if (!string.IsNullOrEmpty(search))
             {
-                search = search.Trim().ToLower();
+                string text = search.Trim().ToLower();
+                List<Employee> result = new List<Employee>();
 
-                employees = employees.Where(e =>
-                    (!string.IsNullOrEmpty(e.FullName) && e.FullName.ToLower().Contains(search)) ||
-                    (!string.IsNullOrEmpty(e.Email) && e.Email.ToLower().Contains(search))
-                );
+                foreach (var e in employees)
+                {
+                    if ((e.FullName != null && e.FullName.ToLower().Contains(text)) ||
+                        (e.Email != null && e.Email.ToLower().Contains(text)))
+                    {
+                        result.Add(e);
+                    }
+                }
+
+                employees = result;
             }
 
             ViewBag.Search = search;
@@ -52,7 +56,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return View(employee);
         }
-
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -67,7 +70,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return View(employee);
         }
-
         [HttpPost]
         public async Task<IActionResult> Edit(Employee employee)
         {
@@ -76,6 +78,10 @@ namespace EmployeeAccessSystem.Controllers
             if (!ModelState.IsValid)
             {
                 return View(employee);
+            }
+            if (employee.Role == "Supervisor" || employee.Role == "Admin")
+            {
+                employee.SupervisorEmployeeId = null;
             }
 
             string error = await _employeeService.UpdateAsync(employee);
@@ -88,13 +94,11 @@ namespace EmployeeAccessSystem.Controllers
 
             return RedirectToAction("Index");
         }
-
         [HttpGet]
         public IActionResult Create()
         {
             return RedirectToAction("Register", "Account");
         }
-
         [HttpPost]
         public async Task<IActionResult> Toggle(int id)
         {
@@ -114,7 +118,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return View(employee);
         }
-
         [HttpPost]
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -128,7 +131,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return RedirectToAction("Index");
         }
-
         private async Task LoadDropdowns(int selectedDepartmentId, string selectedRole, int currentEmployeeId, int? selectedSupervisorId)
         {
             var departments = await _departmentRepository.GetAllAsync();
@@ -139,20 +141,16 @@ namespace EmployeeAccessSystem.Controllers
                 "DepartmentName",
                 selectedDepartmentId
             );
+            List<string> roles = new List<string>();
+            roles.Add("Admin");
+            roles.Add("Employee");
+            roles.Add("Supervisor");
 
-            ViewBag.Roles = new SelectList(
-                new List<string> { "Admin", "Employee", "Supervisor" },
-                selectedRole
-            );
-
+            ViewBag.Roles = new SelectList(roles, selectedRole);
             var supervisors = await _employeeService.GetSupervisorsAsync();
 
-            var filteredSupervisors = supervisors
-                .Where(x => x.EmployeeId != currentEmployeeId)
-                .ToList();
-
             ViewBag.Supervisors = new SelectList(
-                filteredSupervisors,
+                supervisors,
                 "EmployeeId",
                 "FullName",
                 selectedSupervisorId

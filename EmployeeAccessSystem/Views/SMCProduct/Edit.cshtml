@@ -1,0 +1,45 @@
+﻿@model EmployeeAccessSystem.Models.SMCProduct
+
+@{
+    ViewData["Title"] = "Edit SMC Product";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <h2>Edit SMC Product</h2>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="SMCProductId" />
+
+                    <div class="form-group">
+                        <label asp-for="SMCProductName"></label>
+                        <input asp-for="SMCProductName" class="form-control" />
+                        <span asp-validation-for="SMCProductName" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning">Update</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

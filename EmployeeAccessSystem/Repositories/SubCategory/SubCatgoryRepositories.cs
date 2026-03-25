@@ -15,7 +15,6 @@ namespace EmployeeAccessSystem.Repositories
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-
         private SqlConnection GetConnection()
             => new SqlConnection(_connectionString);
         public async Task<IEnumerable<SubCategory>> GetAllAsync()

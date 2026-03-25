@@ -1,0 +1,84 @@
+﻿@model EmployeeAccessSystem.Models.ProductSetup
+
+@{
+    ViewData["Title"] = "";
+}
+
+<section class="content pt-3">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-12">
+
+                <div class="card category-full-card">
+                    <div class="card-header bg-white">
+                        <h3 class="card-title mb-0">Add Product Setup</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <form asp-action="Create" method="post">
+
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Product Name</label>
+                                <input asp-for="ProductName"
+                                       class="form-control form-control-lg"
+                                       placeholder="Enter product name" />
+                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" asp-for="IsActive" />
+                                <label class="form-check-label fw-semibold">
+                                    Is Active
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-smx">
+                                    Back
+                                </a>
+
+                                <button type="submit" class="btn btn-success btn-smx">
+                                    Save
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        .category-full-card {
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-smx {
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 90px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

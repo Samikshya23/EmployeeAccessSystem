@@ -9,13 +9,11 @@ namespace EmployeeAccessSystem.Services
     {
         private readonly IEmployeeRepositories _employeeRepo;
         private readonly IAccountRepositories _accountRepo;
-
         public EmployeeService(IEmployeeRepositories employeeRepo, IAccountRepositories accountRepo)
         {
             _employeeRepo = employeeRepo;
             _accountRepo = accountRepo;
         }
-
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
             return await _employeeRepo.GetAllAsync();
@@ -93,7 +91,6 @@ namespace EmployeeAccessSystem.Services
 
             return "";
         }
-
         public async Task<string> ToggleAsync(int id)
         {
             var emp = await _employeeRepo.GetByIdAsync(id);
@@ -105,7 +102,6 @@ namespace EmployeeAccessSystem.Services
             await _employeeRepo.ToggleAsync(id);
             return "";
         }
-
         public async Task<string> DeleteAsync(int id)
         {
             var emp = await _employeeRepo.GetByIdAsync(id);
@@ -117,7 +113,6 @@ namespace EmployeeAccessSystem.Services
             await _accountRepo.DeleteAsync(emp.AccountId);
             return "";
         }
-
         private int GetRoleIdByName(string roleName)
         {
             if (roleName == "Admin")
@@ -134,7 +129,6 @@ namespace EmployeeAccessSystem.Services
             {
                 return 3;
             }
-
             return 0;
         }
     }

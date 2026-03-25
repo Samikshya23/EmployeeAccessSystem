@@ -24,19 +24,20 @@
                 <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="EmployeeId" />
                     <input type="hidden" asp-for="AccountId" />
-
                     <div class="mb-3">
                         <label asp-for="FullName" class="form-label fw-semibold"></label>
                         <input asp-for="FullName" class="form-control" />
                         <span asp-validation-for="FullName" class="text-danger"></span>
                     </div>
 
+                    <!-- Email -->
                     <div class="mb-3">
                         <label asp-for="Email" class="form-label fw-semibold"></label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
+                    <!-- Department -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Department</label>
                         <select asp-for="DepartmentId"
@@ -47,17 +48,20 @@
                         <span asp-validation-for="DepartmentId" class="text-danger"></span>
                     </div>
 
+                    <!-- Role -->
                     <div class="mb-3">
                         <label asp-for="Role" class="form-label fw-semibold">Role</label>
                         <select asp-for="Role"
                                 asp-items="ViewBag.Roles"
-                                class="form-control">
+                                class="form-control"
+                                id="roleDropdown">
                             <option value="">-- Select Role --</option>
                         </select>
                         <span asp-validation-for="Role" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- Supervisor -->
+                    <div class="mb-3" id="supervisorDiv">
                         <label asp-for="SupervisorEmployeeId" class="form-label fw-semibold">Supervisor</label>
                         <select asp-for="SupervisorEmployeeId"
                                 asp-items="ViewBag.Supervisors"
@@ -67,11 +71,13 @@
                         <span asp-validation-for="SupervisorEmployeeId" class="text-danger"></span>
                     </div>
 
+                    <!-- Active -->
                     <div class="form-check mb-3">
                         <input asp-for="IsActive" class="form-check-input" />
                         <label asp-for="IsActive" class="form-check-label fw-semibold"></label>
                     </div>
 
+                    <!-- Buttons -->
                     <div class="details-actions">
                         <button type="submit"
                                 class="btn btn-warning btn-pill">
@@ -145,4 +151,24 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function toggleSupervisor() {
+            var role = document.getElementById("roleDropdown").value;
+            var supervisorDiv = document.getElementById("supervisorDiv");
+
+            if (role === "Employee") {
+                supervisorDiv.style.display = "block";
+            } else {
+                supervisorDiv.style.display = "none";
+            }
+        }
+
+        document.getElementById("roleDropdown").addEventListener("change", toggleSupervisor);
+
+        // VERY IMPORTANT for Edit page
+        window.onload = function () {
+            toggleSupervisor();
+        };
+    </script>
 }
