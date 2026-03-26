@@ -8,11 +8,11 @@ using EmployeeAccessSystem.Models;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    public class ProductSetupRepositories : IProductSetupRepositories
+    public class SMCProductItemRepositories : ISMCProductItemRepositories
     {
         private readonly string _connectionString;
 
-        public ProductSetupRepositories(IConfiguration configuration)
+        public SMCProductItemRepositories(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
@@ -22,56 +22,61 @@ namespace EmployeeAccessSystem.Repositories
             return new SqlConnection(_connectionString);
         }
 
-        public async Task<IEnumerable<ProductSetup>> GetAllAsync()
+        public async Task<IEnumerable<SMCProductItem>> GetAllAsync()
         {
             using var conn = GetConnection();
 
-            return await conn.QueryAsync<ProductSetup>(
-                "dbo.sp_ProductSetup_Manage",
+            return await conn.QueryAsync<SMCProductItem>(
+                "dbo.sp_SMCProductItem_Manage",
                 new { Flag = "GETALL" },
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<ProductSetup> GetByIdAsync(int id)
+        public async Task<SMCProductItem> GetByIdAsync(int id)
         {
             using var conn = GetConnection();
 
-            DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("Flag", "GETBYID");
-            parameters.Add("ProductId", id);
-
-            return await conn.QueryFirstOrDefaultAsync<ProductSetup>("dbo.sp_ProductSetup_Manage", parameters, commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<int> AddAsync(ProductSetup productSetup)
-        {
-            using var conn = GetConnection();
-
-            return await conn.ExecuteAsync(
-                "dbo.sp_ProductSetup_Manage",
+            return await conn.QueryFirstOrDefaultAsync<SMCProductItem>(
+                "dbo.sp_SMCProductItem_Manage",
                 new
                 {
-                    Flag = "ADD",
-                    productSetup.ProductName,
-                    productSetup.IsActive
+                    Flag = "GETBYID",
+                    SMCProductItemId = id
                 },
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<int> UpdateAsync(ProductSetup productSetup)
+        public async Task<int> AddAsync(SMCProductItem model)
         {
             using var conn = GetConnection();
 
             return await conn.ExecuteAsync(
-                "dbo.sp_ProductSetup_Manage",
+                "dbo.sp_SMCProductItem_Manage",
+                new
+                {
+                    Flag = "ADD",
+                    model.SMCProductId,
+                    model.ItemName
+                },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<int> UpdateAsync(SMCProductItem model)
+        {
+            using var conn = GetConnection();
+
+            return await conn.ExecuteAsync(
+                "dbo.sp_SMCProductItem_Manage",
                 new
                 {
                     Flag = "UPDATE",
-                    productSetup.ProductId,
-                    productSetup.ProductName,
-                    productSetup.IsActive
+                    model.SMCProductItemId,
+                    model.SMCProductId,
+                    model.ItemName,
+                    model.IsActive
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -82,11 +87,11 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             return await conn.ExecuteAsync(
-                "dbo.sp_ProductSetup_Manage",
+                "dbo.sp_SMCProductItem_Manage",
                 new
                 {
                     Flag = "DELETE",
-                    ProductId = id
+                    SMCProductItemId = id
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -97,23 +102,27 @@ namespace EmployeeAccessSystem.Repositories
             using var conn = GetConnection();
 
             await conn.ExecuteAsync(
-                "dbo.sp_ProductSetup_Manage",
+                "dbo.sp_SMCProductItem_Manage",
                 new
                 {
                     Flag = "TOGGLE",
-                    ProductId = id
+                    SMCProductItemId = id
                 },
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<IEnumerable<ProductSetup>> GetActiveAsync()
+        public async Task<IEnumerable<SMCProductItem>> GetByProductAsync(int smcProductId)
         {
             using var conn = GetConnection();
 
-            return await conn.QueryAsync<ProductSetup>(
-                "dbo.sp_ProductSetup_Manage",
-                new { Flag = "GETACTIVE" },
+            return await conn.QueryAsync<SMCProductItem>(
+                "dbo.sp_SMCProductItem_Manage",
+                new
+                {
+                    Flag = "GETBYPRODUCT",
+                    SMCProductId = smcProductId
+                },
                 commandType: CommandType.StoredProcedure
             );
         }

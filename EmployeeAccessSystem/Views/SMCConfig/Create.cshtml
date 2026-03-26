@@ -1,0 +1,116 @@
+﻿@model EmployeeAccessSystem.Models.SMCConfig
+
+@{
+    ViewData["Title"] = "Create SMC Config";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="mb-0">Create SMC Config</h3>
+        </div>
+
+        <div class="card-body">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductId" class="form-label">Product</label>
+                    <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-select" id="ProductId">
+                        <option value="">-- Select Product --</option>
+                    </select>
+                    <span asp-validation-for="ProductId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="SMCProductId" class="form-label">SMC Product</label>
+                    <select asp-for="SMCProductId" asp-items="ViewBag.SMCProductList" class="form-select" id="SMCProductId">
+                        <option value="">-- Select SMC Product --</option>
+                    </select>
+                    <span asp-validation-for="SMCProductId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="SMCProductItemId" class="form-label">SMC Product Item</label>
+                    <select asp-for="SMCProductItemId" asp-items="ViewBag.SMCProductItemList" class="form-select" id="SMCProductItemId">
+                        <option value="">-- Select Item --</option>
+                    </select>
+                    <span asp-validation-for="SMCProductItemId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfigValue" class="form-label">Config Value</label>
+                    <input asp-for="ConfigValue" class="form-control" placeholder="Example: 7% or OK or Tick" />
+                    <span asp-validation-for="ConfigValue" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Remarks" class="form-label">Remarks</label>
+                    <textarea asp-for="Remarks" class="form-control" rows="4" placeholder="Optional remarks"></textarea>
+                    <span asp-validation-for="Remarks" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label">Is Active</label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById("ProductId").addEventListener("change", function () {
+            var productId = this.value;
+            var smcProductDropdown = document.getElementById("SMCProductId");
+            var smcProductItemDropdown = document.getElementById("SMCProductItemId");
+
+            smcProductDropdown.innerHTML = '<option value="">-- Select SMC Product --</option>';
+            smcProductItemDropdown.innerHTML = '<option value="">-- Select Item --</option>';
+
+            if (productId !== "") {
+                fetch('/SMCConfig/GetSMCProductsByProductId?productId=' + productId)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function (item) {
+                            smcProductDropdown.innerHTML += `<option value="${item.smcProductId}">${item.smcProductName}</option>`;
+                        });
+                    });
+            }
+        });
+
+        document.getElementById("SMCProductId").addEventListener("change", function () {
+            var smcProductId = this.value;
+            var smcProductItemDropdown = document.getElementById("SMCProductItemId");
+
+            smcProductItemDropdown.innerHTML = '<option value="">-- Select Item --</option>';
+
+            if (smcProductId !== "") {
+                fetch('/SMCConfig/GetSMCProductItemsBySMCProductId?smcProductId=' + smcProductId)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function (item) {
+                            smcProductItemDropdown.innerHTML += `<option value="${item.smcProductItemId}">${item.itemName}</option>`;
+                        });
+                    });
+            }
+        });
+    </script>
+}

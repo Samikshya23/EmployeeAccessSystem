@@ -1,0 +1,127 @@
+﻿@model EmployeeAccessSystem.Models.SMCProductItem
+
+@{
+    ViewData["Title"] = "SMC Product Item Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .details-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+            overflow: hidden;
+        }
+
+        .details-header {
+            background: #fff;
+            padding: 24px 28px 18px 28px;
+            border-bottom: 1px solid #eef2f7;
+        }
+        .details-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0;
+        }
+
+        .details-subtitle {
+            color: #6b7280;
+            margin-top: 6px;
+            margin-bottom: 0;
+        }
+
+        .info-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .info-row {
+            margin-bottom: 14px;
+        }
+            .info-row:last-child {
+                margin-bottom: 0;
+            }
+
+        .info-label {
+            font-weight: 700;
+            color: #374151;
+            min-width: 160px;
+            display: inline-block;
+        }
+
+        .status-badge {
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-pill {
+            border-radius: 999px;
+            min-width: 110px;
+            font-weight: 600;
+        }
+    </style>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card details-card">
+            <div class="details-header">
+                <h2 class="details-title">SMC Product Item Details</h2>
+                <p class="details-subtitle">View the complete details of the selected item.</p>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">Item ID:</span>
+                        <span>@Model.SMCProductItemId</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">SMC Product:</span>
+                        <span>@Model.SMCProductName</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Item Name:</span>
+                        <span>@Model.ItemName</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        @if (Model.IsActive)
+                        {
+                            <span class="status-badge status-active">Active</span>
+                        }
+                        else
+                        {
+                            <span class="status-badge status-inactive">Inactive</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-pill">Back</a>
+                    <a asp-action="Edit" asp-route-id="@Model.SMCProductItemId" class="btn btn-primary btn-pill">Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,75 @@
+﻿@model IEnumerable<EmployeeAccessSystem.Models.SMCConfig>
+
+@{
+    ViewData["Title"] = "SMC Config List";
+    int sn = 1;
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">SMC Config List</h3>
+            <a asp-action="Create" class="btn btn-primary">Add New</a>
+        </div>
+
+        <div class="card-body">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>SN</th>
+                                <th>Product</th>
+                                <th>SMC Product</th>
+                                <th>Item</th>
+                                <th>Entry Date</th>
+                                <th>Config Value</th>
+                                <th>Remarks</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@sn</td>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.SMCProductName</td>
+                                    <td>@item.ItemName</td>
+                                    <td>@item.EntryDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@item.ConfigValue</td>
+                                    <td>@item.Remarks</td>
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                </tr>
+                                sn++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No SMC Config records found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

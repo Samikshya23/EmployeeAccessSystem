@@ -1,8 +1,8 @@
 ﻿using EmployeeAccessSystem.Models;
 
-namespace EmployeeAccessSystem.Repositories
+namespace EmployeeAccessSystem.Services
 {
-    public interface ISMCConfigRepository
+    public interface ISMCConfigService
     {
         Task<IEnumerable<SMCConfig>> GetAllAsync();
         Task<SMCConfig> GetByIdAsync(int id);

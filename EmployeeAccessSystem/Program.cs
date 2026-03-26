@@ -11,10 +11,8 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<ICoreDbConnection, CoreDbConnection>();
-
 builder.Services.AddScoped<ICategoryRepositories, CategoryRepositories>();
 builder.Services.AddScoped<ISubCategoryRepositories, SubCategoryRepositories>();
 builder.Services.AddScoped<IAccountRepositories, AccountRepositories>();
@@ -24,8 +22,13 @@ builder.Services.AddScoped<IAccessRequestRepositories, AccessRequestRepositories
 builder.Services.AddScoped<ISupervisorRepositories, SupervisorRepositories>();
 builder.Services.AddScoped<IProductSetupRepositories, ProductSetupRepositories>();
 builder.Services.AddScoped<ISMCProductRepository, SMCProductRepository>();
+builder.Services.AddScoped<ISMCProductItemRepositories, SMCProductItemRepositories>();
+builder.Services.AddScoped<ISMCConfigRepository, SMCConfigRepository>();
 
 
+builder.Services.AddScoped<ISMCConfigService, SMCConfigService>();
+
+builder.Services.AddScoped<ISMCProductItemService, SMCProductItemService>();
 builder.Services.AddScoped<ISMCProductService, SMCProductService>();
 builder.Services.AddScoped<IProductSetupService, ProductSetupService>();
 builder.Services.AddScoped<IAccountService, AccountService>(); 

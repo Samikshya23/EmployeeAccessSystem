@@ -1,0 +1,92 @@
+﻿@model EmployeeAccessSystem.Models.SMCProductItem
+
+@{
+    ViewData["Title"] = "Delete SMC Product Item";
+}
+
+@section Styles {
+    <style>
+        .delete-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+            overflow: hidden;
+        }
+
+        .delete-header {
+            background: #fff;
+            padding: 24px 28px 18px 28px;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .delete-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #b91c1c;
+            margin-bottom: 0;
+        }
+
+        .delete-subtitle {
+            color: #6b7280;
+            margin-top: 6px;
+            margin-bottom: 0;
+        }
+
+        .info-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #374151;
+            min-width: 150px;
+            display: inline-block;
+        }
+
+        .btn-pill {
+            border-radius: 999px;
+            min-width: 110px;
+            font-weight: 600;
+        }
+    </style>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card delete-card">
+            <div class="delete-header">
+                <h2 class="delete-title">Delete SMC Product Item</h2>
+                <p class="delete-subtitle">Please review the item before deleting it.</p>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="alert alert-warning">
+                    Are you sure you want to delete this record?
+                </div>
+
+                <div class="info-box mb-4">
+                    <p><span class="info-label">Item ID:</span> @Model.SMCProductItemId</p>
+                    <p><span class="info-label">SMC Product ID:</span> @Model.SMCProductId</p>
+                    <p><span class="info-label">Item Name:</span> @Model.ItemName</p>
+                    <p class="mb-0">
+                        <span class="info-label">Status:</span>
+                        @(Model.IsActive ? "Active" : "Inactive")
+                    </p>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="SMCProductItemId" />
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-pill">Back</a>
+                        <button type="submit" class="btn btn-danger btn-pill">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

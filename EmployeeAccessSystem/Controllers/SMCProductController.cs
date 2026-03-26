@@ -14,13 +14,11 @@ namespace EmployeeAccessSystem.Controllers
         {
             _service = service;
         }
-
         public async Task<IActionResult> Index()
         {
             var smcProducts = await _service.GetAllAsync();
             return View(smcProducts);
         }
-
         public IActionResult Create()
         {
             return View();
