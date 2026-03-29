@@ -22,8 +22,26 @@ namespace EmployeeAccessSystem.Services
             return await _repo.GetByIdAsync(id);
         }
 
+        public async Task<SMCConfig> GetExistingAsync(int productId, int smcProductId, int itemId, DateTime date)
+        {
+            return await _repo.GetExistingAsync(productId, smcProductId, itemId, date);
+        }
+
         public async Task<int> AddAsync(SMCConfig model)
         {
+            var existing = await _repo.GetExistingAsync(
+                model.ProductId,
+                model.SMCProductId,
+                model.SMCProductItemId,
+                model.EntryDate
+            );
+
+            if (existing != null)
+            {
+                model.SMCConfigId = existing.SMCConfigId;
+                return await _repo.UpdateAsync(model);
+            }
+
             return await _repo.AddAsync(model);
         }
 

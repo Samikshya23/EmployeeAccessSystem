@@ -36,10 +36,24 @@ namespace EmployeeAccessSystem.Repositories
 
             return await conn.QueryFirstOrDefaultAsync<SMCConfig>(
                 "dbo.sp_SMCConfig_Manage",
+                new { Flag = "GETBYID", SMCConfigId = id },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<SMCConfig> GetExistingAsync(int productId, int smcProductId, int itemId, DateTime date)
+        {
+            using var conn = GetConnection();
+
+            return await conn.QueryFirstOrDefaultAsync<SMCConfig>(
+                "dbo.sp_SMCConfig_Manage",
                 new
                 {
-                    Flag = "GETBYID",
-                    SMCConfigId = id
+                    Flag = "CHECKEXIST",
+                    ProductId = productId,
+                    SMCProductId = smcProductId,
+                    SMCProductItemId = itemId,
+                    EntryDate = date
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -49,20 +63,23 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
+            await conn.ExecuteAsync(
                 "dbo.sp_SMCConfig_Manage",
                 new
                 {
                     Flag = "ADD",
-                    model.ProductId,
-                    model.SMCProductId,
-                    model.SMCProductItemId,
-                    model.EntryDate,
-                    model.ConfigValue,
-                    model.Remarks
+                    ProductId = model.ProductId,
+                    SMCProductId = model.SMCProductId,
+                    SMCProductItemId = model.SMCProductItemId,
+                    EntryDate = model.EntryDate,
+                    ConfigValue = model.ConfigValue,
+                    Remarks = model.Remarks,
+                    IsActive = model.IsActive
                 },
                 commandType: CommandType.StoredProcedure
             );
+
+            return 1;
         }
 
         public async Task<int> UpdateAsync(SMCConfig model)
@@ -74,14 +91,14 @@ namespace EmployeeAccessSystem.Repositories
                 new
                 {
                     Flag = "UPDATE",
-                    model.SMCConfigId,
-                    model.ProductId,
-                    model.SMCProductId,
-                    model.SMCProductItemId,
-                    model.EntryDate,
-                    model.ConfigValue,
-                    model.Remarks,
-                    model.IsActive
+                    SMCConfigId = model.SMCConfigId,
+                    ProductId = model.ProductId,
+                    SMCProductId = model.SMCProductId,
+                    SMCProductItemId = model.SMCProductItemId,
+                    EntryDate = model.EntryDate,
+                    ConfigValue = model.ConfigValue,
+                    Remarks = model.Remarks,
+                    IsActive = model.IsActive
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -93,11 +110,7 @@ namespace EmployeeAccessSystem.Repositories
 
             return await conn.ExecuteAsync(
                 "dbo.sp_SMCConfig_Manage",
-                new
-                {
-                    Flag = "DELETE",
-                    SMCConfigId = id
-                },
+                new { Flag = "DELETE", SMCConfigId = id },
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -108,11 +121,7 @@ namespace EmployeeAccessSystem.Repositories
 
             await conn.ExecuteAsync(
                 "dbo.sp_SMCConfig_Manage",
-                new
-                {
-                    Flag = "TOGGLE",
-                    SMCConfigId = id
-                },
+                new { Flag = "TOGGLE", SMCConfigId = id },
                 commandType: CommandType.StoredProcedure
             );
         }

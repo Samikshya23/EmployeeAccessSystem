@@ -14,20 +14,31 @@ namespace EmployeeAccessSystem.Controllers
         {
             _service = service;
         }
+
+        // ✅ FIXED
         public async Task<IActionResult> Index()
         {
-            var smcProducts = await _service.GetAllAsync();
-            return View(smcProducts);
+            var data = await _service.GetAllAsync();
+            return View(data);
         }
+
         public IActionResult Create()
         {
-            return View();
+            return View(new SMCProduct
+            {
+                IsActive = true
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SMCProduct smcProduct)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(smcProduct);
+            }
+
             var error = await _service.AddAsync(smcProduct);
 
             if (error != null)
@@ -45,9 +56,7 @@ namespace EmployeeAccessSystem.Controllers
             var smcProduct = await _service.GetByIdAsync(id);
 
             if (smcProduct == null)
-            {
                 return NotFound();
-            }
 
             return View(smcProduct);
         }
@@ -56,6 +65,14 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SMCProduct smcProduct)
         {
+            if (!ModelState.IsValid)
+                return View(smcProduct);
+
+            var existing = await _service.GetByIdAsync(smcProduct.SMCProductId);
+
+            if (existing == null)
+                return NotFound();
+
             var error = await _service.UpdateAsync(smcProduct);
 
             if (error != null)
@@ -73,9 +90,7 @@ namespace EmployeeAccessSystem.Controllers
             var smcProduct = await _service.GetByIdAsync(id);
 
             if (smcProduct == null)
-            {
                 return NotFound();
-            }
 
             return View(smcProduct);
         }
@@ -84,7 +99,13 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var existing = await _service.GetByIdAsync(id);
+
+            if (existing == null)
+                return NotFound();
+
             await _service.DeleteAsync(id);
+
             TempData["Success"] = "SMC Product deleted successfully.";
             return RedirectToAction(nameof(Index));
         }

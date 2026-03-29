@@ -17,6 +17,11 @@ namespace EmployeeAccessSystem.Services
             return await _repo.GetAllAsync();
         }
 
+        public async Task<IEnumerable<SMCProductItem>> GetByProductAsync(int smcProductId)
+        {
+            return await _repo.GetByProductAsync(smcProductId);
+        }
+
         public async Task<SMCProductItem> GetByIdAsync(int id)
         {
             return await _repo.GetByIdAsync(id);
@@ -25,10 +30,14 @@ namespace EmployeeAccessSystem.Services
         public async Task<string> AddAsync(SMCProductItem model)
         {
             if (model.SMCProductId <= 0)
+            {
                 return "Please select SMC Product.";
+            }
 
             if (string.IsNullOrWhiteSpace(model.ItemName))
+            {
                 return "Item Name is required.";
+            }
 
             await _repo.AddAsync(model);
             return null;
@@ -37,13 +46,19 @@ namespace EmployeeAccessSystem.Services
         public async Task<string> UpdateAsync(SMCProductItem model)
         {
             if (model.SMCProductItemId <= 0)
+            {
                 return "Invalid item.";
+            }
 
             if (model.SMCProductId <= 0)
+            {
                 return "Please select SMC Product.";
+            }
 
             if (string.IsNullOrWhiteSpace(model.ItemName))
+            {
                 return "Item Name is required.";
+            }
 
             await _repo.UpdateAsync(model);
             return null;
@@ -52,7 +67,9 @@ namespace EmployeeAccessSystem.Services
         public async Task<string> DeleteAsync(int id)
         {
             if (id <= 0)
+            {
                 return "Invalid item.";
+            }
 
             await _repo.DeleteAsync(id);
             return null;
@@ -61,11 +78,6 @@ namespace EmployeeAccessSystem.Services
         public async Task ToggleAsync(int id)
         {
             await _repo.ToggleAsync(id);
-        }
-
-        public async Task<IEnumerable<SMCProductItem>> GetByProductAsync(int smcProductId)
-        {
-            return await _repo.GetByProductAsync(smcProductId);
         }
     }
 }

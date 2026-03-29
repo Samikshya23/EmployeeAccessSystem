@@ -25,66 +25,113 @@ namespace EmployeeAccessSystem.Controllers
             _smcProductItemRepo = smcProductItemRepo;
         }
 
+        // ===================== LIST =====================
         public async Task<IActionResult> Index()
         {
             var data = await _service.GetAllAsync();
             return View(data);
         }
 
+        // ===================== CREATE =====================
         public async Task<IActionResult> Create()
         {
             await LoadProducts();
 
-            ViewBag.SMCProductList = new SelectList(
-                new List<SMCProduct>(),
-                "SMCProductId",
-                "SMCProductName"
-            );
+            ViewBag.SMCProductList = new SelectList(new List<SMCProduct>(), "SMCProductId", "SMCProductName");
+            ViewBag.SMCProductItemList = new SelectList(new List<SMCProductItem>(), "SMCProductItemId", "ItemName");
 
-            ViewBag.SMCProductItemList = new SelectList(
-                new List<SMCProductItem>(),
-                "SMCProductItemId",
-                "ItemName"
-            );
-
-            SMCConfig model = new SMCConfig();
-            model.IsActive = true;
-
-            return View(model);
+            return View(new SMCConfig { IsActive = true });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SMCConfig model)
         {
-            model.EntryDate = DateTime.Now;
-
-            if (!ModelState.IsValid)
+            try
             {
-                await LoadProducts();
-                await LoadSMCProducts(model.ProductId);
-                await LoadSMCProductItems(model.SMCProductId);
+                model.EntryDate = DateTime.Now;
+
+                if (!ModelState.IsValid)
+                {
+                    await LoadProducts();
+                    await LoadSMCProducts(model.ProductId);
+                    await LoadSMCProductItems(model.SMCProductId);
+                    return View(model);
+                }
+
+                var result = await _service.AddAsync(model);
+
+                if (result <= 0)
+                {
+                    ViewBag.Error = "Insert failed.";
+                    return View(model);
+                }
+
+                TempData["Success"] = "Saved successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
                 return View(model);
             }
+        }
 
-            var result = await _service.AddAsync(model);
+        // ===================== EDIT =====================
+        public async Task<IActionResult> Edit(int id)
+        {
+            var data = await _service.GetByIdAsync(id);
+            if (data == null)
+                return NotFound();
 
-            if (result <= 0)
+            return View(data);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(SMCConfig model)
+        {
+            try
             {
-                ViewBag.Error = "Failed to save SMC Config.";
-                await LoadProducts();
-                await LoadSMCProducts(model.ProductId);
-                await LoadSMCProductItems(model.SMCProductId);
+                if (!ModelState.IsValid)
+                    return View(model);
+
+                var result = await _service.UpdateAsync(model);
+
+                if (result <= 0)
+                {
+                    ViewBag.Error = "Update failed.";
+                    return View(model);
+                }
+
+                TempData["Success"] = "Updated successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
                 return View(model);
             }
+        }
 
-            TempData["Success"] = "SMC Config saved successfully.";
+        // ===================== DELETE =====================
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _service.DeleteAsync(id);
+
+            if (result > 0)
+                TempData["Success"] = "Deleted successfully.";
+            else
+                TempData["Error"] = "Delete failed.";
+
             return RedirectToAction(nameof(Index));
         }
+
+        // ===================== DROPDOWNS =====================
         [HttpGet]
         public async Task<IActionResult> GetSMCProductsByProductId(int productId)
         {
-            var data = await _smcProductRepo.GetAllAsync();
+            var data = await _smcProductRepo.GetByProductIdAsync(productId);
             return Json(data);
         }
 
@@ -95,6 +142,7 @@ namespace EmployeeAccessSystem.Controllers
             return Json(data);
         }
 
+        // ===================== HELPERS =====================
         private async Task LoadProducts()
         {
             var products = await _productRepo.GetAllAsync();
@@ -103,24 +151,14 @@ namespace EmployeeAccessSystem.Controllers
 
         private async Task LoadSMCProducts(int productId)
         {
-            var data = await _smcProductRepo.GetAllAsync();
-
-            ViewBag.SMCProductList = new SelectList(
-                data,
-                "SMCProductId",
-                "SMCProductName"
-            );
+            var data = await _smcProductRepo.GetByProductIdAsync(productId);
+            ViewBag.SMCProductList = new SelectList(data, "SMCProductId", "SMCProductName");
         }
 
         private async Task LoadSMCProductItems(int smcProductId)
         {
             var data = await _smcProductItemRepo.GetByProductAsync(smcProductId);
-
-            ViewBag.SMCProductItemList = new SelectList(
-                data,
-                "SMCProductItemId",
-                "ItemName"
-            );
+            ViewBag.SMCProductItemList = new SelectList(data, "SMCProductItemId", "ItemName");
         }
     }
 }

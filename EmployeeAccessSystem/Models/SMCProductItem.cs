@@ -7,6 +7,6 @@
         public string ItemName { get; set; }
         public bool IsActive { get; set; }
 
-        public string SMCProductName { get; set; }
+        public string? SMCProductName { get; set; }
     }
 }

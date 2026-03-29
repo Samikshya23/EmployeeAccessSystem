@@ -5,9 +5,11 @@ namespace EmployeeAccessSystem.Services
     public interface ISMCProductService
     {
         Task<IEnumerable<SMCProduct>> GetAllAsync();
+        Task<IEnumerable<SMCProduct>> GetActiveAsync();
         Task<SMCProduct> GetByIdAsync(int id);
         Task<string> AddAsync(SMCProduct smcProduct);
         Task<string> UpdateAsync(SMCProduct smcProduct);
         Task DeleteAsync(int id);
+        Task ToggleAsync(int id);
     }
 }

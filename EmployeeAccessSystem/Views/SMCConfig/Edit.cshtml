@@ -1,0 +1,30 @@
+﻿@model EmployeeAccessSystem.Models.SMCConfig
+
+<div class="container mt-4">
+    <div class="card p-4 shadow">
+        <h3>Edit Entry</h3>
+
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="SMCConfigId" />
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" asp-for="SMCProductId" />
+            <input type="hidden" asp-for="SMCProductItemId" />
+            <input type="hidden" asp-for="EntryDate" />
+
+            <div class="mb-3">
+                <label>Value</label>
+                <input asp-for="ConfigValue" class="form-control" />
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label class="form-check-label">Active</label>
+            </div>
+
+            <button type="submit" class="btn btn-success">Update</button>
+            <a asp-action="Index" class="btn btn-secondary">Back</a>
+        </form>
+    </div>
+</div>

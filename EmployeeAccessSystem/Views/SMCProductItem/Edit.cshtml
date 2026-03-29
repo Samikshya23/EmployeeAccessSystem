@@ -71,7 +71,6 @@
                     @Html.AntiForgeryToken()
 
                     <input type="hidden" asp-for="SMCProductItemId" />
-                    <input type="hidden" asp-for="IsActive" />
 
                     <div class="form-group mb-3">
                         <label asp-for="SMCProductId" class="form-label">SMC Product</label>
@@ -85,6 +84,11 @@
                         <label asp-for="ItemName" class="form-label">Item Name</label>
                         <input asp-for="ItemName" class="form-control" />
                         <span asp-validation-for="ItemName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Is Active</label>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">

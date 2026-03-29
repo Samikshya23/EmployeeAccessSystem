@@ -1,29 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace EmployeeAccessSystem.Models
+﻿namespace EmployeeAccessSystem.Models
 {
     public class SMCConfig
     {
         public int SMCConfigId { get; set; }
 
-        [Required]
         public int ProductId { get; set; }
-
-        [Required]
         public int SMCProductId { get; set; }
-
-        [Required]
         public int SMCProductItemId { get; set; }
 
         public DateTime EntryDate { get; set; }
 
-        [Required]
         public string ConfigValue { get; set; }
-
         public string? Remarks { get; set; }
 
         public bool IsActive { get; set; }
 
+       
         public string? ProductName { get; set; }
         public string? SMCProductName { get; set; }
         public string? ItemName { get; set; }

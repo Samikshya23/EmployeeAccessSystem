@@ -1,10 +1,10 @@
-﻿using System.Data;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 using Dapper;
-using Microsoft.Extensions.Configuration;
 using EmployeeAccessSystem.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace EmployeeAccessSystem.Repositories
 {
@@ -28,7 +28,39 @@ namespace EmployeeAccessSystem.Repositories
 
             return await conn.QueryAsync<SMCProductItem>(
                 "dbo.sp_SMCProductItem_Manage",
-                new { Flag = "GETALL" },
+                new
+                {
+                    Flag = "GETALL"
+                },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<IEnumerable<SMCProductItem>> GetActiveAsync()
+        {
+            using var conn = GetConnection();
+
+            return await conn.QueryAsync<SMCProductItem>(
+                "dbo.sp_SMCProductItem_Manage",
+                new
+                {
+                    Flag = "GETACTIVE"
+                },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<IEnumerable<SMCProductItem>> GetByProductAsync(int smcProductId)
+        {
+            using var conn = GetConnection();
+
+            return await conn.QueryAsync<SMCProductItem>(
+                "dbo.sp_SMCProductItem_Manage",
+                new
+                {
+                    Flag = "GETBYPRODUCT",
+                    SMCProductId = smcProductId
+                },
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -37,13 +69,13 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "GETBYID");
+            parameters.Add("SMCProductItemId", id);
+
             return await conn.QueryFirstOrDefaultAsync<SMCProductItem>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "GETBYID",
-                    SMCProductItemId = id
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -57,8 +89,9 @@ namespace EmployeeAccessSystem.Repositories
                 new
                 {
                     Flag = "ADD",
-                    model.SMCProductId,
-                    model.ItemName
+                    SMCProductId = model.SMCProductId,
+                    ItemName = model.ItemName,
+                    IsActive = model.IsActive
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -73,10 +106,10 @@ namespace EmployeeAccessSystem.Repositories
                 new
                 {
                     Flag = "UPDATE",
-                    model.SMCProductItemId,
-                    model.SMCProductId,
-                    model.ItemName,
-                    model.IsActive
+                    SMCProductItemId = model.SMCProductItemId,
+                    SMCProductId = model.SMCProductId,
+                    ItemName = model.ItemName,
+                    IsActive = model.IsActive
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -107,21 +140,6 @@ namespace EmployeeAccessSystem.Repositories
                 {
                     Flag = "TOGGLE",
                     SMCProductItemId = id
-                },
-                commandType: CommandType.StoredProcedure
-            );
-        }
-
-        public async Task<IEnumerable<SMCProductItem>> GetByProductAsync(int smcProductId)
-        {
-            using var conn = GetConnection();
-
-            return await conn.QueryAsync<SMCProductItem>(
-                "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "GETBYPRODUCT",
-                    SMCProductId = smcProductId
                 },
                 commandType: CommandType.StoredProcedure
             );

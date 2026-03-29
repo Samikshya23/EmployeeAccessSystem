@@ -17,6 +17,11 @@ namespace EmployeeAccessSystem.Services
             return await _repository.GetAllAsync();
         }
 
+        public async Task<IEnumerable<SMCProduct>> GetActiveAsync()
+        {
+            return await _repository.GetActiveAsync();
+        }
+
         public async Task<SMCProduct> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
@@ -47,6 +52,11 @@ namespace EmployeeAccessSystem.Services
         public async Task DeleteAsync(int id)
         {
             await _repository.DeleteAsync(id);
+        }
+
+        public async Task ToggleAsync(int id)
+        {
+            await _repository.ToggleAsync(id);
         }
     }
 }

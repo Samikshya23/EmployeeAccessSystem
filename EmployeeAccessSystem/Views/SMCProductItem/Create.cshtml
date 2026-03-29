@@ -83,6 +83,11 @@
                         <span asp-validation-for="ItemName" class="text-danger"></span>
                     </div>
 
+                    <div class="form-check mb-4">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Is Active</label>
+                    </div>
+
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <a asp-action="Index" class="btn btn-outline-secondary btn-pill">Back</a>
                         <button type="submit" class="btn btn-primary btn-pill">Save</button>

@@ -10,5 +10,7 @@ namespace EmployeeAccessSystem.Repositories
         Task<int> UpdateAsync(SMCConfig model);
         Task<int> DeleteAsync(int id);
         Task ToggleAsync(int id);
+
+        Task<SMCConfig> GetExistingAsync(int productId, int smcProductId, int itemId, DateTime date);
     }
 }
