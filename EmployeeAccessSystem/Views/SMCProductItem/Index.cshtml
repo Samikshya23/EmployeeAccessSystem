@@ -32,6 +32,7 @@
                         <th style="width:80px;">SN</th>
                         <th>SMC Product</th>
                         <th>Item Name</th>
+                        <th>Value Type</th>
                         <th class="text-right" style="width:260px;">Actions</th>
                     </tr>
                 </thead>
@@ -44,20 +45,18 @@
                                 <td>@sn</td>
                                 <td>@item.SMCProductName</td>
                                 <td>@item.ItemName</td>
+                                @* <td>@item.ValueType</td> *@
                                 <td>
                                     <div class="table-action-group">
-                                        <a asp-action="Details" asp-route-id="@item.SMCProductItemId"
-                                           class="btn btn-outline-dark btn-sm action-btn">
+                                        <a asp-action="Details" asp-route-id="@item.SMCProductItemId" class="btn btn-outline-dark btn-sm action-btn">
                                             Details
                                         </a>
 
-                                        <a asp-action="Edit" asp-route-id="@item.SMCProductItemId"
-                                           class="btn btn-outline-primary btn-sm action-btn">
+                                        <a asp-action="Edit" asp-route-id="@item.SMCProductItemId" class="btn btn-outline-primary btn-sm action-btn">
                                             Edit
                                         </a>
 
-                                        <a asp-action="Delete" asp-route-id="@item.SMCProductItemId"
-                                           class="btn btn-outline-danger btn-sm action-btn">
+                                        <a asp-action="Delete" asp-route-id="@item.SMCProductItemId" class="btn btn-outline-danger btn-sm action-btn">
                                             Delete
                                         </a>
                                     </div>
@@ -69,7 +68,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="empty-state">
                                     No SMC Product Items found.
                                 </div>

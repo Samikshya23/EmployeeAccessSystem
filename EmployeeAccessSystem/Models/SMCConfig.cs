@@ -10,12 +10,13 @@
 
         public DateTime EntryDate { get; set; }
 
-        public string ConfigValue { get; set; }
+        public string? ConfigValue { get; set; }
+        public bool IsChecked { get; set; }
+        public string? EntryMode { get; set; }
         public string? Remarks { get; set; }
 
         public bool IsActive { get; set; }
 
-       
         public string? ProductName { get; set; }
         public string? SMCProductName { get; set; }
         public string? ItemName { get; set; }

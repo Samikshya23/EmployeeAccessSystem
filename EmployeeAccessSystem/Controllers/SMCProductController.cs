@@ -1,7 +1,9 @@
 ﻿using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Services;
+using EmployeeAccessSystem.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EmployeeAccessSystem.Controllers
 {
@@ -9,21 +11,24 @@ namespace EmployeeAccessSystem.Controllers
     public class SMCProductController : Controller
     {
         private readonly ISMCProductService _service;
+        private readonly IProductSetupRepositories _productRepo;
 
-        public SMCProductController(ISMCProductService service)
+        public SMCProductController(ISMCProductService service, IProductSetupRepositories productRepo)
         {
             _service = service;
+            _productRepo = productRepo;
         }
 
-        // ✅ FIXED
         public async Task<IActionResult> Index()
         {
             var data = await _service.GetAllAsync();
             return View(data);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            await LoadProducts();
+
             return View(new SMCProduct
             {
                 IsActive = true
@@ -36,6 +41,7 @@ namespace EmployeeAccessSystem.Controllers
         {
             if (!ModelState.IsValid)
             {
+                await LoadProducts();
                 return View(smcProduct);
             }
 
@@ -44,6 +50,7 @@ namespace EmployeeAccessSystem.Controllers
             if (error != null)
             {
                 ViewBag.Error = error;
+                await LoadProducts();
                 return View(smcProduct);
             }
 
@@ -58,6 +65,7 @@ namespace EmployeeAccessSystem.Controllers
             if (smcProduct == null)
                 return NotFound();
 
+            await LoadProducts();
             return View(smcProduct);
         }
 
@@ -66,7 +74,10 @@ namespace EmployeeAccessSystem.Controllers
         public async Task<IActionResult> Edit(SMCProduct smcProduct)
         {
             if (!ModelState.IsValid)
+            {
+                await LoadProducts();
                 return View(smcProduct);
+            }
 
             var existing = await _service.GetByIdAsync(smcProduct.SMCProductId);
 
@@ -78,6 +89,7 @@ namespace EmployeeAccessSystem.Controllers
             if (error != null)
             {
                 ViewBag.Error = error;
+                await LoadProducts();
                 return View(smcProduct);
             }
 
@@ -99,15 +111,22 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var existing = await _service.GetByIdAsync(id);
+            var error = await _service.DeleteAsync(id);
 
-            if (existing == null)
-                return NotFound();
-
-            await _service.DeleteAsync(id);
+            if (error != null)
+            {
+                TempData["Error"] = error;
+                return RedirectToAction(nameof(Index));
+            }
 
             TempData["Success"] = "SMC Product deleted successfully.";
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task LoadProducts()
+        {
+            var products = await _productRepo.GetAllAsync();
+            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName");
         }
     }
 }

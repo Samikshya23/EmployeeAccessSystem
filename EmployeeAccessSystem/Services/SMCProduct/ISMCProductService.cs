@@ -9,7 +9,7 @@ namespace EmployeeAccessSystem.Services
         Task<SMCProduct> GetByIdAsync(int id);
         Task<string> AddAsync(SMCProduct smcProduct);
         Task<string> UpdateAsync(SMCProduct smcProduct);
-        Task DeleteAsync(int id);
+        Task<string> DeleteAsync(int id);
         Task ToggleAsync(int id);
     }
 }

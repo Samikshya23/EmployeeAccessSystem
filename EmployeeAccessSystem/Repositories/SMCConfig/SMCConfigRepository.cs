@@ -2,6 +2,7 @@
 using Dapper;
 using EmployeeAccessSystem.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace EmployeeAccessSystem.Repositories
 {
@@ -30,7 +31,7 @@ namespace EmployeeAccessSystem.Repositories
             );
         }
 
-        public async Task<SMCConfig> GetByIdAsync(int id)
+        public async Task<SMCConfig?> GetByIdAsync(int id)
         {
             using var conn = GetConnection();
 
@@ -41,7 +42,7 @@ namespace EmployeeAccessSystem.Repositories
             );
         }
 
-        public async Task<SMCConfig> GetExistingAsync(int productId, int smcProductId, int itemId, DateTime date)
+        public async Task<SMCConfig?> GetExistingAsync(int productId, int smcProductId, int itemId, DateTime date)
         {
             using var conn = GetConnection();
 
@@ -63,7 +64,7 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            await conn.ExecuteAsync(
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
                 new
                 {
@@ -73,20 +74,20 @@ namespace EmployeeAccessSystem.Repositories
                     SMCProductItemId = model.SMCProductItemId,
                     EntryDate = model.EntryDate,
                     ConfigValue = model.ConfigValue,
+                    IsChecked = model.IsChecked,
+                    EntryMode = model.EntryMode,
                     Remarks = model.Remarks,
                     IsActive = model.IsActive
                 },
                 commandType: CommandType.StoredProcedure
             );
-
-            return 1;
         }
 
         public async Task<int> UpdateAsync(SMCConfig model)
         {
             using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
                 new
                 {
@@ -97,6 +98,8 @@ namespace EmployeeAccessSystem.Repositories
                     SMCProductItemId = model.SMCProductItemId,
                     EntryDate = model.EntryDate,
                     ConfigValue = model.ConfigValue,
+                    IsChecked = model.IsChecked,
+                    EntryMode = model.EntryMode,
                     Remarks = model.Remarks,
                     IsActive = model.IsActive
                 },
@@ -108,18 +111,18 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
                 new { Flag = "DELETE", SMCConfigId = id },
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task ToggleAsync(int id)
+        public async Task<int> ToggleAsync(int id)
         {
             using var conn = GetConnection();
 
-            await conn.ExecuteAsync(
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
                 new { Flag = "TOGGLE", SMCConfigId = id },
                 commandType: CommandType.StoredProcedure

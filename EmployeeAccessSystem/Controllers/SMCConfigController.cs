@@ -25,22 +25,27 @@ namespace EmployeeAccessSystem.Controllers
             _smcProductItemRepo = smcProductItemRepo;
         }
 
-        // ===================== LIST =====================
         public async Task<IActionResult> Index()
         {
             var data = await _service.GetAllAsync();
             return View(data);
         }
 
-        // ===================== CREATE =====================
         public async Task<IActionResult> Create()
         {
             await LoadProducts();
+            await LoadEntryModes();
 
             ViewBag.SMCProductList = new SelectList(new List<SMCProduct>(), "SMCProductId", "SMCProductName");
             ViewBag.SMCProductItemList = new SelectList(new List<SMCProductItem>(), "SMCProductItemId", "ItemName");
 
-            return View(new SMCConfig { IsActive = true });
+            var model = new SMCConfig
+            {
+                IsActive = true,
+                EntryMode = "Value"
+            };
+
+            return View(model);
         }
 
         [HttpPost]
@@ -56,6 +61,7 @@ namespace EmployeeAccessSystem.Controllers
                     await LoadProducts();
                     await LoadSMCProducts(model.ProductId);
                     await LoadSMCProductItems(model.SMCProductId);
+                    await LoadEntryModes();
                     return View(model);
                 }
 
@@ -63,7 +69,11 @@ namespace EmployeeAccessSystem.Controllers
 
                 if (result <= 0)
                 {
-                    ViewBag.Error = "Insert failed.";
+                    ViewBag.Error = "Data could not be saved.";
+                    await LoadProducts();
+                    await LoadSMCProducts(model.ProductId);
+                    await LoadSMCProductItems(model.SMCProductId);
+                    await LoadEntryModes();
                     return View(model);
                 }
 
@@ -73,16 +83,27 @@ namespace EmployeeAccessSystem.Controllers
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
+                await LoadProducts();
+                await LoadSMCProducts(model.ProductId);
+                await LoadSMCProductItems(model.SMCProductId);
+                await LoadEntryModes();
                 return View(model);
             }
         }
 
-        // ===================== EDIT =====================
         public async Task<IActionResult> Edit(int id)
         {
             var data = await _service.GetByIdAsync(id);
+
             if (data == null)
+            {
                 return NotFound();
+            }
+
+            await LoadProducts();
+            await LoadSMCProducts(data.ProductId);
+            await LoadSMCProductItems(data.SMCProductId);
+            await LoadEntryModes();
 
             return View(data);
         }
@@ -94,13 +115,23 @@ namespace EmployeeAccessSystem.Controllers
             try
             {
                 if (!ModelState.IsValid)
+                {
+                    await LoadProducts();
+                    await LoadSMCProducts(model.ProductId);
+                    await LoadSMCProductItems(model.SMCProductId);
+                    await LoadEntryModes();
                     return View(model);
+                }
 
                 var result = await _service.UpdateAsync(model);
 
                 if (result <= 0)
                 {
-                    ViewBag.Error = "Update failed.";
+                    ViewBag.Error = "Data could not be updated.";
+                    await LoadProducts();
+                    await LoadSMCProducts(model.ProductId);
+                    await LoadSMCProductItems(model.SMCProductId);
+                    await LoadEntryModes();
                     return View(model);
                 }
 
@@ -110,24 +141,30 @@ namespace EmployeeAccessSystem.Controllers
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
+                await LoadProducts();
+                await LoadSMCProducts(model.ProductId);
+                await LoadSMCProductItems(model.SMCProductId);
+                await LoadEntryModes();
                 return View(model);
             }
         }
 
-        // ===================== DELETE =====================
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
 
             if (result > 0)
+            {
                 TempData["Success"] = "Deleted successfully.";
+            }
             else
+            {
                 TempData["Error"] = "Delete failed.";
+            }
 
             return RedirectToAction(nameof(Index));
         }
 
-        // ===================== DROPDOWNS =====================
         [HttpGet]
         public async Task<IActionResult> GetSMCProductsByProductId(int productId)
         {
@@ -142,7 +179,6 @@ namespace EmployeeAccessSystem.Controllers
             return Json(data);
         }
 
-        // ===================== HELPERS =====================
         private async Task LoadProducts()
         {
             var products = await _productRepo.GetAllAsync();
@@ -159,6 +195,18 @@ namespace EmployeeAccessSystem.Controllers
         {
             var data = await _smcProductItemRepo.GetByProductAsync(smcProductId);
             ViewBag.SMCProductItemList = new SelectList(data, "SMCProductItemId", "ItemName");
+        }
+
+        private Task LoadEntryModes()
+        {
+            var modes = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Value", Text = "Value" },
+                new SelectListItem { Value = "Checkbox", Text = "Checkbox" }
+            };
+
+            ViewBag.EntryModeList = new SelectList(modes, "Value", "Text");
+            return Task.CompletedTask;
         }
     }
 }

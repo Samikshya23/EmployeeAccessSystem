@@ -5,52 +5,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@section Styles {
-    <style>
-        .form-card {
-            border: none;
-            border-radius: 18px;
-            box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
-            overflow: hidden;
-        }
-
-        .form-header {
-            background: #fff;
-            padding: 24px 28px 18px 28px;
-            border-bottom: 1px solid #eef2f7;
-        }
-
-        .form-title {
-            font-size: 1.9rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0;
-        }
-
-        .form-subtitle {
-            color: #6b7280;
-            margin-top: 6px;
-            margin-bottom: 0;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .form-control, .form-select {
-            border-radius: 12px;
-            min-height: 46px;
-        }
-
-        .btn-pill {
-            border-radius: 999px;
-            min-width: 110px;
-            font-weight: 600;
-        }
-    </style>
-}
-
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card form-card">
@@ -85,6 +39,14 @@
                         <input asp-for="ItemName" class="form-control" />
                         <span asp-validation-for="ItemName" class="text-danger"></span>
                     </div>
+
+                    @* <div class="form-group mb-3">
+                        <label asp-for="ValueType" class="form-label">Value Type</label>
+                        <select asp-for="ValueType" asp-items="ViewBag.ValueTypeList" class="form-control">
+                            <option value="">-- Select Value Type --</option>
+                        </select>
+                        <span asp-validation-for="ValueType" class="text-danger"></span>
+                    </div> *@
 
                     <div class="form-check mb-4">
                         <input asp-for="IsActive" class="form-check-input" />

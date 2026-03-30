@@ -24,10 +24,10 @@ builder.Services.AddScoped<IProductSetupRepositories, ProductSetupRepositories>(
 builder.Services.AddScoped<ISMCProductRepository, SMCProductRepository>();
 builder.Services.AddScoped<ISMCProductItemRepositories, SMCProductItemRepositories>();
 builder.Services.AddScoped<ISMCConfigRepository, SMCConfigRepository>();
-
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddScoped<ISMCConfigService, SMCConfigService>();
-
 builder.Services.AddScoped<ISMCProductItemService, SMCProductItemService>();
 builder.Services.AddScoped<ISMCProductService, SMCProductService>();
 builder.Services.AddScoped<IProductSetupService, ProductSetupService>();

@@ -1,48 +1,64 @@
-﻿@{
+﻿@model EmployeeAccessSystem.Models.ReportPageViewModel
+
+@{
     ViewData["Title"] = "Reports";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string today = DateTime.Today.ToString("yyyy-MM-dd");
 }
 
 <div class="container-fluid report-page">
 
-    <!-- Small Page Header -->
     <div class="card shadow-sm border-0 page-title-card mb-3">
         <div class="card-body py-3 px-4">
             <h2 class="page-title mb-1">Reports</h2>
-            <p class="page-subtitle mb-0">View monitoring reports for all products</p>
+            <p class="page-subtitle mb-0">View monitoring reports</p>
         </div>
     </div>
 
-    <!-- Filter Section -->
     <div class="card shadow-sm border-0 report-card mb-3">
         <div class="card-body py-3 px-4">
-            <form method="get" asp-controller="Report" asp-action="Index">
-                <div class="row g-3 align-items-end">
+            <form asp-controller="Report" asp-action="Index" method="get">
+                <div class="row g-2 align-items-end">
 
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <label class="form-label report-label">Product</label>
-                        <select class="form-select report-input">
-                            <option selected>SMSC</option>
-                            <option>Fortigate</option>
-                            <option>Website</option>
-                            <option>Server Ping</option>
-                            <option>VEEAM Backup</option>
+                        <select name="selectedProductId" class="form-select report-input">
+                            <option value="">-- Select Product --</option>
+                            @for (int i = 0; i < Model.ProductList.Count; i++)
+                            {
+                                if (Model.SelectedProductId.HasValue && Model.ProductList[i].ProductId == Model.SelectedProductId.Value)
+                                {
+                                    <option value="@Model.ProductList[i].ProductId" selected>@Model.ProductList[i].ProductName</option>
+                                }
+                                else
+                                {
+                                    <option value="@Model.ProductList[i].ProductId">@Model.ProductList[i].ProductName</option>
+                                }
+                            }
                         </select>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label report-label">From Date</label>
-                        <input type="date" class="form-control report-input" value="2026-03-23" />
+                        <input type="date"
+                               name="fromDate"
+                               class="form-control report-input"
+                               max="@today"
+                               value="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : today)" />
                     </div>
 
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label report-label">To Date</label>
-                        <input type="date" class="form-control report-input" value="2026-03-29" />
+                        <input type="date"
+                               name="toDate"
+                               class="form-control report-input"
+                               max="@today"
+                               value="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : today)" />
                     </div>
 
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-2 col-md-6">
                         <button type="submit" class="btn report-btn w-100">
-                            Generate Report
+                            Generate
                         </button>
                     </div>
 
@@ -51,163 +67,190 @@
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row g-3 mb-3">
-        <div class="col-lg-3 col-md-6">
-            <div class="summary-card">
-                <div class="summary-title">Total Records</div>
-                <div class="summary-value text-primary">18</div>
-                <div class="summary-text">Entries found</div>
-            </div>
+    @if (!Model.SelectedProductId.HasValue)
+    {
+        <div class="alert alert-info">
+            Please select a product to generate report.
         </div>
+    }
+    else if (Model.HasData)
+    {
+        <div class="card shadow-sm border-0 report-card mb-3">
+            <div class="card-body py-3 px-4">
+                <h4 class="mb-1 matrix-title">@Model.ReportTitle</h4>
+                <p class="matrix-subtitle mb-3">
+                    Monitoring status from
+                    @Model.FromDate.Value.ToString("dd MMM yyyy")
+                    to
+                    @Model.ToDate.Value.ToString("dd MMM yyyy")
+                </p>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="summary-card">
-                <div class="summary-title">Monitoring Types</div>
-                <div class="summary-value text-purple">3</div>
-                <div class="summary-text">Telnet, Resource Utilization, Log</div>
-            </div>
-        </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered matrix-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="type-col">Monitoring Type</th>
+                                <th class="item-col">Item</th>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="summary-card">
-                <div class="summary-title">Items</div>
-                <div class="summary-value text-success">5</div>
-                <div class="summary-text">NTC, Ncell, CPU, Memory, Bulk SMS</div>
-            </div>
-        </div>
+                                @for (int i = 0; i < Model.Dates.Count; i++)
+                                {
+                                    <th>
+                                        @Model.Dates[i].ToString("dd MMM")
+                                        <br />
+                                        <small>@Model.Dates[i].ToString("ddd")</small>
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                List<string> monitoringTypes = new List<string>();
 
-        <div class="col-lg-3 col-md-6">
-            <div class="summary-card">
-                <div class="summary-title">Date Range</div>
-                <div class="summary-value text-orange">7 Days</div>
-                <div class="summary-text">23 Mar - 29 Mar 2026</div>
-            </div>
-        </div>
-    </div>
+                                for (int i = 0; i < Model.ReportData.Count; i++)
+                                {
+                                    bool typeExists = false;
 
-    <!-- Main Report -->
-    <div class="card shadow-sm border-0 report-card mb-3">
-        <div class="card-body py-3 px-4">
+                                    for (int j = 0; j < monitoringTypes.Count; j++)
+                                    {
+                                        if (monitoringTypes[j] == Model.ReportData[i].MonitoringTypeName)
+                                        {
+                                            typeExists = true;
+                                            break;
+                                        }
+                                    }
 
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <div>
-                    <h4 class="report-section-title mb-1">SMSC Report Summary</h4>
-                    <p class="report-section-subtitle mb-0">Monitoring status by item across selected date range</p>
+                                    if (!typeExists)
+                                    {
+                                        monitoringTypes.Add(Model.ReportData[i].MonitoringTypeName);
+                                    }
+                                }
+                            }
+
+                            @for (int i = 0; i < monitoringTypes.Count; i++)
+                            {
+                                string currentType = monitoringTypes[i];
+                                List<string> items = new List<string>();
+
+                                for (int j = 0; j < Model.ReportData.Count; j++)
+                                {
+                                    if (Model.ReportData[j].MonitoringTypeName == currentType)
+                                    {
+                                        bool itemExists = false;
+
+                                        for (int k = 0; k < items.Count; k++)
+                                        {
+                                            if (items[k] == Model.ReportData[j].ItemName)
+                                            {
+                                                itemExists = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!itemExists)
+                                        {
+                                            items.Add(Model.ReportData[j].ItemName);
+                                        }
+                                    }
+                                }
+
+                                for (int j = 0; j < items.Count; j++)
+                                {
+                                    string currentItem = items[j];
+
+                                    <tr>
+                                        @if (j == 0)
+                                        {
+                                            <td class="type-cell" rowspan="@items.Count">@currentType</td>
+                                        }
+
+                                        <td class="item-cell">@currentItem</td>
+
+                                        @for (int d = 0; d < Model.Dates.Count; d++)
+                                        {
+                                            string value = "";
+                                            string entryMode = "";
+                                            bool isChecked = false;
+
+                                            for (int m = 0; m < Model.ReportData.Count; m++)
+                                            {
+                                                if (Model.ReportData[m].MonitoringTypeName == currentType &&
+                                                Model.ReportData[m].ItemName == currentItem &&
+                                                Model.ReportData[m].EntryDate.Date == Model.Dates[d].Date)
+                                                {
+                                                    value = Model.ReportData[m].ConfigValue;
+                                                    entryMode = Model.ReportData[m].EntryMode;
+                                                    isChecked = Model.ReportData[m].IsChecked;
+                                                    break;
+                                                }
+                                            }
+
+                                            <td>
+                                                @if (entryMode == "Checkbox")
+                                                {
+                                                    if (isChecked)
+                                                    {
+                                                        <span class="status-badge check-badge">✔</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge fail-badge">✘</span>
+                                                    }
+                                                }
+                                                else if (!string.IsNullOrWhiteSpace(value))
+                                                {
+                                                    string lowerValue = value.ToLower();
+
+                                                    if (lowerValue == "ok")
+                                                    {
+                                                        <span class="status-badge ok-badge">@value</span>
+                                                    }
+                                                    else if (lowerValue.Contains("fail"))
+                                                    {
+                                                        <span class="status-badge fail-badge">@value</span>
+                                                    }
+                                                    else if (value.Contains("%"))
+                                                    {
+                                                        <span class="status-badge percent-badge">@value</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge complete-badge">@value</span>
+                                                    }
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn table-action-btn">Print</button>
-                    <button type="button" class="btn table-action-btn">Export</button>
-                </div>
             </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle report-table mb-0">
-                    <thead>
-                        <tr>
-                            <th>Monitoring Type</th>
-                            <th>Item</th>
-                            <th>23 Mar<br /><small>Mon</small></th>
-                            <th>24 Mar<br /><small>Tue</small></th>
-                            <th>25 Mar<br /><small>Wed</small></th>
-                            <th>26 Mar<br /><small>Thu</small></th>
-                            <th>27 Mar<br /><small>Fri</small></th>
-                            <th>28 Mar<br /><small>Sat</small></th>
-                            <th>29 Mar<br /><small>Sun</small></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td rowspan="2" class="monitoring-type-cell">Telnet</td>
-                            <td>NTC</td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge fail-badge">Failed</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge fail-badge">Failed</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                        </tr>
-                        <tr>
-                            <td>Ncell</td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge fail-badge">Failed</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge ok-badge">OK</span></td>
-                            <td><span class="status-badge fail-badge">Failed</span></td>
-                        </tr>
-
-                        <tr>
-                            <td rowspan="2" class="monitoring-type-cell">Resource Utilization</td>
-                            <td>CPU</td>
-                            <td><span class="status-badge percent-badge">65%</span></td>
-                            <td><span class="status-badge percent-badge">72%</span></td>
-                            <td><span class="status-badge percent-badge">78%</span></td>
-                            <td><span class="status-badge percent-badge">70%</span></td>
-                            <td><span class="status-badge percent-badge">80%</span></td>
-                            <td><span class="status-badge percent-badge">75%</span></td>
-                            <td><span class="status-badge percent-badge">70%</span></td>
-                        </tr>
-                        <tr>
-                            <td>Memory</td>
-                            <td><span class="status-badge percent-badge">60%</span></td>
-                            <td><span class="status-badge percent-badge">66%</span></td>
-                            <td><span class="status-badge percent-badge">70%</span></td>
-                            <td><span class="status-badge percent-badge">68%</span></td>
-                            <td><span class="status-badge percent-badge">72%</span></td>
-                            <td><span class="status-badge percent-badge">68%</span></td>
-                            <td><span class="status-badge percent-badge">65%</span></td>
-                        </tr>
-
-                        <tr>
-                            <td class="monitoring-type-cell">Log</td>
-                            <td>Morning Bulk SMS</td>
-                            <td><span class="status-badge complete-badge">Completed</span><div class="sub-value">12,075</div></td>
-                            <td><span class="status-badge complete-badge">Completed</span><div class="sub-value">11,856</div></td>
-                            <td><span class="status-badge complete-badge">Completed</span><div class="sub-value">12,450</div></td>
-                            <td><span class="status-badge complete-badge">Completed</span><div class="sub-value">12,103</div></td>
-                            <td><span class="status-badge complete-badge">Completed</span><div class="sub-value">13,201</div></td>
-                            <td><span class="status-badge complete-badge">Completed</span><div class="sub-value">12,540</div></td>
-                            <td><span class="status-badge complete-badge">Completed</span><div class="sub-value">12,940</div></td>
-                        </tr>
-
-                        <tr class="daily-status-row">
-                            <td colspan="2"><strong>Daily Status</strong></td>
-                            <td><span class="status-badge ok-badge">All OK</span></td>
-                            <td><span class="status-badge issue-badge">1 Issue</span></td>
-                            <td><span class="status-badge issue-badge">2 Issues</span></td>
-                            <td><span class="status-badge ok-badge">All OK</span></td>
-                            <td><span class="status-badge issue-badge">2 Issues</span></td>
-                            <td><span class="status-badge ok-badge">All OK</span></td>
-                            <td><span class="status-badge issue-badge">1 Issue</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            No data found for selected filter.
+        </div>
+    }
+
 </div>
 
 <style>
     .report-page {
-        padding: 12px 8px 4px 8px;
+        padding: 12px;
     }
 
     .page-title-card,
     .report-card {
-        border-radius: 10px;
-        overflow: hidden;
+        border-radius: 8px;
     }
 
     .page-title {
         font-size: 24px;
         font-weight: 700;
         color: #1f2937;
-        margin: 0;
     }
 
     .page-subtitle {
@@ -218,31 +261,26 @@
     .report-label {
         font-size: 13px;
         font-weight: 600;
-        color: #374151;
         margin-bottom: 6px;
+        color: #374151;
     }
 
     .report-input {
-        height: 40px;
-        border-radius: 8px;
+        height: 38px;
+        border-radius: 6px;
         border: 1px solid #d7dde5;
         font-size: 14px;
-        box-shadow: none;
     }
 
-        .report-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 0.12rem rgba(59,130,246,0.12);
-        }
-
     .report-btn {
-        height: 40px;
+        height: 38px;
         background: #2f80ed;
         color: #fff;
         border: none;
-        border-radius: 8px;
+        border-radius: 6px;
         font-size: 14px;
         font-weight: 600;
+        padding: 0 16px;
     }
 
         .report-btn:hover {
@@ -250,99 +288,57 @@
             color: #fff;
         }
 
-    .summary-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        padding: 16px;
-        height: 100%;
-        box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-    }
-
-    .summary-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 10px;
-    }
-
-    .summary-value {
-        font-size: 22px;
-        font-weight: 700;
-        line-height: 1.1;
-        margin-bottom: 8px;
-    }
-
-    .summary-text {
-        font-size: 13px;
-        color: #6b7280;
-        line-height: 1.5;
-    }
-
-    .text-purple {
-        color: #7c3aed;
-    }
-
-    .text-orange {
-        color: #ea580c;
-    }
-
-    .report-section-title {
-        font-size: 18px;
+    .matrix-title {
+        font-size: 20px;
         font-weight: 700;
         color: #1f2937;
     }
 
-    .report-section-subtitle {
+    .matrix-subtitle {
         font-size: 13px;
         color: #6b7280;
     }
 
-    .table-action-btn {
-        padding: 6px 14px;
-        background: #f8fafc;
-        border: 1px solid #d7dde5;
-        color: #374151;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-        .table-action-btn:hover {
-            background: #eef2f7;
-            color: #1f2937;
-        }
-
-    .report-table thead th {
+    .matrix-table thead th {
         background: #f3f4f6;
         color: #374151;
         font-size: 13px;
         font-weight: 700;
         text-align: center;
         vertical-align: middle;
-        white-space: nowrap;
         padding: 10px 8px;
+        white-space: nowrap;
         border-color: #d9dee5;
     }
 
-    .report-table tbody td {
+    .matrix-table tbody td {
         font-size: 13px;
         color: #374151;
         text-align: center;
         vertical-align: middle;
-        padding: 9px 8px;
+        padding: 10px 8px;
         border-color: #e2e8f0;
     }
 
-        .report-table tbody td:first-child,
-        .report-table tbody td:nth-child(2) {
-            text-align: left;
-        }
+    .type-col {
+        width: 220px;
+        min-width: 180px;
+    }
 
-    .monitoring-type-cell {
+    .item-col {
+        width: 220px;
+        min-width: 180px;
+    }
+
+    .type-cell {
         font-weight: 700;
+        text-align: left !important;
         background: #fafafa;
-        min-width: 150px;
+    }
+
+    .item-cell {
+        text-align: left !important;
+        font-weight: 600;
     }
 
     .status-badge {
@@ -374,32 +370,8 @@
         color: #166534;
     }
 
-    .issue-badge {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .sub-value {
-        font-size: 11px;
-        color: #6b7280;
-        margin-top: 4px;
-    }
-
-    .daily-status-row td {
-        background: #fcfcfd;
-    }
-
-    @@media (max-width: 768px) {
-        .page-title {
-            font-size: 20px;
-        }
-
-        .summary-value {
-            font-size: 20px;
-        }
-
-        .report-page {
-            padding: 10px 4px 2px 4px;
-        }
+    .check-badge {
+        background: #dcfce7;
+        color: #166534;
     }
 </style>

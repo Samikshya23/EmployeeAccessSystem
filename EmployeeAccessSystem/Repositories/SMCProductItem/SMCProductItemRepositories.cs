@@ -91,6 +91,7 @@ namespace EmployeeAccessSystem.Repositories
                     Flag = "ADD",
                     SMCProductId = model.SMCProductId,
                     ItemName = model.ItemName,
+                    //ValueType = model.ValueType,
                     IsActive = model.IsActive
                 },
                 commandType: CommandType.StoredProcedure
@@ -109,6 +110,7 @@ namespace EmployeeAccessSystem.Repositories
                     SMCProductItemId = model.SMCProductItemId,
                     SMCProductId = model.SMCProductId,
                     ItemName = model.ItemName,
+                    //ValueType = model.ValueType,
                     IsActive = model.IsActive
                 },
                 commandType: CommandType.StoredProcedure

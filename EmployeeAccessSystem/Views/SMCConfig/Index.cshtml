@@ -28,6 +28,13 @@
                 </div>
             }
 
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
+
             @if (Model != null && Model.Any())
             {
                 <div class="table-responsive">
@@ -39,7 +46,9 @@
                                 <th>SMC Product</th>
                                 <th>Item</th>
                                 <th>Date</th>
+                                <th>Save Option</th>
                                 <th>Value</th>
+                                <th>Check</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -54,8 +63,18 @@
                                     <td>@item.SMCProductName</td>
                                     <td>@item.ItemName</td>
                                     <td>@item.EntryDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@item.EntryMode</td>
                                     <td>@item.ConfigValue</td>
-
+                                    <td>
+                                        @if (item.IsChecked)
+                                        {
+                                            <span>✔</span>
+                                        }
+                                        else
+                                        {
+                                            <span>✘</span>
+                                        }
+                                    </td>
                                     <td>
                                         @if (item.IsActive)
                                         {
@@ -66,15 +85,12 @@
                                             <span class="badge bg-secondary">Inactive</span>
                                         }
                                     </td>
-
                                     <td>
-                                        <a asp-action="Edit" asp-route-id="@item.SMCConfigId"
-                                           class="btn btn-sm btn-warning">
+                                        <a asp-action="Edit" asp-route-id="@item.SMCConfigId" class="btn btn-sm btn-warning">
                                             Edit
                                         </a>
 
-                                        <a asp-action="Delete" asp-route-id="@item.SMCConfigId"
-                                           class="btn btn-sm btn-danger">
+                                        <a asp-action="Delete" asp-route-id="@item.SMCConfigId" class="btn btn-sm btn-danger">
                                             Delete
                                         </a>
                                     </td>

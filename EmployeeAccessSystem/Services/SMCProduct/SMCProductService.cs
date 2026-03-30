@@ -29,6 +29,11 @@ namespace EmployeeAccessSystem.Services
 
         public async Task<string> AddAsync(SMCProduct smcProduct)
         {
+            if (smcProduct.ProductId <= 0)
+            {
+                return "Product is required.";
+            }
+
             if (string.IsNullOrWhiteSpace(smcProduct.SMCProductName))
             {
                 return "SMC Product Name is required.";
@@ -40,6 +45,11 @@ namespace EmployeeAccessSystem.Services
 
         public async Task<string> UpdateAsync(SMCProduct smcProduct)
         {
+            if (smcProduct.ProductId <= 0)
+            {
+                return "Product is required.";
+            }
+
             if (string.IsNullOrWhiteSpace(smcProduct.SMCProductName))
             {
                 return "SMC Product Name is required.";
@@ -49,9 +59,24 @@ namespace EmployeeAccessSystem.Services
             return null;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<string> DeleteAsync(int id)
         {
-            await _repository.DeleteAsync(id);
+            try
+            {
+                var existing = await _repository.GetByIdAsync(id);
+
+                if (existing == null)
+                {
+                    return "SMC Product not found.";
+                }
+
+                await _repository.DeleteAsync(id);
+                return null;
+            }
+            catch
+            {
+                return "This SMC Product cannot be deleted because related SMC Product Items exist. Please delete related items first or make this product inactive.";
+            }
         }
 
         public async Task ToggleAsync(int id)

@@ -39,6 +39,11 @@ namespace EmployeeAccessSystem.Services
                 return "Item Name is required.";
             }
 
+            //if (string.IsNullOrWhiteSpace(model.ValueType))
+            //{
+            //    return "Value Type is required.";
+            //}
+
             await _repo.AddAsync(model);
             return null;
         }
@@ -59,6 +64,11 @@ namespace EmployeeAccessSystem.Services
             {
                 return "Item Name is required.";
             }
+
+            //if (string.IsNullOrWhiteSpace(model.ValueType))
+            //{
+            //    return "Value Type is required.";
+            //}
 
             await _repo.UpdateAsync(model);
             return null;
