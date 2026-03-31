@@ -189,11 +189,15 @@
                                                 {
                                                     if (isChecked)
                                                     {
-                                                        <span class="status-badge check-badge">✔</span>
+                                                        <span class="status-badge check-badge">
+                                                            <i class="fas fa-check"></i>
+                                                        </span>
                                                     }
                                                     else
                                                     {
-                                                        <span class="status-badge fail-badge">✘</span>
+                                                        <span class="status-badge fail-badge">
+                                                            <i class="fas fa-times"></i>
+                                                        </span>
                                                     }
                                                 }
                                                 else if (!string.IsNullOrWhiteSpace(value))
@@ -342,12 +346,15 @@
     }
 
     .status-badge {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         padding: 4px 10px;
         border-radius: 999px;
         font-size: 12px;
         font-weight: 600;
         min-width: 52px;
+        min-height: 30px;
     }
 
     .ok-badge {
@@ -373,5 +380,9 @@
     .check-badge {
         background: #dcfce7;
         color: #166534;
+    }
+
+    .status-badge i {
+        font-size: 14px;
     }
 </style>

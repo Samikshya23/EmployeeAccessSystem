@@ -5,48 +5,55 @@
 }
 
 <style>
-    .entry-wrapper {
-        padding-top: 32px;
-        padding-bottom: 32px;
+    .config-page {
+        padding: 24px;
     }
 
-    .entry-card {
-        max-width: 880px;
-        margin: auto;
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+    .config-card {
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
         overflow: hidden;
+        background: #ffffff;
+        max-width: 1180px;
+        margin: auto;
     }
 
-    .entry-header {
-        padding: 28px 32px 18px 32px;
+    .config-header {
+        padding: 24px 28px 18px 28px;
         border-bottom: 1px solid #edf1f5;
         background: #ffffff;
     }
 
-    .entry-title {
+    .config-title {
         margin: 0;
         font-size: 2rem;
         font-weight: 700;
         color: #1f2937;
     }
 
-    .entry-body {
-        padding: 30px 32px 34px 32px;
+    .config-subtitle {
+        margin-top: 6px;
+        margin-bottom: 0;
+        color: #6b7280;
+        font-size: 0.98rem;
+    }
+
+    .config-body {
+        padding: 28px;
     }
 
     .field-label {
         display: block;
         margin-bottom: 10px;
-        font-weight: 600;
-        color: #374151;
+        font-weight: 700;
+        color: #334155;
         font-size: 1rem;
     }
 
     .field-input {
         width: 100%;
-        height: 54px;
+        height: 52px;
         border-radius: 14px;
         border: 1px solid #d9e1ea;
         background: #f8fafc;
@@ -73,6 +80,71 @@
         font-size: 0.875rem;
     }
 
+    .dynamic-box {
+        min-height: 108px;
+    }
+
+    .status-select-box {
+        border: 1px solid #d9e1ea;
+        background: #f8fafc;
+        border-radius: 14px;
+        padding: 14px;
+    }
+
+    .status-options {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .status-option {
+        flex: 1;
+        min-width: 180px;
+    }
+
+        .status-option input[type="radio"] {
+            display: none;
+        }
+
+        .status-option label {
+            width: 100%;
+            min-height: 56px;
+            border: 1px solid #d9e1ea;
+            border-radius: 14px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+        }
+
+        .status-option input[type="radio"]:checked + label {
+            border-color: #4f7cff;
+            background: #eef4ff;
+            color: #1d4ed8;
+            box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.12);
+        }
+
+    .tick-icon {
+        color: #15803d;
+        font-weight: 700;
+    }
+
+    .cross-icon {
+        color: #dc2626;
+        font-weight: 700;
+    }
+
+    .active-row {
+        margin-top: 4px;
+    }
+
     .action-row {
         margin-top: 30px;
         display: flex;
@@ -80,24 +152,23 @@
         gap: 14px;
     }
 
-    .btn-soft-back {
-        min-width: 140px;
+    .btn-back-custom {
+        min-width: 150px;
         height: 48px;
         border: 1px solid #d1d9e6;
         background: #ffffff;
         color: #374151;
         border-radius: 12px;
         font-weight: 600;
-        transition: all 0.2s ease;
     }
 
-        .btn-soft-back:hover {
+        .btn-back-custom:hover {
             background: #f8fafc;
             color: #111827;
         }
 
-    .btn-save-entry {
-        min-width: 140px;
+    .btn-save-custom {
+        min-width: 150px;
         height: 48px;
         border: none;
         background: linear-gradient(135deg, #4f7cff, #3b5bdb);
@@ -105,37 +176,30 @@
         border-radius: 12px;
         font-weight: 600;
         box-shadow: 0 8px 20px rgba(79, 124, 255, 0.28);
-        transition: all 0.2s ease;
     }
 
-        .btn-save-entry:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 10px 24px rgba(79, 124, 255, 0.32);
+        .btn-save-custom:hover {
             color: #ffffff;
+            transform: translateY(-1px);
         }
 
-    .alert-box {
+    .alert-custom {
         border-radius: 12px;
-    }
-
-    .checkbox-box {
-        min-height: 54px;
-        display: flex;
-        align-items: center;
-        border: 1px solid #d9e1ea;
-        background: #f8fafc;
-        border-radius: 14px;
-        padding: 12px 16px;
+        padding: 14px 16px;
     }
 
     @@media (max-width: 768px) {
-        .entry-header,
-        .entry-body {
-            padding-left: 20px;
-            padding-right: 20px;
+        .config-page {
+            padding: 16px;
         }
 
-        .entry-title {
+        .config-header,
+        .config-body {
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        .config-title {
             font-size: 1.6rem;
         }
 
@@ -143,27 +207,30 @@
             flex-direction: column;
         }
 
-        .btn-soft-back,
-        .btn-save-entry {
+        .btn-back-custom,
+        .btn-save-custom {
             width: 100%;
         }
     }
 </style>
 
-<div class="container entry-wrapper">
-    <div class="entry-card">
-        <div class="entry-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h2 class="entry-title mb-0">SMC Config Entry</h2>
+<div class="config-page">
+    <div class="card config-card">
+        <div class="config-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="config-title">SMC Config Entry</h2>
+                <p class="config-subtitle">Save monitoring configuration values.</p>
+            </div>
 
             <a asp-action="Index" class="btn btn-outline-secondary">
                 <i class="fas fa-list me-1"></i> View List
             </a>
         </div>
 
-        <div class="entry-body">
+        <div class="config-body">
             @if (ViewBag.Error != null)
             {
-                <div class="alert alert-danger alert-box">
+                <div class="alert alert-danger alert-custom">
                     @ViewBag.Error
                 </div>
             }
@@ -171,6 +238,8 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <form asp-action="Create" method="post">
+                <input type="hidden" asp-for="IsChecked" id="IsCheckedHidden" />
+
                 <div class="row g-4">
                     <div class="col-md-6">
                         <label asp-for="ProductId" class="field-label">Product</label>
@@ -204,24 +273,39 @@
                         <span asp-validation-for="EntryMode" class="text-danger validation-text"></span>
                     </div>
 
-                    <div class="col-md-6" id="valueBoxArea">
-                        <label asp-for="ConfigValue" class="field-label">Value</label>
-                        <input asp-for="ConfigValue" class="field-input" id="ConfigValue" placeholder="Enter value like ON, OFF, 9%, UP, DOWN" />
-                        <span asp-validation-for="ConfigValue" class="text-danger validation-text"></span>
-                    </div>
+                    <div class="col-md-6 dynamic-box">
+                        <label class="field-label" id="dynamicLabel">Input</label>
 
-                    <div class="col-md-6" id="checkboxArea" style="display:none;">
-                        <label asp-for="IsChecked" class="field-label">Checkbox</label>
-                        <div class="checkbox-box">
-                            <div class="form-check m-0">
-                                <input asp-for="IsChecked" class="form-check-input" id="IsChecked" />
-                                <label asp-for="IsChecked" class="form-check-label fw-semibold">Tick / Check</label>
+                        <div id="valueBoxArea">
+                            <input asp-for="ConfigValue" class="field-input" id="ConfigValue" placeholder="Enter value" />
+                            <span asp-validation-for="ConfigValue" class="text-danger validation-text"></span>
+                        </div>
+
+                        <div id="checkboxArea" style="display:none;">
+                            <div class="status-select-box">
+                                <div class="status-options">
+                                    <div class="status-option">
+                                        <input type="radio" name="StatusChoice" id="statusTick" value="true" />
+                                        <label for="statusTick">
+                                            <span class="tick-icon">✔</span>
+                                            <span>Tick</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="status-option">
+                                        <input type="radio" name="StatusChoice" id="statusCross" value="false" />
+                                        <label for="statusCross">
+                                            <span class="cross-icon">✖</span>
+                                            <span>Cross</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12">
-                        <div class="form-check mt-2">
+                    <div class="col-12 active-row">
+                        <div class="form-check">
                             <input asp-for="IsActive" class="form-check-input" />
                             <label asp-for="IsActive" class="form-check-label fw-semibold">Active Entry</label>
                         </div>
@@ -229,8 +313,8 @@
                 </div>
 
                 <div class="action-row">
-                    <a asp-action="Index" class="btn btn-soft-back">Back to List</a>
-                    <button type="submit" class="btn btn-save-entry">Save Entry</button>
+                    <a asp-action="Index" class="btn btn-back-custom">Back to List</a>
+                    <button type="submit" class="btn btn-save-custom">Save Entry</button>
                 </div>
             </form>
         </div>
@@ -260,9 +344,6 @@
                         data.forEach(function (item) {
                             smcProductDropdown.innerHTML += '<option value="' + item.smcProductId + '">' + item.smcProductName + '</option>';
                         });
-                    })
-                    .catch(function (error) {
-                        console.log("Error loading SMC products:", error);
                     });
             }
         });
@@ -282,9 +363,6 @@
                         data.forEach(function (item) {
                             smcProductItemDropdown.innerHTML += '<option value="' + item.smcProductItemId + '">' + item.itemName + '</option>';
                         });
-                    })
-                    .catch(function (error) {
-                        console.log("Error loading SMC product items:", error);
                     });
             }
         });
@@ -293,21 +371,55 @@
             toggleEntryMode();
         });
 
+        document.getElementById("statusTick").addEventListener("change", function () {
+            document.getElementById("IsCheckedHidden").value = "true";
+        });
+
+        document.getElementById("statusCross").addEventListener("change", function () {
+            document.getElementById("IsCheckedHidden").value = "false";
+        });
+
         function toggleEntryMode() {
             var mode = document.getElementById("EntryMode").value;
             var valueBoxArea = document.getElementById("valueBoxArea");
             var checkboxArea = document.getElementById("checkboxArea");
+            var dynamicLabel = document.getElementById("dynamicLabel");
             var configValue = document.getElementById("ConfigValue");
-            var isChecked = document.getElementById("IsChecked");
+            var isCheckedHidden = document.getElementById("IsCheckedHidden");
+            var statusTick = document.getElementById("statusTick");
+            var statusCross = document.getElementById("statusCross");
 
-            if (mode === "Checkbox") {
+            if (mode === "Value") {
+                dynamicLabel.innerText = "Value";
+                valueBoxArea.style.display = "block";
+                checkboxArea.style.display = "none";
+                isCheckedHidden.value = "false";
+                statusTick.checked = false;
+                statusCross.checked = false;
+            }
+            else if (mode === "Checkbox") {
+                dynamicLabel.innerText = "Status";
                 valueBoxArea.style.display = "none";
                 checkboxArea.style.display = "block";
                 configValue.value = "";
-            } else {
-                valueBoxArea.style.display = "block";
+
+                if (isCheckedHidden.value === "true") {
+                    statusTick.checked = true;
+                    statusCross.checked = false;
+                }
+                else {
+                    statusTick.checked = false;
+                    statusCross.checked = true;
+                }
+            }
+            else {
+                dynamicLabel.innerText = "Input";
+                valueBoxArea.style.display = "none";
                 checkboxArea.style.display = "none";
-                isChecked.checked = false;
+                configValue.value = "";
+                isCheckedHidden.value = "false";
+                statusTick.checked = false;
+                statusCross.checked = false;
             }
         }
 

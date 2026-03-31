@@ -1,107 +1,164 @@
 ﻿@model EmployeeAccessSystem.Models.ProductSetup
 
 @{
-    ViewData["Title"] = "";
+    Layout = null;
 }
 
-<section class="content edit-content">
-    <div class="container-fluid edit-container">
+<form asp-action="Edit" method="post" id="editProductForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ProductId" />
 
-        <div class="card edit-card">
-            <div class="card-header bg-white">
-                <h3 class="card-title mb-0">Edit Product Setup</h3>
-            </div>
+    <div asp-validation-summary="All" class="text-danger small mb-3"></div>
 
-            <div class="card-body">
-
-                <form asp-action="Edit" method="post">
-                    <input type="hidden" asp-for="ProductId" />
-
-                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
-                    <div class="mb-3">
-                        <label asp-for="ProductName" class="form-label fw-semibold"></label>
-                        <input asp-for="ProductName" class="form-control" />
-                        <span asp-validation-for="ProductName" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" asp-for="IsActive" />
-                        <label class="form-check-label fw-semibold" asp-for="IsActive">
-                            Is Active
-                        </label>
-                    </div>
-
-                    <div class="edit-actions">
-                        <button type="submit" class="btn btn-warning btn-pill-sm">
-                            Update
-                        </button>
-
-                        <a asp-action="Index" class="btn btn-pill-sm btn-back">
-                            Back
-                        </a>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-
+    <div class="modal-form-group">
+        <label asp-for="ProductName" class="modal-form-label">Product Name</label>
+        <input asp-for="ProductName" class="form-control modal-form-control" placeholder="Enter product name" />
+        <span asp-validation-for="ProductName" class="text-danger small"></span>
     </div>
-</section>
 
-@section Styles {
-    <style>
-        .edit-content {
-            padding-top: 4px !important;
-            padding-bottom: 4px !important;
+    <div class="modal-toggle-row">
+        <label class="switch">
+            <input asp-for="IsActive" />
+            <span class="slider"></span>
+        </label>
+        <label asp-for="IsActive" class="modal-toggle-label">Active</label>
+    </div>
+
+    <div class="modal-form-actions">
+        <button type="button" class="btn modal-btn modal-btn-back" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn modal-btn modal-btn-update">Update</button>
+    </div>
+</form>
+
+<style>
+    .modal-form-group {
+        margin-bottom: 18px;
+    }
+
+    .modal-form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    .modal-form-control {
+        height: 44px;
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+        font-size: 14px;
+        color: #1f2937;
+        box-shadow: none;
+    }
+
+        .modal-form-control:focus {
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 0.12rem rgba(148, 163, 184, 0.18);
         }
 
-        .edit-container {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+    .modal-toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 6px;
+        margin-bottom: 22px;
+    }
+
+    .modal-toggle-label {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 30px;
+        margin: 0;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
         }
 
-        .edit-card {
-            border-radius: 14px;
-            margin-bottom: 8px;
-            overflow: hidden;
+    .slider {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        background-color: #cbd5e1;
+        transition: .25s ease;
+        border-radius: 999px;
+    }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            top: 4px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: .25s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.16);
         }
 
-            .edit-card .card-body {
-                padding: 22px 24px;
-            }
+    .switch input:checked + .slider {
+        background-color: #22c55e;
+    }
 
-        .edit-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 14px;
-            margin-top: 20px;
+        .switch input:checked + .slider:before {
+            transform: translateX(22px);
         }
 
-        .btn-pill-sm {
-            border-radius: 999px;
-            padding: 6px 18px;
-            font-size: 14px;
-            font-weight: 500;
-            min-width: 90px;
-            border: 2px solid transparent;
-            box-shadow: none;
+    .modal-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .modal-btn {
+        min-width: 102px;
+        height: 42px;
+        padding: 0 18px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none !important;
+        box-shadow: none;
+    }
+
+    .modal-btn-back {
+        background: #ffffff;
+        color: #475569;
+        border: 1px solid #9ca3af;
+    }
+
+        .modal-btn-back:hover {
+            background: #f8fafc;
+            color: #334155;
+            border-color: #6b7280;
         }
 
-        .btn-back {
-            background-color: #fff;
-            color: #6c757d;
-            border-color: #6c757d;
+    .modal-btn-update {
+        background: #c56a04;
+        color: #ffffff;
+        border: 1px solid #c56a04;
+    }
+
+        .modal-btn-update:hover {
+            background: #a85604;
+            color: #ffffff;
+            border-color: #a85604;
         }
+</style>
 
-            .btn-back:hover {
-                background-color: #f4f6f9;
-                color: #6c757d;
-                border-color: #6c757d;
-            }
-    </style>
-}
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<partial name="_ValidationScriptsPartial" />

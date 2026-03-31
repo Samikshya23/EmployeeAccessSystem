@@ -140,7 +140,14 @@ namespace EmployeeAccessSystem.Controllers
                 return NotFound();
             }
 
-            await _service.DeleteAsync(id);
+            var message = await _service.DeleteAsync(id);
+
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                TempData["Error"] = message;
+                return RedirectToAction(nameof(Index));
+            }
+
             TempData["Success"] = "SMC Product Item deleted successfully.";
             return RedirectToAction(nameof(Index));
         }

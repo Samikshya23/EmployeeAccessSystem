@@ -39,11 +39,6 @@ namespace EmployeeAccessSystem.Services
                 return "Item Name is required.";
             }
 
-            //if (string.IsNullOrWhiteSpace(model.ValueType))
-            //{
-            //    return "Value Type is required.";
-            //}
-
             await _repo.AddAsync(model);
             return null;
         }
@@ -65,11 +60,6 @@ namespace EmployeeAccessSystem.Services
                 return "Item Name is required.";
             }
 
-            //if (string.IsNullOrWhiteSpace(model.ValueType))
-            //{
-            //    return "Value Type is required.";
-            //}
-
             await _repo.UpdateAsync(model);
             return null;
         }
@@ -81,8 +71,15 @@ namespace EmployeeAccessSystem.Services
                 return "Invalid item.";
             }
 
-            await _repo.DeleteAsync(id);
-            return null;
+            try
+            {
+                await _repo.DeleteAsync(id);
+                return null;
+            }
+            catch
+            {
+                return "Already used in config.";
+            }
         }
 
         public async Task ToggleAsync(int id)

@@ -33,15 +33,34 @@ namespace EmployeeAccessSystem.Controllers
         {
             return View();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductSetup productSetup)
         {
             if (!ModelState.IsValid)
             {
-                return View(productSetup);
+                if (IsAjaxRequest())
+                {
+                    return PartialView("Create", productSetup);
+                }
+
+                TempData["Error"] = "Please enter valid data.";
+                return RedirectToAction(nameof(Index));
             }
 
             await _service.AddAsync(productSetup);
+
+            if (IsAjaxRequest())
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = "Product added successfully."
+                });
+            }
+
+            TempData["Success"] = "Product added successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -58,14 +77,32 @@ namespace EmployeeAccessSystem.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProductSetup productSetup)
         {
             if (!ModelState.IsValid)
             {
-                return View(productSetup);
+                if (IsAjaxRequest())
+                {
+                    return PartialView("Edit", productSetup);
+                }
+
+                TempData["Error"] = "Please enter valid data.";
+                return RedirectToAction(nameof(Index));
             }
 
             await _service.UpdateAsync(productSetup);
+
+            if (IsAjaxRequest())
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = "Product updated successfully."
+                });
+            }
+
+            TempData["Success"] = "Product updated successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -82,11 +119,35 @@ namespace EmployeeAccessSystem.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int productId)
         {
             await _service.DeleteAsync(productId);
+
+            if (IsAjaxRequest())
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = "Product deleted successfully."
+                });
+            }
+
+            TempData["Success"] = "Product deleted successfully.";
             return RedirectToAction(nameof(Index));
+        }
+
+        private bool IsAjaxRequest()
+        {
+            var headerValue = Request.Headers["X-Requested-With"].ToString();
+
+            if (headerValue == "XMLHttpRequest")
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
