@@ -42,7 +42,7 @@ namespace EmployeeAccessSystem.Controllers
             if (!ModelState.IsValid)
             {
                 await LoadProducts();
-                return PartialView(smcProduct);
+                return PartialView("Create", smcProduct);
             }
 
             var error = await _service.AddAsync(smcProduct);
@@ -51,14 +51,11 @@ namespace EmployeeAccessSystem.Controllers
             {
                 ViewBag.Error = error;
                 await LoadProducts();
-                return PartialView(smcProduct);
+                return PartialView("Create", smcProduct);
             }
 
-            return Json(new
-            {
-                success = true,
-                message = "SMC Product added successfully."
-            });
+            TempData["Success"] = "SMC Product added successfully.";
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -71,7 +68,7 @@ namespace EmployeeAccessSystem.Controllers
             }
 
             await LoadProducts();
-            return PartialView(smcProduct);
+            return PartialView("Edit", smcProduct);
         }
 
         [HttpPost]
@@ -81,7 +78,7 @@ namespace EmployeeAccessSystem.Controllers
             if (!ModelState.IsValid)
             {
                 await LoadProducts();
-                return PartialView(smcProduct);
+                return PartialView("Edit", smcProduct);
             }
 
             var existing = await _service.GetByIdAsync(smcProduct.SMCProductId);
@@ -97,14 +94,11 @@ namespace EmployeeAccessSystem.Controllers
             {
                 ViewBag.Error = error;
                 await LoadProducts();
-                return PartialView(smcProduct);
+                return PartialView("Edit", smcProduct);
             }
 
-            return Json(new
-            {
-                success = true,
-                message = "SMC Product updated successfully."
-            });
+            TempData["Success"] = "SMC Product updated successfully.";
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -116,29 +110,24 @@ namespace EmployeeAccessSystem.Controllers
                 return NotFound();
             }
 
-            return PartialView(smcProduct);
+            return PartialView("Delete", smcProduct);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
+        [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int smcProductId)
         {
             var error = await _service.DeleteAsync(smcProductId);
 
             if (error != null)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = error
-                });
+                TempData["Error"] = error;
+                return RedirectToAction(nameof(Index));
             }
 
-            return Json(new
-            {
-                success = true,
-                message = "SMC Product deleted successfully."
-            });
+            TempData["Success"] = "SMC Product deleted successfully.";
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task LoadProducts()

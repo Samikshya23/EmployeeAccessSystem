@@ -151,6 +151,20 @@ namespace EmployeeAccessSystem.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
+            var data = await _service.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            return View(data);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, SMCConfig model)
+        {
             var result = await _service.DeleteAsync(id);
 
             if (result > 0)

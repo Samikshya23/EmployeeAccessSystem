@@ -1,0 +1,99 @@
+﻿@{
+    var isLoggedIn = User.Identity != null && User.Identity.IsAuthenticated;
+}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a asp-controller="Home" asp-action="Index" class="brand-link">
+        <img src="~/adminlte/dist/img/AdminLTELogo.png"
+             class="brand-image img-circle elevation-3" />
+        <span class="brand-text font-weight-light">EmployeeAccess</span>
+    </a>
+
+    <div class="sidebar">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column"
+                data-widget="treeview"
+                role="menu"
+                data-accordion="false">
+
+                <li class="nav-item">
+                    <a asp-controller="Home" asp-action="Index" class="nav-link">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>Home</p>
+                    </a>
+                </li>
+
+                @if (isLoggedIn)
+                {
+                    <li class="nav-item">
+                        <a asp-controller="Employee" asp-action="Index" class="nav-link">
+                            <i class="nav-icon fas fa-user-tie"></i>
+                            <p>Employee</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-controller="Category" asp-action="Index" class="nav-link">
+                            <i class="nav-icon fas fa-tags"></i>
+                            <p>Category</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-controller="SubCategory" asp-action="Index" class="nav-link">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>Sub Category</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-network-wired"></i>
+                            <p>
+                                Network Setup
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a asp-controller="ProductSetup" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Product Setup</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="SMCProduct" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>SMC Product</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="SMCProductItem" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>SMC Product Item</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="SmcConfig" asp-action="Create" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>SMC Config</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="Report" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Reports</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</aside>

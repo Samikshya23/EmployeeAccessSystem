@@ -1,294 +1,190 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.SMCProductItem>
 
 @{
-    ViewData["Title"] = "SMC Product Items";
+    ViewData["Title"] = "SMC Product Item";
     int sn = 1;
 }
 
-<style>
-    .smc-item-page {
-        padding: 24px;
-    }
+<div class="container-fluid pt-2">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-2">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3 class="mb-0">SMC Product Item</h3>
+                </div>
 
-    .smc-item-card {
-        border: none;
-        border-radius: 18px;
-        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-        overflow: hidden;
-        background: #ffffff;
-    }
-
-    .smc-item-header {
-        padding: 24px 28px 18px 28px;
-        border-bottom: 1px solid #edf1f5;
-        background: #ffffff;
-    }
-
-    .smc-item-title {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .smc-item-subtitle {
-        margin-top: 6px;
-        margin-bottom: 0;
-        color: #6b7280;
-        font-size: 0.98rem;
-    }
-
-    .btn-add-item {
-        border: none;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color: #ffffff;
-        border-radius: 12px;
-        font-weight: 600;
-        padding: 11px 18px;
-        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-        .btn-add-item:hover {
-            color: #ffffff;
-            transform: translateY(-1px);
-        }
-
-    .smc-item-body {
-        padding: 24px 28px 28px 28px;
-    }
-
-    .alert-custom {
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-bottom: 18px;
-    }
-
-    .table-wrap {
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        overflow: hidden;
-    }
-
-    .smc-item-table {
-        margin-bottom: 0;
-    }
-
-        .smc-item-table thead th {
-            background: #f8fafc;
-            color: #1f2937;
-            font-size: 14px;
-            font-weight: 700;
-            padding: 16px 14px;
-            border-color: #e5e7eb;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-
-        .smc-item-table tbody td {
-            font-size: 15px;
-            color: #374151;
-            padding: 16px 14px;
-            border-color: #eef2f7;
-            vertical-align: middle;
-        }
-
-        .smc-item-table tbody tr:hover {
-            background: #fafcff;
-        }
-
-    .sn-col {
-        width: 80px;
-        text-align: center;
-        font-weight: 600;
-    }
-
-    .product-col {
-        font-weight: 600;
-        color: #1f2937;
-    }
-
-    .item-col {
-        color: #334155;
-    }
-
-    .action-col {
-        width: 250px;
-        text-align: center;
-    }
-
-    .table-action-group {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: nowrap;
-    }
-
-    .action-btn {
-        min-width: 72px;
-        height: 34px;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 600;
-        padding: 6px 12px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-    }
-
-    .btn-details-custom {
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        color: #334155;
-    }
-
-        .btn-details-custom:hover {
-            background: #f8fafc;
-            color: #111827;
-        }
-
-    .btn-edit-custom {
-        border: 1px solid #93c5fd;
-        background: #eff6ff;
-        color: #1d4ed8;
-    }
-
-        .btn-edit-custom:hover {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-    .btn-delete-custom {
-        border: 1px solid #fca5a5;
-        background: #fef2f2;
-        color: #dc2626;
-    }
-
-        .btn-delete-custom:hover {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-    .empty-state {
-        text-align: center;
-        padding: 30px 20px;
-        color: #6b7280;
-        font-size: 15px;
-        font-weight: 500;
-    }
-
-    @@media (max-width: 768px) {
-        .smc-item-page {
-            padding: 16px;
-        }
-
-        .smc-item-header,
-        .smc-item-body {
-            padding-left: 18px;
-            padding-right: 18px;
-        }
-
-        .smc-item-title {
-            font-size: 1.6rem;
-        }
-
-        .table-action-group {
-            flex-wrap: wrap;
-        }
-
-        .action-col {
-            width: auto;
-        }
-    }
-</style>
-
-<div class="smc-item-page">
-    <div class="card smc-item-card">
-        <div class="smc-item-header d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <h2 class="smc-item-title">SMC Product Items</h2>
-                <p class="smc-item-subtitle">Manage the items under each SMC Product.</p>
+                <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                    <a asp-action="Create"
+                       asp-controller="SMCProductItem"
+                       class="btn btn-primary rounded-pill open-modal-btn"
+                       data-title="Add SMC Product Item">
+                        <i class="fas fa-plus mr-1"></i> Add
+                    </a>
+                </div>
             </div>
-
-            <a asp-action="Create" class="btn btn-add-item">
-                <i class="fas fa-plus"></i>
-                <span>Add Item</span>
-            </a>
         </div>
 
-        <div class="smc-item-body">
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-custom">
-                    @TempData["Success"]
+        <div class="card-body p-2">
+            <div class="row mb-2">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                    <input type="text" id="customSearch" class="form-control" placeholder="Search item..." />
                 </div>
-            }
+            </div>
 
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger alert-custom">
-                    @TempData["Error"]
-                </div>
-            }
-
-            <div class="table-wrap">
-                <div class="table-responsive">
-                    <table class="table smc-item-table align-middle">
-                        <thead>
-                            <tr>
-                                <th class="sn-col">SN</th>
-                                <th>SMC Product</th>
-                                <th>Item Name</th>
-                                <th class="action-col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model != null && Model.Any())
-                            {
-                                @foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td class="sn-col">@sn</td>
-                                        <td class="product-col">@item.SMCProductName</td>
-                                        <td class="item-col">@item.ItemName</td>
-                                        <td class="action-col">
-                                            <div class="table-action-group">
-                                                <a asp-action="Details" asp-route-id="@item.SMCProductItemId" class="action-btn btn-details-custom">
-                                                    Details
-                                                </a>
-
-                                                <a asp-action="Edit" asp-route-id="@item.SMCProductItemId" class="action-btn btn-edit-custom">
-                                                    Edit
-                                                </a>
-
-                                                <a asp-action="Delete" asp-route-id="@item.SMCProductItemId" class="action-btn btn-delete-custom">
-                                                    Delete
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    sn++;
-                                }
-                            }
-                            else
+            <div class="table-responsive">
+                <table id="smcProductItemTable" class="table table-sm table-bordered table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width:80px;">SN</th>
+                            <th class="text-center">SMC Product</th>
+                            <th class="text-center">Item Name</th>
+                            <th class="text-center" style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
                             {
                                 <tr>
-                                    <td colspan="4">
-                                        <div class="empty-state">
-                                            No SMC Product Items found.
-                                        </div>
+                                    <td class="text-center">@sn</td>
+                                    <td>@item.SMCProductName</td>
+                                    <td>@item.ItemName</td>
+                                    <td class="text-center">
+                                        <a asp-action="Edit"
+                                           asp-controller="SMCProductItem"
+                                           asp-route-id="@item.SMCProductItemId"
+                                           class="btn btn-sm btn-light border open-modal-btn"
+                                           data-title="Edit SMC Product Item"
+                                           title="Edit">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-controller="SMCProductItem"
+                                           asp-route-id="@item.SMCProductItemId"
+                                           class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
+                                           data-title="Delete SMC Product Item"
+                                           title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
                                     </td>
                                 </tr>
+
+                                sn++;
                             }
-                        </tbody>
-                    </table>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center">No SMC Product Items found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mainActionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mainActionModalTitle">SMC Product Item</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" id="mainActionModalBody">
+                <div class="text-center py-3">
+                    <i class="fas fa-spinner fa-spin mr-2"></i> Loading...
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="toast-container position-fixed p-3" style="top: 15px; right: 15px; z-index: 9999;">
+    @if (TempData["Success"] != null)
+    {
+        <div class="toast bg-success text-white fade" id="successToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header bg-success text-white border-0">
+                <strong class="mr-auto">Success</strong>
+                <small>Now</small>
+                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                @TempData["Success"]
+            </div>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="toast bg-danger text-white fade" id="errorToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4000">
+            <div class="toast-header bg-danger text-white border-0">
+                <strong class="mr-auto">Error</strong>
+                <small>Now</small>
+                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                @TempData["Error"]
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#smcProductItemTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: false,
+                lengthChange: false,
+                pageLength: 10,
+                autoWidth: false,
+                columnDefs: [
+                    { orderable: false, targets: 3 }
+                ],
+                dom: 't<"row mt-2"<"col-md-6"><"col-md-6 text-right"p>>'
+            });
+
+            $('#customSearch').on('keyup', function () {
+                table.search(this.value).draw();
+            });
+
+            $(document).on('click', '.open-modal-btn', function (e) {
+                e.preventDefault();
+
+                var url = $(this).attr('href');
+                var title = $(this).data('title') || 'SMC Product Item';
+
+                $('#mainActionModalTitle').text(title);
+                $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>');
+
+                $('#mainActionModalBody').load(url, function (response, status) {
+                    if (status === "error") {
+                        $('#mainActionModalBody').html('<div class="alert alert-danger mb-0">Failed to load content.</div>');
+                        return;
+                    }
+
+                    $('#mainActionModal').modal('show');
+                });
+            });
+
+            $('#successToast').toast('show');
+            $('#errorToast').toast('show');
+        });
+    </script>
+}

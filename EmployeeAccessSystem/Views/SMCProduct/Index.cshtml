@@ -2,31 +2,44 @@
 
 @{
     ViewData["Title"] = "SMC Product";
-    var sn = 1;
+    int sn = 1;
 }
 
-<div class="container-fluid mt-3">
-    <div class="card shadow-sm product-setup-card">
-        <div class="card-header bg-white border-0 pt-3 pb-2">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <h5 class="mb-0 fw-semibold">SMC Product</h5>
+<div class="container-fluid pt-2">
+    <div class="card shadow-sm">
 
-                <a href="@Url.Action("Create", "SMCProduct")"
-                   class="btn add-btn open-modal-btn"
-                   data-title="Add SMC Product">
-                    <i class="fas fa-plus mr-1"></i> Add SMC Product
-                </a>
+        <div class="card-header bg-white py-2">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3 class="mb-0">SMC Product</h3>
+                </div>
+
+                <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                    <a asp-action="Create"
+                       asp-controller="SMCProduct"
+                       class="btn btn-primary rounded-pill open-modal-btn"
+                       data-title="Add SMC Product">
+                        <i class="fas fa-plus mr-1"></i> Add
+                    </a>
+                </div>
             </div>
         </div>
 
-        <div class="card-body pt-2">
+        <div class="card-body p-2">
+            <div class="row mb-2">
+                <div class="col-md-8"></div>
+                <div class="col-md-4">
+                    <input type="text" id="customSearch" class="form-control" placeholder="Search SMC products..." />
+                </div>
+            </div>
+
             <div class="table-responsive">
-                <table id="smcProductTable" class="table table-bordered table-hover align-middle mb-0">
+                <table id="smcProductTable" class="table table-sm table-bordered table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th style="width:80px;">SN</th>
-                            <th>SMC Product Name</th>
-                            <th class="text-center action-column">Actions</th>
+                            <th class="text-center">SN</th>
+                            <th class="text-center">SMC Product Name</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,24 +48,29 @@
                             foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>@sn</td>
+                                    <td class="text-center">@sn</td>
                                     <td>@item.SMCProductName</td>
-                                    <td class="text-center action-column">
-                                        <a href="@Url.Action("Edit", "SMCProduct", new { id = item.SMCProductId })"
-                                           class="action-icon-btn edit-icon-btn open-modal-btn"
+                                    <td class="text-center">
+                                        <a asp-action="Edit"
+                                           asp-controller="SMCProduct"
+                                           asp-route-id="@item.SMCProductId"
+                                           class="btn btn-sm btn-light border open-modal-btn"
                                            data-title="Edit SMC Product"
                                            title="Edit">
                                             <i class="fas fa-pen"></i>
                                         </a>
 
-                                        <a href="@Url.Action("Delete", "SMCProduct", new { id = item.SMCProductId })"
-                                           class="action-icon-btn delete-icon-btn open-modal-btn"
+                                        <a asp-action="Delete"
+                                           asp-controller="SMCProduct"
+                                           asp-route-id="@item.SMCProductId"
+                                           class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
                                            data-title="Delete SMC Product"
                                            title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
                                     </td>
                                 </tr>
+
                                 sn++;
                             }
                         }
@@ -69,18 +87,18 @@
     </div>
 </div>
 
-<div class="modal fade custom-office-modal" id="mainActionModal" tabindex="-1" role="dialog" aria-labelledby="mainActionModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-        <div class="modal-content office-modal-content">
-            <div class="modal-header office-modal-header">
+<div class="modal fade" id="mainActionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h5 class="modal-title" id="mainActionModalTitle">SMC Product</h5>
-                <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
                 </button>
             </div>
 
-            <div class="modal-body office-modal-body" id="mainActionModalBody">
-                <div class="text-center py-4">
+            <div class="modal-body" id="mainActionModalBody">
+                <div class="text-center py-3">
                     <i class="fas fa-spinner fa-spin mr-2"></i> Loading...
                 </div>
             </div>
@@ -88,12 +106,46 @@
     </div>
 </div>
 
+<div class="toast-container position-fixed p-3" style="top: 15px; right: 15px; z-index: 9999;">
+    @if (TempData["Success"] != null)
+    {
+        <div class="toast bg-success text-white fade" id="successToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header bg-success text-white border-0">
+                <strong class="mr-auto">Success</strong>
+                <small>Now</small>
+                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                @TempData["Success"]
+            </div>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="toast bg-danger text-white fade" id="errorToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4000">
+            <div class="toast-header bg-danger text-white border-0">
+                <strong class="mr-auto">Error</strong>
+                <small>Now</small>
+                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                @TempData["Error"]
+            </div>
+        </div>
+    }
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
         $(document).ready(function () {
-            $('#smcProductTable').DataTable({
+            var table = $('#smcProductTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
@@ -104,10 +156,11 @@
                 columnDefs: [
                     { orderable: false, targets: 2 }
                 ],
-                language: {
-                    search: "",
-                    searchPlaceholder: "Search SMC products..."
-                }
+                dom: 't<"row mt-2"<"col-md-6"><"col-md-6 text-right"p>>'
+            });
+
+            $('#customSearch').on('keyup', function () {
+                table.search(this.value).draw();
             });
 
             $(document).on('click', '.open-modal-btn', function (e) {
@@ -117,259 +170,20 @@
                 var title = $(this).data('title') || 'SMC Product';
 
                 $('#mainActionModalTitle').text(title);
-                $('#mainActionModalBody').html('<div class="text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>');
+                $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>');
 
-                $('#mainActionModalBody').load(url, function (response, status, xhr) {
+                $('#mainActionModalBody').load(url, function (response, status) {
                     if (status === "error") {
-                        $('#mainActionModalBody').html('<div class="alert alert-danger mb-0">Failed to load content.</div>');
+                        $('#mainActionModalBody').html('<div class="alert alert-danger">Failed to load content.</div>');
                         return;
                     }
-
-                    $('#mainActionModal').modal({
-                        backdrop: true,
-                        keyboard: true
-                    });
 
                     $('#mainActionModal').modal('show');
                 });
             });
 
-            $(document).on('submit', '#createSMCProductForm, #editSMCProductForm, #deleteSMCProductForm', function (e) {
-                e.preventDefault();
-
-                var form = $(this);
-                var url = form.attr('action');
-                var method = form.attr('method');
-                var formData = form.serialize();
-                var submitButton = form.find('button[type="submit"]');
-
-                submitButton.prop('disabled', true);
-
-                $.ajax({
-                    url: url,
-                    type: method,
-                    data: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            $('#mainActionModalBody').html(
-                                '<div class="modal-success-box">' +
-                                    '<i class="fas fa-check-circle success-icon"></i>' +
-                                    '<div class="success-text">' + response.message + '</div>' +
-                                '</div>'
-                            );
-
-                            setTimeout(function () {
-                                $('#mainActionModal').modal('hide');
-                                location.reload();
-                            }, 1000);
-                        } else {
-                            $('#mainActionModalBody').html(response);
-                        }
-                    },
-                    error: function () {
-                        submitButton.prop('disabled', false);
-                        $('#mainActionModalBody').prepend(
-                            '<div class="alert alert-danger">Something went wrong. Please try again.</div>'
-                        );
-                    }
-                });
-            });
+            $('#successToast').toast('show');
+            $('#errorToast').toast('show');
         });
     </script>
-
-    <style>
-        .product-setup-card {
-            border-radius: 14px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-        }
-
-        #smcProductTable {
-            width: 100% !important;
-        }
-
-            #smcProductTable thead th {
-                background-color: #f8fafc !important;
-                color: #334155;
-                font-size: 14px;
-                font-weight: 600;
-                padding: 11px 14px;
-                vertical-align: middle;
-                border: 1px solid #d6dde5 !important;
-            }
-
-            #smcProductTable tbody td {
-                font-size: 14px;
-                padding: 10px 14px !important;
-                vertical-align: middle;
-                border: 1px solid #d6dde5 !important;
-                color: #1f2937;
-            }
-
-        .action-column {
-            width: 130px;
-            white-space: nowrap;
-        }
-
-        .action-icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none !important;
-            transition: all 0.2s ease;
-            margin: 0 4px;
-            border: 1px solid transparent;
-            font-size: 14px;
-        }
-
-        .edit-icon-btn {
-            background: #f8fafc;
-            color: #475569;
-            border-color: #dbe2ea;
-        }
-
-            .edit-icon-btn:hover {
-                background: #eef2f7;
-                color: #334155;
-                border-color: #cbd5e1;
-            }
-
-        .delete-icon-btn {
-            background: #fff7f7;
-            color: #b42318;
-            border-color: #f3d0d0;
-        }
-
-            .delete-icon-btn:hover {
-                background: #fdecec;
-                color: #912018;
-                border-color: #e8b4b4;
-            }
-
-        .add-btn {
-            background: #1f2937;
-            color: #ffffff !important;
-            border-radius: 999px;
-            padding: 8px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none !important;
-            display: inline-flex;
-            align-items: center;
-            border: 1px solid #1f2937;
-        }
-
-            .add-btn:hover {
-                background: #111827;
-                color: #ffffff !important;
-                border-color: #111827;
-            }
-
-        .dataTables_wrapper .dataTables_filter {
-            margin-bottom: 14px;
-        }
-
-            .dataTables_wrapper .dataTables_filter input {
-                width: 280px !important;
-                max-width: 100%;
-                height: 41px;
-                padding: 8px 14px;
-                border-radius: 10px;
-                border: 1px solid #cbd5e1;
-                font-size: 14px;
-                outline: none;
-                box-shadow: none !important;
-            }
-
-                .dataTables_wrapper .dataTables_filter input:focus {
-                    border-color: #94a3b8;
-                }
-
-        .dataTables_paginate .paginate_button {
-            border-radius: 8px !important;
-        }
-
-        .custom-office-modal .modal-dialog {
-            max-width: 520px;
-        }
-
-        .custom-office-modal .modal-content.office-modal-content {
-            border: 0;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.20);
-        }
-
-        .office-modal-header {
-            background: #ffffff;
-            border-bottom: 1px solid #eef2f7;
-            padding: 16px 20px;
-        }
-
-            .office-modal-header .modal-title {
-                font-size: 20px;
-                font-weight: 700;
-                color: #1f2937;
-            }
-
-        .office-modal-body {
-            padding: 20px;
-            background: #ffffff;
-        }
-
-        .modal-close-btn {
-            font-size: 24px;
-            color: #6b7280;
-            opacity: 1;
-            text-shadow: none;
-            box-shadow: none !important;
-            outline: none !important;
-        }
-
-            .modal-close-btn:hover {
-                color: #111827;
-            }
-
-        .modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.25) !important;
-        }
-
-            .modal-backdrop.show {
-                opacity: 1 !important;
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-            }
-
-        .modal-success-box {
-            text-align: center;
-            padding: 28px 10px 20px 10px;
-        }
-
-        .success-icon {
-            font-size: 42px;
-            color: #16a34a;
-            margin-bottom: 12px;
-        }
-
-        .success-text {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        table.dataTable thead th.sorting:before,
-        table.dataTable thead th.sorting:after,
-        table.dataTable thead th.sorting_asc:before,
-        table.dataTable thead th.sorting_asc:after,
-        table.dataTable thead th.sorting_desc:before,
-        table.dataTable thead th.sorting_desc:after {
-            opacity: 0.85;
-        }
-    </style>
 }

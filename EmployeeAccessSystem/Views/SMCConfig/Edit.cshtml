@@ -1,428 +1,186 @@
 ﻿@model EmployeeAccessSystem.Models.SMCConfig
 
 @{
-    ViewData["Title"] = "Edit SMC Config";
+    Layout = null;
 }
 
-<style>
-    .config-page {
-        padding: 24px;
-    }
+<form asp-action="Edit" method="post" id="editSmcConfigForm">
+    @Html.AntiForgeryToken()
 
-    .config-card {
-        border: none;
-        border-radius: 18px;
-        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-        overflow: hidden;
-        background: #ffffff;
-        max-width: 1180px;
-        margin: auto;
-    }
-    .config-header {
-        padding: 24px 28px 18px 28px;
-        border-bottom: 1px solid #edf1f5;
-        background: #ffffff;
-    }
-    .config-title {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1f2937;
-    }
+    <input asp-for="SMCConfigId" type="hidden" />
+    <input asp-for="EntryDate" type="hidden" />
+    <input asp-for="IsChecked" type="hidden" id="IsCheckedHidden" />
 
-    .config-subtitle {
-        margin-top: 6px;
-        margin-bottom: 0;
-        color: #6b7280;
-        font-size: 0.98rem;
-    }
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-    .config-body {
-        padding: 28px;
-    }
-
-    .field-label {
-        display: block;
-        margin-bottom: 10px;
-        font-weight: 700;
-        color: #334155;
-        font-size: 1rem;
-    }
-
-    .field-input {
-        width: 100%;
-        height: 52px;
-        border-radius: 14px;
-        border: 1px solid #d9e1ea;
-        background: #f8fafc;
-        padding: 12px 16px;
-        font-size: 1rem;
-        color: #111827;
-        transition: all 0.2s ease;
-    }
-
-        .field-input:focus {
-            outline: none;
-            border-color: #7c9cff;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(124, 156, 255, 0.14);
-        }
-
-    .field-select {
-        cursor: pointer;
-    }
-
-    .validation-text {
-        display: block;
-        margin-top: 6px;
-        font-size: 0.875rem;
-    }
-
-    .dynamic-box {
-        min-height: 108px;
-    }
-
-    .status-select-box {
-        border: 1px solid #d9e1ea;
-        background: #f8fafc;
-        border-radius: 14px;
-        padding: 14px;
-    }
-
-    .status-options {
-        display: flex;
-        gap: 14px;
-        flex-wrap: wrap;
-    }
-
-    .status-option {
-        flex: 1;
-        min-width: 180px;
-    }
-
-        .status-option input[type="radio"] {
-            display: none;
-        }
-
-        .status-option label {
-            width: 100%;
-            min-height: 56px;
-            border: 1px solid #d9e1ea;
-            border-radius: 14px;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            color: #334155;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-bottom: 0;
-        }
-
-        .status-option input[type="radio"]:checked + label {
-            border-color: #4f7cff;
-            background: #eef4ff;
-            color: #1d4ed8;se
-            box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.12);
-        }
-
-    .tick-icon {
-        color: #15803d;
-        font-weight: 700;
-    }
-
-    .cross-icon {
-        color: #dc2626;
-        font-weight: 700;
-    }
-
-    .active-row {
-        margin-top: 4px;
-    }
-
-    .action-row {
-        margin-top: 30px;
-        display: flex;
-        justify-content: flex-end;
-        gap: 14px;
-    }
-
-    .btn-back-custom {
-        min-width: 150px;
-        height: 48px;
-        border: 1px solid #d1d9e6;
-        background: #ffffff;
-        color: #374151;
-        border-radius: 12px;
-        font-weight: 600;
-    }
-
-        .btn-back-custom:hover {
-            background: #f8fafc;
-            color: #111827;
-        }
-
-    .btn-save-custom {
-        min-width: 150px;
-        height: 48px;
-        border: none;
-        background: linear-gradient(135deg, #4f7cff, #3b5bdb);
-        color: #ffffff;
-        border-radius: 12px;
-        font-weight: 600;
-        box-shadow: 0 8px 20px rgba(79, 124, 255, 0.28);
-    }
-
-        .btn-save-custom:hover {
-            color: #ffffff;
-            transform: translateY(-1px);
-        }
-
-    .alert-custom {
-        border-radius: 12px;
-        padding: 14px 16px;
-    }
-
-    @@media (max-width: 768px) {
-        .config-page {
-            padding: 16px;
-        }
-
-        .config-header,
-        .config-body {
-            padding-left: 18px;
-            padding-right: 18px;
-        }
-
-        .config-title {
-            font-size: 1.6rem;
-        }
-
-        .action-row {
-            flex-direction: column;
-        }
-
-        .btn-back-custom,
-        .btn-save-custom {
-            width: 100%;
-        }
-    }
-</style>
-
-<div class="config-page">
-    <div class="card config-card">
-        <div class="config-header d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <h2 class="config-title">Edit SMC Config</h2>
-                <p class="config-subtitle">Update monitoring configuration values.</p>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="ProductId" class="font-weight-bold">Product</label>
+                <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-control" id="ProductId">
+                    <option value="">Choose product</option>
+                </select>
+                <span asp-validation-for="ProductId" class="text-danger small"></span>
             </div>
-
-            <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="fas fa-list me-1"></i> View List
-            </a>
         </div>
 
-        <div class="config-body">
-            @if (ViewBag.Error != null)
-            {
-                <div class="alert alert-danger alert-custom">
-                    @ViewBag.Error
-                </div>
-            }
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="SMCProductId" class="font-weight-bold">SMC Product</label>
+                <select asp-for="SMCProductId" asp-items="ViewBag.SMCProductList" class="form-control" id="SMCProductId">
+                    <option value="">Choose SMC product</option>
+                </select>
+                <span asp-validation-for="SMCProductId" class="text-danger small"></span>
+            </div>
+        </div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="SMCProductItemId" class="font-weight-bold">SMC Product Item</label>
+                <select asp-for="SMCProductItemId" asp-items="ViewBag.SMCProductItemList" class="form-control" id="SMCProductItemId">
+                    <option value="">Choose SMC product item</option>
+                </select>
+                <span asp-validation-for="SMCProductItemId" class="text-danger small"></span>
+            </div>
+        </div>
 
-            <form asp-action="Edit" method="post">
-                <input asp-for="SMCConfigId" type="hidden" />
-                <input asp-for="EntryDate" type="hidden" />
-                <input type="hidden" asp-for="IsChecked" id="IsCheckedHidden" />
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
+                <select asp-for="EntryMode" asp-items="ViewBag.EntryModeList" class="form-control" id="EntryMode">
+                    <option value="">Choose save option</option>
+                </select>
+                <span asp-validation-for="EntryMode" class="text-danger small"></span>
+            </div>
+        </div>
 
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label asp-for="ProductId" class="field-label">Product</label>
-                        <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="field-input field-select" id="ProductId">
-                            <option value="">Choose product</option>
-                        </select>
-                        <span asp-validation-for="ProductId" class="text-danger validation-text"></span>
+        <div class="col-md-6" id="valueSection">
+            <div class="form-group">
+                <label id="dynamicLabel" class="font-weight-bold">Value</label>
+                <input asp-for="ConfigValue" class="form-control" id="ConfigValue" placeholder="Enter value" />
+                <span asp-validation-for="ConfigValue" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6" id="checkboxSection" style="display:none;">
+            <div class="form-group">
+                <label class="font-weight-bold">Status</label>
+
+                <div class="border rounded p-3">
+                    <div class="custom-control custom-radio mb-2">
+                        <input type="radio" id="statusTick" name="StatusChoice" value="true" class="custom-control-input" />
+                        <label class="custom-control-label" for="statusTick">
+                            <i class="fas fa-check text-success mr-1"></i>Tick
+                        </label>
                     </div>
 
-                    <div class="col-md-6">
-                        <label asp-for="SMCProductId" class="field-label">SMC Product</label>
-                        <select asp-for="SMCProductId" asp-items="ViewBag.SMCProductList" class="field-input field-select" id="SMCProductId">
-                            <option value="">Choose SMC product</option>
-                        </select>
-                        <span asp-validation-for="SMCProductId" class="text-danger validation-text"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="SMCProductItemId" class="field-label">SMC Product Item</label>
-                        <select asp-for="SMCProductItemId" asp-items="ViewBag.SMCProductItemList" class="field-input field-select" id="SMCProductItemId">
-                            <option value="">Choose SMC product item</option>
-                        </select>
-                        <span asp-validation-for="SMCProductItemId" class="text-danger validation-text"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="EntryMode" class="field-label">Save Option</label>
-                        <select asp-for="EntryMode" asp-items="ViewBag.EntryModeList" class="field-input field-select" id="EntryMode">
-                            <option value="">Choose save option</option>
-                        </select>
-                        <span asp-validation-for="EntryMode" class="text-danger validation-text"></span>
-                    </div>
-
-                    <div class="col-md-6 dynamic-box">
-                        <label class="field-label" id="dynamicLabel">Input</label>
-
-                        <div id="valueBoxArea">
-                            <input asp-for="ConfigValue" class="field-input" id="ConfigValue" placeholder="Enter value" />
-                            <span asp-validation-for="ConfigValue" class="text-danger validation-text"></span>
-                        </div>
-
-                        <div id="checkboxArea" style="display:none;">
-                            <div class="status-select-box">
-                                <div class="status-options">
-                                    <div class="status-option">
-                                        <input type="radio" name="StatusChoice" id="statusTick" value="true" />
-                                        <label for="statusTick">
-                                            <span class="tick-icon">✔</span>
-                                            <span>Tick</span>
-                                        </label>
-                                    </div>
-
-                                    <div class="status-option">
-                                        <input type="radio" name="StatusChoice" id="statusCross" value="false" />
-                                        <label for="statusCross">
-                                            <span class="cross-icon">✖</span>
-                                            <span>Cross</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 active-row">
-                        <div class="form-check">
-                            <input asp-for="IsActive" class="form-check-input" />
-                            <label asp-for="IsActive" class="form-check-label fw-semibold">Active Entry</label>
-                        </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="statusCross" name="StatusChoice" value="false" class="custom-control-input" />
+                        <label class="custom-control-label" for="statusCross">
+                            <i class="fas fa-times text-danger mr-1"></i>Cross
+                        </label>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="action-row">
-                    <a asp-action="Index" class="btn btn-back-custom">Back to List</a>
-                    <button type="submit" class="btn btn-save-custom">Update Entry</button>
+        <div class="col-12">
+            <div class="form-group mb-3">
+                <div class="custom-control custom-checkbox">
+                    <input asp-for="IsActive" class="custom-control-input" id="EditIsActive" />
+                    <label class="custom-control-label font-weight-bold" for="EditIsActive">Active</label>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <div class="modal-footer px-0 pb-0">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn btn-warning">Update</button>
+    </div>
+</form>
 
-    <script>
-        document.getElementById("ProductId").addEventListener("change", function () {
-            var productId = this.value;
-            var smcProductDropdown = document.getElementById("SMCProductId");
-            var smcProductItemDropdown = document.getElementById("SMCProductItemId");
+<partial name="_ValidationScriptsPartial" />
 
-            smcProductDropdown.innerHTML = '<option value="">Choose SMC product</option>';
-            smcProductItemDropdown.innerHTML = '<option value="">Choose SMC product item</option>';
+<script>
+    $(document).ready(function () {
+
+        $("#ProductId").change(function () {
+            var productId = $(this).val();
+
+            $("#SMCProductId").html('<option value="">Choose SMC product</option>');
+            $("#SMCProductItemId").html('<option value="">Choose SMC product item</option>');
 
             if (productId !== "") {
-                fetch('/SMCConfig/GetSMCProductsByProductId?productId=' + productId)
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    .then(function (data) {
-                        data.forEach(function (item) {
-                            smcProductDropdown.innerHTML += '<option value="' + item.smcProductId + '">' + item.smcProductName + '</option>';
-                        });
+                $.get('/SMCConfig/GetSMCProductsByProductId', { productId: productId }, function (data) {
+                    $.each(data, function (i, item) {
+                        $("#SMCProductId").append('<option value="' + item.smcProductId + '">' + item.smcProductName + '</option>');
                     });
+                });
             }
         });
 
-        document.getElementById("SMCProductId").addEventListener("change", function () {
-            var smcProductId = this.value;
-            var smcProductItemDropdown = document.getElementById("SMCProductItemId");
+        $("#SMCProductId").change(function () {
+            var smcProductId = $(this).val();
 
-            smcProductItemDropdown.innerHTML = '<option value="">Choose SMC product item</option>';
+            $("#SMCProductItemId").html('<option value="">Choose SMC product item</option>');
 
             if (smcProductId !== "") {
-                fetch('/SMCConfig/GetSMCProductItemsBySMCProductId?smcProductId=' + smcProductId)
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    .then(function (data) {
-                        data.forEach(function (item) {
-                            smcProductItemDropdown.innerHTML += '<option value="' + item.smcProductItemId + '">' + item.itemName + '</option>';
-                        });
+                $.get('/SMCConfig/GetSMCProductItemsBySMCProductId', { smcProductId: smcProductId }, function (data) {
+                    $.each(data, function (i, item) {
+                        $("#SMCProductItemId").append('<option value="' + item.smcProductItemId + '">' + item.itemName + '</option>');
                     });
+                });
             }
         });
 
-        document.getElementById("EntryMode").addEventListener("change", function () {
+        $("#EntryMode").change(function () {
             toggleEntryMode();
         });
 
-        document.getElementById("statusTick").addEventListener("change", function () {
-            document.getElementById("IsCheckedHidden").value = "true";
+        $("#statusTick").change(function () {
+            $("#IsCheckedHidden").val("true");
         });
 
-        document.getElementById("statusCross").addEventListener("change", function () {
-            document.getElementById("IsCheckedHidden").value = "false";
+        $("#statusCross").change(function () {
+            $("#IsCheckedHidden").val("false");
         });
 
         function toggleEntryMode() {
-            var mode = document.getElementById("EntryMode").value;
-            var valueBoxArea = document.getElementById("valueBoxArea");
-            var checkboxArea = document.getElementById("checkboxArea");
-            var dynamicLabel = document.getElementById("dynamicLabel");
-            var configValue = document.getElementById("ConfigValue");
-            var isCheckedHidden = document.getElementById("IsCheckedHidden");
-            var statusTick = document.getElementById("statusTick");
-            var statusCross = document.getElementById("statusCross");
+            var mode = $("#EntryMode").val();
 
             if (mode === "Value") {
-                dynamicLabel.innerText = "Value";
-                valueBoxArea.style.display = "block";
-                checkboxArea.style.display = "none";
-                isCheckedHidden.value = "false";
-                statusTick.checked = false;
-                statusCross.checked = false;
+                $("#valueSection").show();
+                $("#checkboxSection").hide();
+                $("#dynamicLabel").text("Value");
+                $("#IsCheckedHidden").val("false");
+                $("#statusTick").prop("checked", false);
+                $("#statusCross").prop("checked", false);
             }
             else if (mode === "Checkbox") {
-                dynamicLabel.innerText = "Status";
-                valueBoxArea.style.display = "none";
-                checkboxArea.style.display = "block";
-                configValue.value = "";
+                $("#valueSection").hide();
+                $("#checkboxSection").show();
+                $("#ConfigValue").val("");
 
-                if (isCheckedHidden.value === "true") {
-                    statusTick.checked = true;
-                    statusCross.checked = false;
-                }
-                else {
-                    statusTick.checked = false;
-                    statusCross.checked = true;
+                if ($("#IsCheckedHidden").val() === "true") {
+                    $("#statusTick").prop("checked", true);
+                    $("#statusCross").prop("checked", false);
+                } else {
+                    $("#statusTick").prop("checked", false);
+                    $("#statusCross").prop("checked", true);
                 }
             }
             else {
-                dynamicLabel.innerText = "Input";
-                valueBoxArea.style.display = "none";
-                checkboxArea.style.display = "none";
-                configValue.value = "";
-                isCheckedHidden.value = "false";
-                statusTick.checked = false;
-                statusCross.checked = false;
+                $("#valueSection").hide();
+                $("#checkboxSection").hide();
+                $("#dynamicLabel").text("Input");
+                $("#ConfigValue").val("");
+                $("#IsCheckedHidden").val("false");
+                $("#statusTick").prop("checked", false);
+                $("#statusCross").prop("checked", false);
             }
         }
 
         toggleEntryMode();
-    </script>
-}
+    });
+</script>

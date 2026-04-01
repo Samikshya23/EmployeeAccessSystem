@@ -23,15 +23,19 @@ namespace EmployeeAccessSystem.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Toggle(int id)
         {
             await _service.ToggleAsync(id);
+            TempData["Success"] = "Product status updated successfully.";
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Create()
         {
-            return View();
+            var model = new ProductSetup();
+            model.IsActive = true;
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -40,25 +44,10 @@ namespace EmployeeAccessSystem.Controllers
         {
             if (!ModelState.IsValid)
             {
-                if (IsAjaxRequest())
-                {
-                    return PartialView("Create", productSetup);
-                }
-
-                TempData["Error"] = "Please enter valid data.";
-                return RedirectToAction(nameof(Index));
+                return PartialView("Create", productSetup);
             }
 
             await _service.AddAsync(productSetup);
-
-            if (IsAjaxRequest())
-            {
-                return Json(new
-                {
-                    success = true,
-                    message = "Product added successfully."
-                });
-            }
 
             TempData["Success"] = "Product added successfully.";
             return RedirectToAction(nameof(Index));
@@ -73,7 +62,7 @@ namespace EmployeeAccessSystem.Controllers
                 return NotFound();
             }
 
-            return View(productSetup);
+            return PartialView("Edit", productSetup);
         }
 
         [HttpPost]
@@ -82,25 +71,10 @@ namespace EmployeeAccessSystem.Controllers
         {
             if (!ModelState.IsValid)
             {
-                if (IsAjaxRequest())
-                {
-                    return PartialView("Edit", productSetup);
-                }
-
-                TempData["Error"] = "Please enter valid data.";
-                return RedirectToAction(nameof(Index));
+                return PartialView("Edit", productSetup);
             }
 
             await _service.UpdateAsync(productSetup);
-
-            if (IsAjaxRequest())
-            {
-                return Json(new
-                {
-                    success = true,
-                    message = "Product updated successfully."
-                });
-            }
 
             TempData["Success"] = "Product updated successfully.";
             return RedirectToAction(nameof(Index));
@@ -115,7 +89,7 @@ namespace EmployeeAccessSystem.Controllers
                 return NotFound();
             }
 
-            return View(productSetup);
+            return PartialView("Delete", productSetup);
         }
 
         [HttpPost]
@@ -125,29 +99,8 @@ namespace EmployeeAccessSystem.Controllers
         {
             await _service.DeleteAsync(productId);
 
-            if (IsAjaxRequest())
-            {
-                return Json(new
-                {
-                    success = true,
-                    message = "Product deleted successfully."
-                });
-            }
-
             TempData["Success"] = "Product deleted successfully.";
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool IsAjaxRequest()
-        {
-            var headerValue = Request.Headers["X-Requested-With"].ToString();
-
-            if (headerValue == "XMLHttpRequest")
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

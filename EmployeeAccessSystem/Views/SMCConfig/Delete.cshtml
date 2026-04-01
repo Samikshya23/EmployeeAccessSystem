@@ -1,20 +1,28 @@
-﻿@model EmployeeAccessSystem.Models.ProductSetup
+﻿@model EmployeeAccessSystem.Models.SMCConfig
 
 @{
     Layout = null;
 }
 
-<form asp-action="Delete" method="post" id="deleteProductForm">
+<form asp-action="Delete" method="post" id="deleteSmcConfigForm">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="productId" value="@Model.ProductId" />
+    <input type="hidden" name="id" value="@Model.SMCConfigId" />
 
-    <p class="text-muted mb-3">Are you sure you want to delete this product setup?</p>
+    <p class="text-muted mb-3">Are you sure you want to delete this SMC config entry?</p>
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover mb-0">
             <tr>
-                <th>Product Name</th>
+                <th>Product</th>
                 <td>@Model.ProductName</td>
+            </tr>
+            <tr>
+                <th>SMC Product</th>
+                <td>@Model.SMCProductName</td>
+            </tr>
+            <tr>
+                <th>Item</th>
+                <td>@Model.ItemName</td>
             </tr>
             <tr>
                 <th>Status</th>

@@ -31,12 +31,10 @@ namespace EmployeeAccessSystem.Controllers
         {
             await LoadSMCProducts();
 
-            var model = new SMCProductItem
-            {
-                IsActive = true
-            };
+            var model = new SMCProductItem();
+            model.IsActive = true;
 
-            return View(model);
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -46,16 +44,16 @@ namespace EmployeeAccessSystem.Controllers
             if (!ModelState.IsValid)
             {
                 await LoadSMCProducts();
-                return View(model);
+                return PartialView("Create", model);
             }
 
             var message = await _service.AddAsync(model);
 
-            if (message != null)
+            if (!string.IsNullOrWhiteSpace(message))
             {
                 ViewBag.Error = message;
                 await LoadSMCProducts();
-                return View(model);
+                return PartialView("Create", model);
             }
 
             TempData["Success"] = "SMC Product Item added successfully.";
@@ -72,7 +70,7 @@ namespace EmployeeAccessSystem.Controllers
             }
 
             await LoadSMCProducts();
-            return View(data);
+            return PartialView("Edit", data);
         }
 
         [HttpPost]
@@ -82,7 +80,7 @@ namespace EmployeeAccessSystem.Controllers
             if (!ModelState.IsValid)
             {
                 await LoadSMCProducts();
-                return View(model);
+                return PartialView("Edit", model);
             }
 
             var existingItem = await _service.GetByIdAsync(model.SMCProductItemId);
@@ -94,27 +92,15 @@ namespace EmployeeAccessSystem.Controllers
 
             var message = await _service.UpdateAsync(model);
 
-            if (message != null)
+            if (!string.IsNullOrWhiteSpace(message))
             {
                 ViewBag.Error = message;
                 await LoadSMCProducts();
-                return View(model);
+                return PartialView("Edit", model);
             }
 
             TempData["Success"] = "SMC Product Item updated successfully.";
             return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var data = await _service.GetByIdAsync(id);
-
-            if (data == null)
-            {
-                return NotFound();
-            }
-
-            return View(data);
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -126,21 +112,22 @@ namespace EmployeeAccessSystem.Controllers
                 return NotFound();
             }
 
-            return View(data);
+            return PartialView("Delete", data);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int smcProductItemId)
         {
-            var existingItem = await _service.GetByIdAsync(id);
+            var existingItem = await _service.GetByIdAsync(smcProductItemId);
 
             if (existingItem == null)
             {
                 return NotFound();
             }
 
-            var message = await _service.DeleteAsync(id);
+            var message = await _service.DeleteAsync(smcProductItemId);
 
             if (!string.IsNullOrWhiteSpace(message))
             {

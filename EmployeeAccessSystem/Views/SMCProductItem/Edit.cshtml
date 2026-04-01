@@ -1,70 +1,45 @@
 ﻿@model EmployeeAccessSystem.Models.SMCProductItem
 
 @{
-    ViewData["Title"] = "Edit SMC Product Item";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card form-card">
-            <div class="form-header">
-                <h2 class="form-title">Edit SMC Product Item</h2>
-                <p class="form-subtitle">Update the selected item details.</p>
-            </div>
+<form asp-action="Edit" method="post" id="editSMCProductItemForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="SMCProductItemId" />
 
-            <div class="card-body p-4">
-                @if (ViewBag.Error != null)
-                {
-                    <div class="alert alert-danger">
-                        @ViewBag.Error
-                    </div>
-                }
+    <div asp-validation-summary="All" class="text-danger small mb-3"></div>
 
-                <form asp-action="Edit" method="post">
-                    @Html.AntiForgeryToken()
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
 
-                    <input type="hidden" asp-for="SMCProductItemId" />
+    <div class="form-group">
+        <label asp-for="SMCProductId" class="font-weight-bold">SMC Product</label>
+        <select asp-for="SMCProductId" asp-items="ViewBag.SMCProductList" class="form-control">
+            <option value="">Select SMC Product</option>
+        </select>
+        <span asp-validation-for="SMCProductId" class="text-danger small"></span>
+    </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="SMCProductId" class="form-label">SMC Product</label>
-                        <select asp-for="SMCProductId" asp-items="ViewBag.SMCProductList" class="form-control">
-                            <option value="">-- Select SMC Product --</option>
-                        </select>
-                        <span asp-validation-for="SMCProductId" class="text-danger"></span>
-                    </div>
+    <div class="form-group">
+        <label asp-for="ItemName" class="font-weight-bold">Item Name</label>
+        <input asp-for="ItemName" class="form-control" placeholder="Enter item name" />
+        <span asp-validation-for="ItemName" class="text-danger small"></span>
+    </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="ItemName" class="form-label">Item Name</label>
-                        <input asp-for="ItemName" class="form-control" />
-                        <span asp-validation-for="ItemName" class="text-danger"></span>
-                    </div>
-
-                    @* <div class="form-group mb-3">
-                        <label asp-for="ValueType" class="form-label">Value Type</label>
-                        <select asp-for="ValueType" asp-items="ViewBag.ValueTypeList" class="form-control">
-                            <option value="">-- Select Value Type --</option>
-                        </select>
-                        <span asp-validation-for="ValueType" class="text-danger"></span>
-                    </div> *@
-
-                    <div class="form-check mb-4">
-                        <input asp-for="IsActive" class="form-check-input" />
-                        <label asp-for="IsActive" class="form-check-label">Is Active</label>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a asp-action="Index" class="btn btn-outline-secondary btn-pill">Back</a>
-                        <button type="submit" class="btn btn-primary btn-pill">Update</button>
-                    </div>
-                </form>
-            </div>
+    <div class="form-group mb-4">
+        <div class="custom-control custom-switch">
+            <input asp-for="IsActive" class="custom-control-input" id="EditIsActive" />
+            <label class="custom-control-label font-weight-bold" for="EditIsActive">Active</label>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+    <div class="modal-footer px-0 pb-0">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn btn-warning">Update</button>
+    </div>
+</form>
+
+<partial name="_ValidationScriptsPartial" />

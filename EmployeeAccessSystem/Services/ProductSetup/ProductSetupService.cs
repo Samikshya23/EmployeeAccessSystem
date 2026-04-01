@@ -14,13 +14,11 @@ namespace EmployeeAccessSystem.Services
         {
             _repo = repo;
         }
-
         public async Task<List<ProductSetup>> GetAllAsync()
         {
             var data = await _repo.GetAllAsync();
             return data.ToList();
         }
-
         public Task<ProductSetup?> GetByIdAsync(int id)
         {
             return _repo.GetByIdAsync(id);

@@ -9,155 +9,24 @@
 
     <div asp-validation-summary="All" class="text-danger small mb-3"></div>
 
-    <div class="modal-form-group">
-        <label asp-for="ProductName" class="modal-form-label">Product Name</label>
-        <input asp-for="ProductName" class="form-control modal-form-control" placeholder="Enter product name" />
+    <div class="form-group">
+        <label asp-for="ProductName" class="font-weight-bold">Product Name</label>
+        <input asp-for="ProductName" class="form-control" placeholder="Enter product name" />
         <span asp-validation-for="ProductName" class="text-danger small"></span>
     </div>
 
-    <div class="modal-toggle-row">
-        <label class="switch">
-            <input asp-for="IsActive" />
-            <span class="slider"></span>
-        </label>
-        <label asp-for="IsActive" class="modal-toggle-label">Active</label>
+    <div class="form-group mb-4">
+        <div class="custom-control custom-switch">
+            <input asp-for="IsActive" class="custom-control-input" id="IsActive" />
+            <label class="custom-control-label font-weight-bold" for="IsActive">Active</label>
+        </div>
+        <span asp-validation-for="IsActive" class="text-danger small"></span>
     </div>
 
-    <div class="modal-form-actions">
-        <button type="button" class="btn modal-btn modal-btn-back" data-dismiss="modal">Back</button>
-        <button type="submit" class="btn modal-btn modal-btn-save">Save</button>
+    <div class="modal-footer px-0 pb-0">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </form>
-
-<style>
-    .modal-form-group {
-        margin-bottom: 18px;
-    }
-
-    .modal-form-label {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 8px;
-    }
-
-    .modal-form-control {
-        height: 44px;
-        border-radius: 12px;
-        border: 1px solid #d1d5db;
-        font-size: 14px;
-        color: #1f2937;
-        box-shadow: none;
-    }
-
-        .modal-form-control:focus {
-            border-color: #94a3b8;
-            box-shadow: 0 0 0 0.12rem rgba(148, 163, 184, 0.18);
-        }
-
-    .modal-toggle-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-top: 6px;
-        margin-bottom: 22px;
-    }
-
-    .modal-toggle-label {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #374151;
-    }
-
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 52px;
-        height: 30px;
-        margin: 0;
-    }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-            position: absolute;
-        }
-
-    .slider {
-        position: absolute;
-        inset: 0;
-        cursor: pointer;
-        background-color: #cbd5e1;
-        transition: .25s ease;
-        border-radius: 999px;
-    }
-
-        .slider:before {
-            content: "";
-            position: absolute;
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            top: 4px;
-            background: #ffffff;
-            border-radius: 50%;
-            transition: .25s ease;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.16);
-        }
-
-    .switch input:checked + .slider {
-        background-color: #22c55e;
-    }
-
-        .switch input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-
-    .modal-form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 8px;
-        flex-wrap: wrap;
-    }
-
-    .modal-btn {
-        min-width: 102px;
-        height: 42px;
-        padding: 0 18px;
-        border-radius: 999px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none !important;
-        box-shadow: none;
-    }
-
-    .modal-btn-back {
-        background: #ffffff;
-        color: #475569;
-        border: 1px solid #9ca3af;
-    }
-
-        .modal-btn-back:hover {
-            background: #f8fafc;
-            color: #334155;
-            border-color: #6b7280;
-        }
-
-    .modal-btn-save {
-        background: #1d4ed8;
-        color: #ffffff;
-        border: 1px solid #1d4ed8;
-    }
-
-        .modal-btn-save:hover {
-            background: #1e40af;
-            color: #ffffff;
-            border-color: #1e40af;
-        }
-</style>
 
 <partial name="_ValidationScriptsPartial" />

@@ -8,89 +8,23 @@
     @Html.AntiForgeryToken()
     <input type="hidden" name="smcProductId" value="@Model.SMCProductId" />
 
-    <p class="delete-note-text">Are you sure you want to delete this SMC Product?</p>
+    <p class="text-muted mb-3">Are you sure you want to delete this SMC Product?</p>
 
-    <table class="table table-bordered delete-view-table">
-        <tr>
-            <th>SMC Product Name</th>
-            <td>@Model.SMCProductName</td>
-        </tr>
-        <tr>
-            <th>Status</th>
-            <td>@(Model.IsActive ? "Active" : "Inactive")</td>
-        </tr>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <tr>
+                <th>SMC Product Name</th>
+                <td>@Model.SMCProductName</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>@(Model.IsActive ? "Active" : "Inactive")</td>
+            </tr>
+        </table>
+    </div>
 
-    <div class="modal-form-actions mt-3">
-        <button type="button" class="btn modal-btn modal-btn-back" data-dismiss="modal">Back</button>
-        <button type="submit" class="btn modal-btn modal-btn-delete">Delete</button>
+    <div class="modal-footer px-0 pb-0 mt-3">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn btn-danger">Delete</button>
     </div>
 </form>
-
-<style>
-    .delete-note-text {
-        font-size: 14px;
-        color: #4b5563;
-        margin-bottom: 14px;
-    }
-
-    .delete-view-table {
-        margin-bottom: 0;
-        border-color: #d8dee6;
-    }
-
-        .delete-view-table th {
-            width: 170px;
-            background: #f8fafc;
-            color: #374151;
-            font-weight: 600;
-        }
-
-        .delete-view-table th,
-        .delete-view-table td {
-            padding: 12px 14px;
-            vertical-align: middle;
-        }
-
-    .modal-form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .modal-btn {
-        min-width: 102px;
-        height: 42px;
-        padding: 0 18px;
-        border-radius: 999px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none !important;
-        box-shadow: none;
-    }
-
-    .modal-btn-back {
-        background: #ffffff;
-        color: #475569;
-        border: 1px solid #9ca3af;
-    }
-
-        .modal-btn-back:hover {
-            background: #f8fafc;
-            color: #334155;
-            border-color: #6b7280;
-        }
-
-    .modal-btn-delete {
-        background: #dc2626;
-        color: #ffffff;
-        border: 1px solid #dc2626;
-    }
-
-        .modal-btn-delete:hover {
-            background: #b91c1c;
-            color: #ffffff;
-            border-color: #b91c1c;
-        }
-</style>
