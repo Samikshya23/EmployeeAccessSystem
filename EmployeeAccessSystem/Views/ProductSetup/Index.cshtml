@@ -5,9 +5,8 @@
     int sn = 1;
 }
 
-<div class="container-fluid pt-2">
-    <div class="card shadow-sm">
-
+@* <div class="container-fluid p-0"> *@
+    <div class="card shadow-sm mb-0">
         <div class="card-header bg-white py-2">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -34,7 +33,7 @@
             </div>
 
             <div class="table-responsive">
-                <table id="productSetupTable" class="table table-sm table-bordered table-hover align-middle mb-0">
+                <table id="productSetupTable" class="table table-sm table-bordered table-hover mb-0">
                     <thead>
                         <tr>
                             <th class="text-center">SN</th>
@@ -79,7 +78,7 @@
             </div>
         </div>
     </div>
-</div>
+@* </div> *@
 
 <div class="modal fade" id="mainActionModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-md">
@@ -100,39 +99,42 @@
     </div>
 </div>
 
-<div class="toast-container position-fixed p-3" style="top: 15px; right: 15px; z-index: 9999;">
-    @if (TempData["Success"] != null)
-    {
-        <div class="toast bg-success text-white fade" id="successToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
-            <div class="toast-header bg-success text-white border-0">
-                <strong class="mr-auto">Success</strong>
-                <small>Now</small>
-                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+@if (TempData["Success"] != null || TempData["Error"] != null)
+{
+    <div class="position-fixed" style="top: 15px; right: 15px; z-index: 1055;">
+        @if (TempData["Success"] != null)
+        {
+            <div class="toast bg-success text-white fade" id="successToast" role="alert" data-delay="3000">
+                <div class="toast-header bg-success text-white border-0">
+                    <strong class="mr-auto">Success</strong>
+                    <small>Now</small>
+                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    @TempData["Success"]
+                </div>
             </div>
-            <div class="toast-body">
-                @TempData["Success"]
-            </div>
-        </div>
-    }
+        }
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="toast bg-danger text-white fade" id="errorToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4000">
-            <div class="toast-header bg-danger text-white border-0">
-                <strong class="mr-auto">Error</strong>
-                <small>Now</small>
-                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        @if (TempData["Error"] != null)
+        {
+            <div class="toast bg-danger text-white fade" id="errorToast" role="alert" data-delay="4000">
+                <div class="toast-header bg-danger text-white border-0">
+                    <strong class="mr-auto">Error</strong>
+                    <small>Now</small>
+                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    @TempData["Error"]
+                </div>
             </div>
-            <div class="toast-body">
-                @TempData["Error"]
-            </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -168,7 +170,7 @@
 
                 $('#mainActionModalBody').load(url, function (response, status) {
                     if (status === "error") {
-                        $('#mainActionModalBody').html('<div class="alert alert-danger">Failed to load content.</div>');
+                        $('#mainActionModalBody').html('<div class="alert alert-danger mb-0">Failed to load content.</div>');
                         return;
                     }
 

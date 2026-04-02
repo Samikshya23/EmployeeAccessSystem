@@ -11,14 +11,23 @@
     <input asp-for="EntryDate" type="hidden" />
     <input asp-for="IsChecked" type="hidden" id="IsCheckedHidden" />
 
-    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
+    }
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="ProductId" class="font-weight-bold">Product</label>
-                <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-control" id="ProductId">
-                    <option value="">Choose product</option>
+                <select asp-for="ProductId"
+                        asp-items="ViewBag.ProductList"
+                        class="form-control select2bs4"
+                        id="ProductId">
                 </select>
                 <span asp-validation-for="ProductId" class="text-danger small"></span>
             </div>
@@ -27,8 +36,10 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="SMCProductId" class="font-weight-bold">SMC Product</label>
-                <select asp-for="SMCProductId" asp-items="ViewBag.SMCProductList" class="form-control" id="SMCProductId">
-                    <option value="">Choose SMC product</option>
+                <select asp-for="SMCProductId"
+                        asp-items="ViewBag.SMCProductList"
+                        class="form-control select2bs4"
+                        id="SMCProductId">
                 </select>
                 <span asp-validation-for="SMCProductId" class="text-danger small"></span>
             </div>
@@ -37,8 +48,10 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="SMCProductItemId" class="font-weight-bold">SMC Product Item</label>
-                <select asp-for="SMCProductItemId" asp-items="ViewBag.SMCProductItemList" class="form-control" id="SMCProductItemId">
-                    <option value="">Choose SMC product item</option>
+                <select asp-for="SMCProductItemId"
+                        asp-items="ViewBag.SMCProductItemList"
+                        class="form-control select2bs4"
+                        id="SMCProductItemId">
                 </select>
                 <span asp-validation-for="SMCProductItemId" class="text-danger small"></span>
             </div>
@@ -47,8 +60,10 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
-                <select asp-for="EntryMode" asp-items="ViewBag.EntryModeList" class="form-control" id="EntryMode">
-                    <option value="">Choose save option</option>
+                <select asp-for="EntryMode"
+                        asp-items="ViewBag.EntryModeList"
+                        class="form-control"
+                        id="EntryMode">
                 </select>
                 <span asp-validation-for="EntryMode" class="text-danger small"></span>
             </div>
@@ -57,7 +72,10 @@
         <div class="col-md-6" id="valueSection">
             <div class="form-group">
                 <label id="dynamicLabel" class="font-weight-bold">Value</label>
-                <input asp-for="ConfigValue" class="form-control" id="ConfigValue" placeholder="Enter value" />
+                <input asp-for="ConfigValue"
+                       class="form-control"
+                       id="ConfigValue"
+                       placeholder="Enter value" />
                 <span asp-validation-for="ConfigValue" class="text-danger small"></span>
             </div>
         </div>
@@ -68,14 +86,22 @@
 
                 <div class="border rounded p-3">
                     <div class="custom-control custom-radio mb-2">
-                        <input type="radio" id="statusTick" name="StatusChoice" value="true" class="custom-control-input" />
+                        <input type="radio"
+                               id="statusTick"
+                               name="StatusChoice"
+                               value="true"
+                               class="custom-control-input" />
                         <label class="custom-control-label" for="statusTick">
                             <i class="fas fa-check text-success mr-1"></i>Tick
                         </label>
                     </div>
 
                     <div class="custom-control custom-radio">
-                        <input type="radio" id="statusCross" name="StatusChoice" value="false" class="custom-control-input" />
+                        <input type="radio"
+                               id="statusCross"
+                               name="StatusChoice"
+                               value="false"
+                               class="custom-control-input" />
                         <label class="custom-control-label" for="statusCross">
                             <i class="fas fa-times text-danger mr-1"></i>Cross
                         </label>
@@ -105,17 +131,26 @@
 <script>
     $(document).ready(function () {
 
+        $('.select2bs4').select2({
+            theme: 'bootstrap4',
+            width: '100%',
+            dropdownParent: $('#mainActionModal')
+        });
+
         $("#ProductId").change(function () {
             var productId = $(this).val();
 
-            $("#SMCProductId").html('<option value="">Choose SMC product</option>');
-            $("#SMCProductItemId").html('<option value="">Choose SMC product item</option>');
+            $("#SMCProductId").empty();
+            $("#SMCProductItemId").empty();
 
             if (productId !== "") {
                 $.get('/SMCConfig/GetSMCProductsByProductId', { productId: productId }, function (data) {
                     $.each(data, function (i, item) {
                         $("#SMCProductId").append('<option value="' + item.smcProductId + '">' + item.smcProductName + '</option>');
                     });
+
+                    var selectedSMCProductId = '@Model.SMCProductId';
+                    $("#SMCProductId").val(selectedSMCProductId).trigger('change');
                 });
             }
         });
@@ -123,13 +158,16 @@
         $("#SMCProductId").change(function () {
             var smcProductId = $(this).val();
 
-            $("#SMCProductItemId").html('<option value="">Choose SMC product item</option>');
+            $("#SMCProductItemId").empty();
 
             if (smcProductId !== "") {
                 $.get('/SMCConfig/GetSMCProductItemsBySMCProductId', { smcProductId: smcProductId }, function (data) {
                     $.each(data, function (i, item) {
                         $("#SMCProductItemId").append('<option value="' + item.smcProductItemId + '">' + item.itemName + '</option>');
                     });
+
+                    var selectedItemId = '@Model.SMCProductItemId';
+                    $("#SMCProductItemId").val(selectedItemId).trigger('change');
                 });
             }
         });
@@ -153,7 +191,6 @@
                 $("#valueSection").show();
                 $("#checkboxSection").hide();
                 $("#dynamicLabel").text("Value");
-                $("#IsCheckedHidden").val("false");
                 $("#statusTick").prop("checked", false);
                 $("#statusCross").prop("checked", false);
             }
@@ -175,7 +212,6 @@
                 $("#checkboxSection").hide();
                 $("#dynamicLabel").text("Input");
                 $("#ConfigValue").val("");
-                $("#IsCheckedHidden").val("false");
                 $("#statusTick").prop("checked", false);
                 $("#statusCross").prop("checked", false);
             }

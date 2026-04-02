@@ -1,5 +1,6 @@
 ﻿@{
     var isLoggedIn = User.Identity != null && User.Identity.IsAuthenticated;
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -16,8 +17,11 @@
                 role="menu"
                 data-accordion="false">
 
+                <!-- Home -->
                 <li class="nav-item">
-                    <a asp-controller="Home" asp-action="Index" class="nav-link">
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="nav-link @(currentController == "Home" ? "active" : "")">
                         <i class="nav-icon fas fa-home"></i>
                         <p>Home</p>
                     </a>
@@ -25,29 +29,41 @@
 
                 @if (isLoggedIn)
                 {
+                    <!-- Employee -->
                     <li class="nav-item">
-                        <a asp-controller="Employee" asp-action="Index" class="nav-link">
+                        <a asp-controller="Employee"
+                           asp-action="Index"
+                           class="nav-link @(currentController == "Employee" ? "active" : "")">
                             <i class="nav-icon fas fa-user-tie"></i>
                             <p>Employee</p>
                         </a>
                     </li>
 
+                    <!-- Category -->
                     <li class="nav-item">
-                        <a asp-controller="Category" asp-action="Index" class="nav-link">
+                        <a asp-controller="Category"
+                           asp-action="Index"
+                           class="nav-link @(currentController == "Category" ? "active" : "")">
                             <i class="nav-icon fas fa-tags"></i>
                             <p>Category</p>
                         </a>
                     </li>
 
+                    <!-- SubCategory -->
                     <li class="nav-item">
-                        <a asp-controller="SubCategory" asp-action="Index" class="nav-link">
+                        <a asp-controller="SubCategory"
+                           asp-action="Index"
+                           class="nav-link @(currentController == "SubCategory" ? "active" : "")">
                             <i class="nav-icon fas fa-list"></i>
                             <p>Sub Category</p>
                         </a>
                     </li>
 
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
+                    <!-- Network Setup Parent -->
+                    <li class="nav-item has-treeview @((currentController == "ProductSetup" || currentController == "SMCProduct" || currentController == "SMCProductItem" || currentController == "SMCConfig" || currentController == "Report") ? "menu-open" : "")">
+
+                        <a href="#"
+                           class="nav-link @((currentController == "ProductSetup" || currentController == "SMCProduct" || currentController == "SMCProductItem" || currentController == "SMCConfig" || currentController == "Report") ? "active" : "")">
                             <i class="nav-icon fas fa-network-wired"></i>
                             <p>
                                 Network Setup
@@ -56,43 +72,62 @@
                         </a>
 
                         <ul class="nav nav-treeview">
+
+                            <!-- Product Setup -->
                             <li class="nav-item">
-                                <a asp-controller="ProductSetup" asp-action="Index" class="nav-link">
+                                <a asp-controller="ProductSetup"
+                                   asp-action="Index"
+                                   class="nav-link @(currentController == "ProductSetup" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Product Setup</p>
                                 </a>
                             </li>
 
+                            <!-- SMC Product -->
                             <li class="nav-item">
-                                <a asp-controller="SMCProduct" asp-action="Index" class="nav-link">
+                                <a asp-controller="SMCProduct"
+                                   asp-action="Index"
+                                   class="nav-link @(currentController == "SMCProduct" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>SMC Product</p>
                                 </a>
                             </li>
 
+                            <!-- SMC Product Item -->
                             <li class="nav-item">
-                                <a asp-controller="SMCProductItem" asp-action="Index" class="nav-link">
+                                <a asp-controller="SMCProductItem"
+                                   asp-action="Index"
+                                   class="nav-link @(currentController == "SMCProductItem" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>SMC Product Item</p>
                                 </a>
                             </li>
 
+                            <!-- SMC Config -->
                             <li class="nav-item">
-                                <a asp-controller="SmcConfig" asp-action="Create" class="nav-link">
+                                <a asp-controller="SMCConfig"
+                                   asp-action="Index"
+                                   asp-route-openCreate="true"
+                                   class="nav-link @(currentController == "SMCConfig" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>SMC Config</p>
                                 </a>
                             </li>
 
+                            <!-- Reports -->
                             <li class="nav-item">
-                                <a asp-controller="Report" asp-action="Index" class="nav-link">
+                                <a asp-controller="Report"
+                                   asp-action="Index"
+                                   class="nav-link @(currentController == "Report" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Reports</p>
                                 </a>
                             </li>
+
                         </ul>
                     </li>
                 }
+
             </ul>
         </nav>
     </div>

@@ -15,9 +15,6 @@
             <div class="card-body">
                 <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="SubCategoryId" />
-
-                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Category</label>
                         <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">

@@ -3,6 +3,7 @@ using EmployeeAccessSystem.Repositories;
 using EmployeeAccessSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 namespace EmployeeAccessSystem.Controllers
 {
@@ -31,18 +32,59 @@ namespace EmployeeAccessSystem.Controllers
             return View(data);
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(bool modal = false)
         {
-            await LoadProducts();
-            await LoadEntryModes();
+            ViewBag.IsModal = modal;
 
-            ViewBag.SMCProductList = new SelectList(new List<SMCProduct>(), "SMCProductId", "SMCProductName");
-            ViewBag.SMCProductItemList = new SelectList(new List<SMCProductItem>(), "SMCProductItemId", "ItemName");
+            var products = await _productRepo.GetAllAsync();
+            int selectedProductId = 0;
+            int selectedSMCProductId = 0;
+            int selectedSMCProductItemId = 0;
+
+            if (products != null && products.Any())
+            {
+                selectedProductId = products.First().ProductId;
+            }
+
+            var smcProducts = new List<SMCProduct>();
+            if (selectedProductId > 0)
+            {
+                smcProducts = (await _smcProductRepo.GetByProductIdAsync(selectedProductId)).ToList();
+                if (smcProducts.Any())
+                {
+                    selectedSMCProductId = smcProducts.First().SMCProductId;
+                }
+            }
+
+            var smcProductItems = new List<SMCProductItem>();
+            if (selectedSMCProductId > 0)
+            {
+                smcProductItems = (await _smcProductItemRepo.GetByProductAsync(selectedSMCProductId)).ToList();
+                if (smcProductItems.Any())
+                {
+                    selectedSMCProductItemId = smcProductItems.First().SMCProductItemId;
+                }
+            }
+
+            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName", selectedProductId);
+            ViewBag.SMCProductList = new SelectList(smcProducts, "SMCProductId", "SMCProductName", selectedSMCProductId);
+            ViewBag.SMCProductItemList = new SelectList(smcProductItems, "SMCProductItemId", "ItemName", selectedSMCProductItemId);
+
+            var modes = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Value", Text = "Value" },
+                new SelectListItem { Value = "Checkbox", Text = "Checkbox" }
+            };
+            ViewBag.EntryModeList = new SelectList(modes, "Value", "Text", "Value");
 
             var model = new SMCConfig
             {
+                ProductId = selectedProductId,
+                SMCProductId = selectedSMCProductId,
+                SMCProductItemId = selectedSMCProductItemId,
                 IsActive = true,
-                EntryMode = "Value"
+                EntryMode = "Value",
+                IsChecked = false
             };
 
             return View(model);
@@ -50,18 +92,19 @@ namespace EmployeeAccessSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SMCConfig model)
+        public async Task<IActionResult> Create(SMCConfig model, bool isModal = false)
         {
             try
             {
                 model.EntryDate = DateTime.Now;
+                ViewBag.IsModal = isModal;
 
                 if (!ModelState.IsValid)
                 {
-                    await LoadProducts();
-                    await LoadSMCProducts(model.ProductId);
-                    await LoadSMCProductItems(model.SMCProductId);
-                    await LoadEntryModes();
+                    await LoadProducts(model.ProductId);
+                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
+                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+                    await LoadEntryModes(model.EntryMode);
                     return View(model);
                 }
 
@@ -70,10 +113,10 @@ namespace EmployeeAccessSystem.Controllers
                 if (result <= 0)
                 {
                     ViewBag.Error = "Data could not be saved.";
-                    await LoadProducts();
-                    await LoadSMCProducts(model.ProductId);
-                    await LoadSMCProductItems(model.SMCProductId);
-                    await LoadEntryModes();
+                    await LoadProducts(model.ProductId);
+                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
+                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+                    await LoadEntryModes(model.EntryMode);
                     return View(model);
                 }
 
@@ -83,10 +126,11 @@ namespace EmployeeAccessSystem.Controllers
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
-                await LoadProducts();
-                await LoadSMCProducts(model.ProductId);
-                await LoadSMCProductItems(model.SMCProductId);
-                await LoadEntryModes();
+                ViewBag.IsModal = isModal;
+                await LoadProducts(model.ProductId);
+                await LoadSMCProducts(model.ProductId, model.SMCProductId);
+                await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+                await LoadEntryModes(model.EntryMode);
                 return View(model);
             }
         }
@@ -100,10 +144,10 @@ namespace EmployeeAccessSystem.Controllers
                 return NotFound();
             }
 
-            await LoadProducts();
-            await LoadSMCProducts(data.ProductId);
-            await LoadSMCProductItems(data.SMCProductId);
-            await LoadEntryModes();
+            await LoadProducts(data.ProductId);
+            await LoadSMCProducts(data.ProductId, data.SMCProductId);
+            await LoadSMCProductItems(data.SMCProductId, data.SMCProductItemId);
+            await LoadEntryModes(data.EntryMode);
 
             return View(data);
         }
@@ -116,10 +160,10 @@ namespace EmployeeAccessSystem.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    await LoadProducts();
-                    await LoadSMCProducts(model.ProductId);
-                    await LoadSMCProductItems(model.SMCProductId);
-                    await LoadEntryModes();
+                    await LoadProducts(model.ProductId);
+                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
+                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+                    await LoadEntryModes(model.EntryMode);
                     return View(model);
                 }
 
@@ -128,10 +172,10 @@ namespace EmployeeAccessSystem.Controllers
                 if (result <= 0)
                 {
                     ViewBag.Error = "Data could not be updated.";
-                    await LoadProducts();
-                    await LoadSMCProducts(model.ProductId);
-                    await LoadSMCProductItems(model.SMCProductId);
-                    await LoadEntryModes();
+                    await LoadProducts(model.ProductId);
+                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
+                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+                    await LoadEntryModes(model.EntryMode);
                     return View(model);
                 }
 
@@ -141,10 +185,10 @@ namespace EmployeeAccessSystem.Controllers
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
-                await LoadProducts();
-                await LoadSMCProducts(model.ProductId);
-                await LoadSMCProductItems(model.SMCProductId);
-                await LoadEntryModes();
+                await LoadProducts(model.ProductId);
+                await LoadSMCProducts(model.ProductId, model.SMCProductId);
+                await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+                await LoadEntryModes(model.EntryMode);
                 return View(model);
             }
         }
@@ -193,25 +237,25 @@ namespace EmployeeAccessSystem.Controllers
             return Json(data);
         }
 
-        private async Task LoadProducts()
+        private async Task LoadProducts(int? selectedProductId = null)
         {
             var products = await _productRepo.GetAllAsync();
-            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName");
+            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName", selectedProductId);
         }
 
-        private async Task LoadSMCProducts(int productId)
+        private async Task LoadSMCProducts(int productId, int? selectedSMCProductId = null)
         {
             var data = await _smcProductRepo.GetByProductIdAsync(productId);
-            ViewBag.SMCProductList = new SelectList(data, "SMCProductId", "SMCProductName");
+            ViewBag.SMCProductList = new SelectList(data, "SMCProductId", "SMCProductName", selectedSMCProductId);
         }
 
-        private async Task LoadSMCProductItems(int smcProductId)
+        private async Task LoadSMCProductItems(int smcProductId, int? selectedSMCProductItemId = null)
         {
             var data = await _smcProductItemRepo.GetByProductAsync(smcProductId);
-            ViewBag.SMCProductItemList = new SelectList(data, "SMCProductItemId", "ItemName");
+            ViewBag.SMCProductItemList = new SelectList(data, "SMCProductItemId", "ItemName", selectedSMCProductItemId);
         }
 
-        private Task LoadEntryModes()
+        private Task LoadEntryModes(string selectedEntryMode = null)
         {
             var modes = new List<SelectListItem>
             {
@@ -219,7 +263,7 @@ namespace EmployeeAccessSystem.Controllers
                 new SelectListItem { Value = "Checkbox", Text = "Checkbox" }
             };
 
-            ViewBag.EntryModeList = new SelectList(modes, "Value", "Text");
+            ViewBag.EntryModeList = new SelectList(modes, "Value", "Text", selectedEntryMode);
             return Task.CompletedTask;
         }
     }

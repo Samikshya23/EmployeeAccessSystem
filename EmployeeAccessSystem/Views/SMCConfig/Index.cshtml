@@ -13,7 +13,10 @@
                 <small class="text-muted">View all saved monitoring configuration entries.</small>
             </div>
             <div class="col-sm-6 text-sm-right mt-2 mt-sm-0">
-                <a asp-action="Create" class="btn btn-primary btn-sm">
+                <a asp-action="Create"
+                   asp-route-modal="true"
+                   class="btn btn-primary btn-sm open-modal-btn"
+                   data-title="Add SMC Config">
                     <i class="fas fa-plus mr-1"></i>Add Entry
                 </a>
             </div>
@@ -23,45 +26,28 @@
 
 <section class="content">
     <div class="container-fluid">
-        <div class="card card-primary card-outline">
+        <div class="card">
             <div class="card-header bg-white py-2">
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <h3 class="mb-0">Saved Entries</h3>
                     </div>
                     <div class="col-md-6 text-md-right mt-2 mt-md-0">
-                        <input type="text" id="customSearch" class="form-control d-inline-block" placeholder="Search entries..." style="max-width: 260px;">
+                        <input type="text"
+                               id="customSearch"
+                               class="form-control d-inline-block"
+                               placeholder="Search entries..."
+                               style="max-width: 260px;">
                     </div>
                 </div>
             </div>
 
             <div class="card-body p-2">
-                @if (TempData["Success"] != null)
-                {
-                    <div class="alert alert-success alert-dismissible fade show">
-                        @TempData["Success"]
-                        <button type="button" class="close" data-dismiss="alert">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                }
-
-                @if (TempData["Error"] != null)
-                {
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        @TempData["Error"]
-                        <button type="button" class="close" data-dismiss="alert">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                }
-
                 <div class="table-responsive">
                     <table id="smcConfigTable" class="table table-sm table-bordered table-hover mb-0">
                         <thead>
                             <tr>
                                 <th class="text-center">SN</th>
-                                <th class="text-center">Product</th>
                                 <th class="text-center">SMC Product</th>
                                 <th class="text-center">Item</th>
                                 <th class="text-center">Date</th>
@@ -78,7 +64,6 @@
                                 {
                                     <tr>
                                         <td class="text-center">@sn</td>
-                                        <td>@item.ProductName</td>
                                         <td>@item.SMCProductName</td>
                                         <td>@item.ItemName</td>
                                         <td class="text-center">@item.EntryDate.ToString("yyyy-MM-dd")</td>
@@ -127,16 +112,14 @@
                                             <a asp-action="Edit"
                                                asp-route-id="@item.SMCConfigId"
                                                class="btn btn-sm btn-light border open-modal-btn"
-                                               data-title="Edit SMC Config"
-                                               title="Edit">
+                                               data-title="Edit SMC Config">
                                                 <i class="fas fa-pen"></i>
                                             </a>
 
                                             <a asp-action="Delete"
                                                asp-route-id="@item.SMCConfigId"
                                                class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
-                                               data-title="Delete SMC Config"
-                                               title="Delete">
+                                               data-title="Delete SMC Config">
                                                 <i class="fas fa-trash-alt"></i>
                                             </a>
                                         </td>
@@ -153,12 +136,12 @@
     </div>
 </section>
 
-<div class="modal fade" id="mainActionModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-md">
+<div class="modal fade" id="mainActionModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="mainActionModalTitle">SMC Config</h5>
-                <button type="button" class="close" data-dismiss="modal">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span>&times;</span>
                 </button>
             </div>
@@ -172,11 +155,40 @@
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+<div class="toast-container position-fixed p-3" style="top: 15px; right: 15px; z-index: 9999;">
+    @if (TempData["Success"] != null)
+    {
+        <div class="toast bg-success text-white fade" id="successToast" data-delay="3000">
+            <div class="toast-header bg-success text-white border-0">
+                <strong class="mr-auto">Success</strong>
+                <small>Now</small>
+                <button type="button" class="close text-white" data-dismiss="toast">&times;</button>
+            </div>
+            <div class="toast-body">
+                @TempData["Success"]
+            </div>
+        </div>
+    }
 
+    @if (TempData["Error"] != null)
+    {
+        <div class="toast bg-danger text-white fade" id="errorToast" data-delay="4000">
+            <div class="toast-header bg-danger text-white border-0">
+                <strong class="mr-auto">Error</strong>
+                <small>Now</small>
+                <button type="button" class="close text-white" data-dismiss="toast">&times;</button>
+            </div>
+            <div class="toast-body">
+                @TempData["Error"]
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
     <script>
         $(document).ready(function () {
+
             var table = $('#smcConfigTable').DataTable({
                 paging: true,
                 searching: true,
@@ -186,7 +198,7 @@
                 pageLength: 10,
                 autoWidth: false,
                 columnDefs: [
-                    { orderable: false, targets: 8 }
+                    { orderable: false, targets: 7 }
                 ],
                 dom: 't<"row mt-2"<"col-md-6"><"col-md-6 text-right"p>>'
             });
@@ -195,24 +207,38 @@
                 table.search(this.value).draw();
             });
 
+            function openSmcConfigModal(url, title) {
+                $('#mainActionModalTitle').text(title);
+                $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</div>');
+
+                $('#mainActionModalBody').load(url, function () {
+                    $.validator.unobtrusive.parse('#mainActionModalBody');
+                });
+
+                $('#mainActionModal').modal('show');
+            }
+
             $(document).on('click', '.open-modal-btn', function (e) {
                 e.preventDefault();
 
                 var url = $(this).attr('href');
                 var title = $(this).data('title') || 'SMC Config';
 
-                $('#mainActionModalTitle').text(title);
-                $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</div>');
-
-                $('#mainActionModalBody').load(url, function (response, status) {
-                    if (status === "error") {
-                        $('#mainActionModalBody').html('<div class="alert alert-danger mb-0">Failed to load content.</div>');
-                        return;
-                    }
-
-                    $('#mainActionModal').modal('show');
-                });
+                openSmcConfigModal(url, title);
             });
+
+            var shouldOpenCreate = '@Context.Request.Query["openCreate"]';
+
+            if (shouldOpenCreate === 'true') {
+                openSmcConfigModal('/SMCConfig/Create?modal=true', 'Add SMC Config');
+
+                if (window.history.replaceState) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+
+            $('#successToast').toast('show');
+            $('#errorToast').toast('show');
         });
     </script>
 }

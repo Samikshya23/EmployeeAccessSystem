@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "SMC Product Item";
     int sn = 1;
+    var shownProductIds = new List<int>();
 }
 
 <div class="container-fluid pt-2">
@@ -33,46 +34,108 @@
             </div>
 
             <div class="table-responsive">
-                <table id="smcProductItemTable" class="table table-sm table-bordered table-hover align-middle mb-0">
+                <table id="smcProductItemTable" class="table table-bordered table-hover mb-0">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width:80px;">SN</th>
-                            <th class="text-center">SMC Product</th>
-                            <th class="text-center">Item Name</th>
-                            <th class="text-center" style="width:120px;">Actions</th>
+                            <th class="text-center align-middle" style="width:80px;">SN</th>
+                            <th class="text-center align-middle" style="width:40%;">SMC Product</th>
+                            <th class="text-center align-middle" style="width:30%;">Item Name</th>
+                            <th class="text-center align-middle" style="width:180px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
-                            foreach (var item in Model)
+                            foreach (var product in Model)
                             {
-                                <tr>
-                                    <td class="text-center">@sn</td>
-                                    <td>@item.SMCProductName</td>
-                                    <td>@item.ItemName</td>
-                                    <td class="text-center">
-                                        <a asp-action="Edit"
-                                           asp-controller="SMCProductItem"
-                                           asp-route-id="@item.SMCProductItemId"
-                                           class="btn btn-sm btn-light border open-modal-btn"
-                                           data-title="Edit SMC Product Item"
-                                           title="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </a>
+                                if (!shownProductIds.Contains(product.SMCProductId))
+                                {
+                                    shownProductIds.Add(product.SMCProductId);
 
-                                        <a asp-action="Delete"
-                                           asp-controller="SMCProductItem"
-                                           asp-route-id="@item.SMCProductItemId"
-                                           class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
-                                           data-title="Delete SMC Product Item"
-                                           title="Delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                    var groupItems = new List<EmployeeAccessSystem.Models.SMCProductItem>();
 
-                                sn++;
+                                    foreach (var item in Model)
+                                    {
+                                        if (item.SMCProductId == product.SMCProductId)
+                                        {
+                                            groupItems.Add(item);
+                                        }
+                                    }
+
+                                    string combinedItemNames = "";
+                                    bool firstText = true;
+
+                                    foreach (var groupItem in groupItems)
+                                    {
+                                        if (firstText)
+                                        {
+                                            combinedItemNames = groupItem.ItemName;
+                                            firstText = false;
+                                        }
+                                        else
+                                        {
+                                            combinedItemNames = combinedItemNames + " " + groupItem.ItemName;
+                                        }
+                                    }
+
+                                    <tr>
+                                        <td class="text-center align-middle font-weight-bold">
+                                            @sn
+                                        </td>
+
+                                        <td class="align-middle">
+                                            @product.SMCProductName
+                                        </td>
+
+                                        <td class="p-0 align-middle" data-order="@combinedItemNames">
+                                            <table class="table table-bordered mb-0">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td class="border-left-0 border-right-0 @(i == groupItems.Count - 1 ? "border-bottom-0" : "")">
+                                                                @groupItems[i].ItemName
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+
+                                        <td class="p-0 align-middle">
+                                            <table class="table table-bordered mb-0">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-center border-left-0 border-right-0 @(i == groupItems.Count - 1 ? "border-bottom-0" : "")">
+                                                                <a asp-action="Edit"
+                                                                   asp-controller="SMCProductItem"
+                                                                   asp-route-id="@groupItems[i].SMCProductItemId"
+                                                                   class="btn btn-sm btn-light border open-modal-btn"
+                                                                   data-title="Edit SMC Product Item"
+                                                                   title="Edit">
+                                                                    <i class="fas fa-pen"></i>
+                                                                </a>
+
+                                                                <a asp-action="Delete"
+                                                                   asp-controller="SMCProductItem"
+                                                                   asp-route-id="@groupItems[i].SMCProductItemId"
+                                                                   class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
+                                                                   data-title="Delete SMC Product Item"
+                                                                   title="Delete">
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                    sn++;
+                                }
                             }
                         }
                         else
@@ -155,6 +218,9 @@
                 pageLength: 10,
                 autoWidth: false,
                 columnDefs: [
+                    { orderable: true, targets: 0 },
+                    { orderable: true, targets: 1 },
+                    { orderable: true, targets: 2 },
                     { orderable: false, targets: 3 }
                 ],
                 dom: 't<"row mt-2"<"col-md-6"><"col-md-6 text-right"p>>'

@@ -7,9 +7,6 @@
 <form asp-action="Edit" method="post" id="editSMCProductForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="SMCProductId" />
-
-    <div asp-validation-summary="All" class="text-danger small mb-3"></div>
-
     @if (ViewBag.Error != null)
     {
         <div class="alert alert-danger">@ViewBag.Error</div>

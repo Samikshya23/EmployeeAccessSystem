@@ -1,8 +1,30 @@
 ﻿@model EmployeeAccessSystem.Models.ReportPageViewModel
-@using System.Linq
 
 @{
     ViewData["Title"] = "Reports";
+    var todayDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+    var uniqueRows = new List<EmployeeAccessSystem.Models.ReportModel>();
+
+    for (int i = 0; i < Model.ReportData.Count; i++)
+    {
+        bool alreadyExists = false;
+
+        for (int j = 0; j < uniqueRows.Count; j++)
+        {
+            if (uniqueRows[j].MonitoringTypeName == Model.ReportData[i].MonitoringTypeName &&
+                uniqueRows[j].ItemName == Model.ReportData[i].ItemName)
+            {
+                alreadyExists = true;
+                break;
+            }
+        }
+
+        if (!alreadyExists)
+        {
+            uniqueRows.Add(Model.ReportData[i]);
+        }
+    }
 }
 
 <section class="content-header">
@@ -29,51 +51,68 @@
         <div class="card">
             <div class="card-body">
                 <form asp-controller="Report" asp-action="Index" method="get">
-                    <div class="form-row align-items-end">
-                        <div class="form-group col-md-4">
-                            <label for="selectedProductId">Product</label>
-                            <select id="selectedProductId" name="selectedProductId" class="form-control">
-                                <option value="">-- Select Product --</option>
-                                @if (Model.ProductList != null && Model.ProductList.Count > 0)
-                                {
-                                    foreach (var product in Model.ProductList)
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="selectedProductId">Product</label>
+                                <select id="selectedProductId"
+                                        name="selectedProductId"
+                                        class="form-control select2bs4"
+                                        data-placeholder="Select Product">
+                                    <option value=""></option>
+                                    @for (int i = 0; i < Model.ProductList.Count; i++)
                                     {
-                                        if (Model.SelectedProductId == product.ProductId)
+                                        if (Model.SelectedProductId.HasValue && Model.SelectedProductId.Value == Model.ProductList[i].ProductId)
                                         {
-                                            <option value="@product.ProductId" selected>@product.ProductName</option>
+                                            <option value="@Model.ProductList[i].ProductId" selected="selected">
+                                                @Model.ProductList[i].ProductName
+                                            </option>
                                         }
                                         else
                                         {
-                                            <option value="@product.ProductId">@product.ProductName</option>
+                                            <option value="@Model.ProductList[i].ProductId">
+                                                @Model.ProductList[i].ProductName
+                                            </option>
                                         }
                                     }
-                                }
-                            </select>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="form-group col-md-3">
-                            <label for="fromDate">From Date</label>
-                            <input type="date"
-                                   id="fromDate"
-                                   name="fromDate"
-                                   class="form-control"
-                                   value="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")" />
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="fromDate">From Date</label>
+                                <input type="date"
+                                       id="fromDate"
+                                       name="fromDate"
+                                       class="form-control"
+                                       max="@todayDate"
+                                       value="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")" />
+                            </div>
                         </div>
 
-                        <div class="form-group col-md-3">
-                            <label for="toDate">To Date</label>
-                            <input type="date"
-                                   id="toDate"
-                                   name="toDate"
-                                   class="form-control"
-                                   value="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")" />
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="toDate">To Date</label>
+                                <input type="date"
+                                       id="toDate"
+                                       name="toDate"
+                                       class="form-control"
+                                       max="@todayDate"
+                                       value="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")" />
+                            </div>
                         </div>
 
-                        <div class="form-group col-md-2">
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-chart-bar mr-1"></i> Generate
-                            </button>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fas fa-chart-bar mr-1"></i> Generate
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </form>
             </div>
@@ -82,14 +121,12 @@
         @if (!Model.SelectedProductId.HasValue)
         {
             <div class="alert alert-info">
-                <i class="fas fa-info-circle mr-1"></i>
                 Please select a product to generate report.
             </div>
         }
         else if (!Model.HasData || Model.ReportData == null || Model.ReportData.Count == 0)
         {
             <div class="alert alert-warning">
-                <i class="fas fa-exclamation-circle mr-1"></i>
                 No report data found for the selected criteria.
             </div>
         }
@@ -100,93 +137,116 @@
                     <h3 class="card-title">@Model.ReportTitle</h3>
                 </div>
 
-                <div class="card-body">
-                    <p class="text-muted mb-3">
+                <div class="card-body p-0">
+                    <div class="px-3 pt-3 pb-2 text-muted">
                         Monitoring status from
-                        <strong>@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("dd MMM yyyy") : "")</strong>
+                        <strong>@Model.FromDate?.ToString("dd MMM yyyy")</strong>
                         to
-                        <strong>@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("dd MMM yyyy") : "")</strong>
-                    </p>
+                        <strong>@Model.ToDate?.ToString("dd MMM yyyy")</strong>
+                    </div>
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover mb-0">
-                            <thead>
+                            <thead class="thead-light">
                                 <tr>
-                                    <th class="align-middle">Monitoring Type</th>
-                                    <th class="align-middle">Item</th>
-                                    @foreach (var date in Model.Dates)
+                                    <th>Monitoring Type</th>
+                                    <th>Item</th>
+                                    @for (int d = 0; d < Model.Dates.Count; d++)
                                     {
-                                        <th class="text-center align-middle">
-                                            <div>@date.ToString("dd MMM")</div>
-                                            <small class="text-muted">@date.ToString("ddd")</small>
+                                        <th class="text-center">
+                                            <div>@Model.Dates[d].ToString("dd MMM")</div>
+                                            <small class="text-muted">@Model.Dates[d].ToString("ddd")</small>
                                         </th>
                                     }
                                 </tr>
                             </thead>
                             <tbody>
-                                @{
-                                    var groupedData = Model.ReportData
-                                    .GroupBy(x => x.MonitoringTypeName)
-                                    .ToList();
-                                }
-
-                                @foreach (var group in groupedData)
+                                @for (int i = 0; i < uniqueRows.Count; i++)
                                 {
-                                    var items = group
-                                    .GroupBy(x => x.ItemName)
-                                    .ToList();
+                                    var currentRow = uniqueRows[i];
+                                    bool showMonitoringType = true;
 
-                                    var firstRow = true;
-
-                                    foreach (var itemGroup in items)
+                                    for (int p = 0; p < i; p++)
                                     {
-                                        <tr>
-                                            @if (firstRow)
-                                            {
-                                                <td class="align-middle bg-light" rowspan="@items.Count">
-                                                    @group.Key
-                                                </td>
-                                                firstRow = false;
-                                            }
+                                        if (uniqueRows[p].MonitoringTypeName == currentRow.MonitoringTypeName)
+                                        {
+                                            showMonitoringType = false;
+                                            break;
+                                        }
+                                    }
 
-                                            <td class="align-middle">
-                                                @itemGroup.Key
+                                    int rowCount = 0;
+
+                                    for (int c = 0; c < uniqueRows.Count; c++)
+                                    {
+                                        if (uniqueRows[c].MonitoringTypeName == currentRow.MonitoringTypeName)
+                                        {
+                                            rowCount++;
+                                        }
+                                    }
+
+                                    <tr>
+                                        @if (showMonitoringType)
+                                        {
+                                            <td rowspan="@rowCount" class="align-middle bg-light">
+                                                @currentRow.MonitoringTypeName
                                             </td>
+                                        }
 
-                                            @foreach (var date in Model.Dates)
-                                            {
-                                                var cell = itemGroup.FirstOrDefault(x => x.EntryDate.Date == date.Date);
+                                        <td class="align-middle">
+                                            @currentRow.ItemName
+                                        </td>
 
-                                                <td class="text-center align-middle">
-                                                    @if (cell == null)
+                                        @for (int d = 0; d < Model.Dates.Count; d++)
+                                        {
+                                            bool found = false;
+
+                                            <td class="text-center align-middle">
+                                                @for (int r = 0; r < Model.ReportData.Count; r++)
+                                                {
+                                                    if (Model.ReportData[r].MonitoringTypeName == currentRow.MonitoringTypeName &&
+                                                    Model.ReportData[r].ItemName == currentRow.ItemName &&
+                                                    Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
                                                     {
-                                                        <span class="text-muted">-</span>
-                                                    }
-                                                    else if (cell.EntryMode == "Checkbox")
-                                                    {
-                                                        if (cell.IsChecked)
+                                                        found = true;
+
+                                                        if (Model.ReportData[r].EntryMode == "Checkbox")
                                                         {
-                                                            <span class="badge badge-success">
-                                                                <i class="fas fa-check"></i>
+                                                            if (Model.ReportData[r].IsChecked)
+                                                            {
+                                                                <span class="badge badge-success">
+                                                                    <i class="fas fa-check"></i>
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-muted">-</span>
+                                                            }
+                                                        }
+                                                        else if (Model.ReportData[r].EntryMode == "Percentage")
+                                                        {
+                                                            <span class="badge badge-primary">
+                                                                @Model.ReportData[r].ConfigValue
                                                             </span>
                                                         }
                                                         else
                                                         {
-                                                            <span class="text-muted">-</span>
+                                                            <span class="badge badge-secondary">
+                                                                @Model.ReportData[r].ConfigValue
+                                                            </span>
                                                         }
+
+                                                        break;
                                                     }
-                                                    else if (cell.EntryMode == "Percentage")
-                                                    {
-                                                        <span class="badge badge-primary">@cell.ConfigValue</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge badge-secondary">@cell.ConfigValue</span>
-                                                    }
-                                                </td>
-                                            }
-                                        </tr>
-                                    }
+                                                }
+
+                                                @if (!found)
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
                                 }
                             </tbody>
                         </table>
@@ -199,31 +259,37 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
+        $(function () {
+            $('#selectedProductId').select2({
+                theme: 'bootstrap4',
+                placeholder: 'Select Product',
+                allowClear: true,
+                minimumResultsForSearch: 0,
+                width: '100%'
+            });
 
-            $('#fromDate').removeAttr('max');
-            $('#toDate').removeAttr('max');
+            var today = '@todayDate';
 
-            function applyToDateMin() {
-                var fromDateValue = $('#fromDate').val();
+            $('#fromDate').attr('max', today);
+            $('#toDate').attr('max', today);
 
-                if (fromDateValue) {
-                    $('#toDate').attr('min', fromDateValue);
+            if ($('#fromDate').val() !== '') {
+                $('#toDate').attr('min', $('#fromDate').val());
+            }
+
+            $('#fromDate').on('change', function () {
+                var fromDate = $(this).val();
+
+                if (fromDate !== '') {
+                    $('#toDate').attr('min', fromDate);
                 } else {
                     $('#toDate').removeAttr('min');
                 }
-            }
 
-            applyToDateMin();
+                var toDate = $('#toDate').val();
 
-            $('#fromDate').on('change', function () {
-                applyToDateMin();
-
-                var fromDateValue = $('#fromDate').val();
-                var toDateValue = $('#toDate').val();
-
-                if (fromDateValue && toDateValue && toDateValue < fromDateValue) {
-                    $('#toDate').val(fromDateValue);
+                if (toDate !== '' && fromDate !== '' && toDate < fromDate) {
+                    $('#toDate').val(fromDate);
                 }
             });
         });
