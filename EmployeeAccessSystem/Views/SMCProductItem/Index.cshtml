@@ -38,9 +38,9 @@
                     <thead>
                         <tr>
                             <th class="text-center align-middle" style="width:80px;">SN</th>
-                            <th class="text-center align-middle" style="width:40%;">SMC Product</th>
-                            <th class="text-center align-middle" style="width:30%;">Item Name</th>
-                            <th class="text-center align-middle" style="width:180px;">Actions</th>
+                            <th class="text-center align-middle" style="width:36%;">SMC Product</th>
+                            <th class="text-center align-middle" style="width:34%;">Item Name</th>
+                            <th class="text-center align-middle" style="width:170px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,21 +79,21 @@
                                     }
 
                                     <tr>
-                                        <td class="text-center align-middle font-weight-bold">
+                                        <td class="text-center align-top pt-3">
                                             @sn
                                         </td>
 
-                                        <td class="align-middle">
+                                        <td class="align-top pt-3">
                                             @product.SMCProductName
                                         </td>
 
-                                        <td class="p-0 align-middle" data-order="@combinedItemNames">
-                                            <table class="table table-bordered mb-0">
+                                        <td class="p-0 align-top" data-order="@combinedItemNames">
+                                            <table class="table table-sm mb-0">
                                                 <tbody>
                                                     @for (int i = 0; i < groupItems.Count; i++)
                                                     {
                                                         <tr>
-                                                            <td class="border-left-0 border-right-0 @(i == groupItems.Count - 1 ? "border-bottom-0" : "")">
+                                                            <td class="py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
                                                                 @groupItems[i].ItemName
                                                             </td>
                                                         </tr>
@@ -102,13 +102,13 @@
                                             </table>
                                         </td>
 
-                                        <td class="p-0 align-middle">
-                                            <table class="table table-bordered mb-0">
+                                        <td class="p-0 align-top">
+                                            <table class="table table-sm mb-0">
                                                 <tbody>
                                                     @for (int i = 0; i < groupItems.Count; i++)
                                                     {
                                                         <tr>
-                                                            <td class="text-center border-left-0 border-right-0 @(i == groupItems.Count - 1 ? "border-bottom-0" : "")">
+                                                            <td class="text-center py-0 px-1 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
                                                                 <a asp-action="Edit"
                                                                    asp-controller="SMCProductItem"
                                                                    asp-route-id="@groupItems[i].SMCProductItemId"
@@ -245,6 +245,7 @@
                         return;
                     }
 
+                    $.validator.unobtrusive.parse('#mainActionModalBody');
                     $('#mainActionModal').modal('show');
                 });
             });
