@@ -17,7 +17,6 @@
                 role="menu"
                 data-accordion="false">
 
-                <!-- Home -->
                 <li class="nav-item">
                     <a asp-controller="Home"
                        asp-action="Index"
@@ -29,7 +28,6 @@
 
                 @if (isLoggedIn)
                 {
-                    <!-- Employee -->
                     <li class="nav-item">
                         <a asp-controller="Employee"
                            asp-action="Index"
@@ -39,7 +37,6 @@
                         </a>
                     </li>
 
-                    <!-- Category -->
                     <li class="nav-item">
                         <a asp-controller="Category"
                            asp-action="Index"
@@ -49,7 +46,6 @@
                         </a>
                     </li>
 
-                    <!-- SubCategory -->
                     <li class="nav-item">
                         <a asp-controller="SubCategory"
                            asp-action="Index"
@@ -59,9 +55,7 @@
                         </a>
                     </li>
 
-                    <!-- Network Setup Parent -->
                     <li class="nav-item has-treeview @((currentController == "ProductSetup" || currentController == "SMCProduct" || currentController == "SMCProductItem" || currentController == "SMCConfig" || currentController == "Report") ? "menu-open" : "")">
-
                         <a href="#"
                            class="nav-link @((currentController == "ProductSetup" || currentController == "SMCProduct" || currentController == "SMCProductItem" || currentController == "SMCConfig" || currentController == "Report") ? "active" : "")">
                             <i class="nav-icon fas fa-network-wired"></i>
@@ -72,8 +66,6 @@
                         </a>
 
                         <ul class="nav nav-treeview">
-
-                            <!-- Product Setup -->
                             <li class="nav-item">
                                 <a asp-controller="ProductSetup"
                                    asp-action="Index"
@@ -83,7 +75,6 @@
                                 </a>
                             </li>
 
-                            <!-- SMC Product -->
                             <li class="nav-item">
                                 <a asp-controller="SMCProduct"
                                    asp-action="Index"
@@ -93,7 +84,6 @@
                                 </a>
                             </li>
 
-                            <!-- SMC Product Item -->
                             <li class="nav-item">
                                 <a asp-controller="SMCProductItem"
                                    asp-action="Index"
@@ -103,18 +93,15 @@
                                 </a>
                             </li>
 
-                            <!-- SMC Config -->
                             <li class="nav-item">
                                 <a asp-controller="SMCConfig"
                                    asp-action="Index"
-                                   asp-route-openCreate="true"
                                    class="nav-link @(currentController == "SMCConfig" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>SMC Config</p>
                                 </a>
                             </li>
 
-                            <!-- Reports -->
                             <li class="nav-item">
                                 <a asp-controller="Report"
                                    asp-action="Index"
@@ -123,7 +110,6 @@
                                     <p>Reports</p>
                                 </a>
                             </li>
-
                         </ul>
                     </li>
                 }

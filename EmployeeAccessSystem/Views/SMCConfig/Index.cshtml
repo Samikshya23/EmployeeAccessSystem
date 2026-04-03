@@ -6,258 +6,247 @@
     var shownProductNames = new List<string>();
 }
 
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>SMC Config List</h1>
-                <small class="text-muted">View all saved monitoring configuration entries.</small>
+<div class="card shadow-sm mb-0 h-100">
+    <div class="card-header bg-white py-2">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3 class="mb-0">SMC Config List</h3>
+                <small class="text-muted d-block">View all saved monitoring configuration entries.</small>
             </div>
-            <div class="col-sm-6 text-sm-right mt-2 mt-sm-0">
+            <div class="col-md-6 text-md-right mt-2 mt-md-0">
                 <a asp-action="Create"
                    asp-route-modal="true"
-                   class="btn btn-primary btn-sm open-modal-btn"
+                   class="btn btn-primary rounded-pill open-modal-btn"
                    data-title="Add SMC Config">
-                    <i class="fas fa-plus mr-1"></i>Add Entry
+                    <i class="fas fa-plus mr-1"></i> Add
                 </a>
             </div>
         </div>
     </div>
-</section>
 
-<section class="content">
-    <div class="container-fluid">
-        <div class="card">
-            <div class="card-header bg-white py-2">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h3 class="mb-0">Saved Entries</h3>
-                    </div>
-                    <div class="col-md-6 text-md-right mt-2 mt-md-0">
-                        <input type="text"
-                               id="customSearch"
-                               class="form-control d-inline-block"
-                               placeholder="Search entries..."
-                               style="max-width: 260px;">
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-body p-2">
-                <div class="table-responsive">
-                    <table id="smcConfigTable" class="table table-sm table-bordered table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 70px;">SN</th>
-                                <th class="text-center" style="width: 24%;">SMC Product</th>
-                                <th class="text-center" style="width: 16%;">Item</th>
-                                <th class="text-center" style="width: 14%;">Date</th>
-                                <th class="text-center" style="width: 10%;">Value</th>
-                                <th class="text-center" style="width: 10%;">Check</th>
-                                <th class="text-center" style="width: 10%;">Status</th>
-                                <th class="text-center" style="width: 120px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model != null && Model.Any())
-                            {
-                                foreach (var product in Model)
-                                {
-                                    if (!shownProductNames.Contains(product.SMCProductName))
-                                    {
-                                        shownProductNames.Add(product.SMCProductName);
-
-                                        var groupItems = new List<EmployeeAccessSystem.Models.SMCConfig>();
-
-                                        foreach (var item in Model)
-                                        {
-                                            if (item.SMCProductName == product.SMCProductName)
-                                            {
-                                                groupItems.Add(item);
-                                            }
-                                        }
-
-                                        string combinedSearchText = "";
-                                        bool firstText = true;
-
-                                        foreach (var groupItem in groupItems)
-                                        {
-                                            string rowText =
-                                                groupItem.SMCProductName + " " +
-                                                groupItem.ItemName + " " +
-                                                groupItem.EntryDate.ToString("yyyy-MM-dd") + " " +
-                                                (string.IsNullOrWhiteSpace(groupItem.ConfigValue) ? "-" : groupItem.ConfigValue) + " " +
-                                                (groupItem.EntryMode == "Checkbox" ? (groupItem.IsChecked ? "Checked" : "Unchecked") : "-") + " " +
-                                                (groupItem.IsActive ? "Active" : "Inactive");
-
-                                            if (firstText)
-                                            {
-                                                combinedSearchText = rowText;
-                                                firstText = false;
-                                            }
-                                            else
-                                            {
-                                                combinedSearchText = combinedSearchText + " " + rowText;
-                                            }
-                                        }
-
-                                        <tr data-search="@combinedSearchText">
-                                            <td class="text-center align-top pt-3">
-                                                @sn
-                                            </td>
-
-                                            <td class="align-top pt-3">
-                                                @product.SMCProductName
-                                            </td>
-
-                                            <td class="p-0 align-top">
-                                                <table class="table table-sm mb-0">
-                                                    <tbody>
-                                                        @for (int i = 0; i < groupItems.Count; i++)
-                                                        {
-                                                            <tr>
-                                                                <td class="py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                    @groupItems[i].ItemName
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-
-                                            <td class="p-0 align-top">
-                                                <table class="table table-sm mb-0">
-                                                    <tbody>
-                                                        @for (int i = 0; i < groupItems.Count; i++)
-                                                        {
-                                                            <tr>
-                                                                <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                    @groupItems[i].EntryDate.ToString("yyyy-MM-dd")
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-
-                                            <td class="p-0 align-top">
-                                                <table class="table table-sm mb-0">
-                                                    <tbody>
-                                                        @for (int i = 0; i < groupItems.Count; i++)
-                                                        {
-                                                            <tr>
-                                                                <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                    @if (!string.IsNullOrWhiteSpace(groupItems[i].ConfigValue))
-                                                                    {
-                                                                        @groupItems[i].ConfigValue
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <span>-</span>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-
-                                            <td class="p-0 align-top">
-                                                <table class="table table-sm mb-0">
-                                                    <tbody>
-                                                        @for (int i = 0; i < groupItems.Count; i++)
-                                                        {
-                                                            <tr>
-                                                                <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                    @if (groupItems[i].EntryMode == "Checkbox")
-                                                                    {
-                                                                        if (groupItems[i].IsChecked)
-                                                                        {
-                                                                            <i class="fas fa-check text-success"></i>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <i class="fas fa-times text-danger"></i>
-                                                                        }
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <span>-</span>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-
-                                            <td class="p-0 align-top">
-                                                <table class="table table-sm mb-0">
-                                                    <tbody>
-                                                        @for (int i = 0; i < groupItems.Count; i++)
-                                                        {
-                                                            <tr>
-                                                                <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                    @if (groupItems[i].IsActive)
-                                                                    {
-                                                                        <span class="badge badge-success">Active</span>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <span class="badge badge-secondary">Inactive</span>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-
-                                            <td class="p-0 align-top">
-                                                <table class="table table-sm mb-0">
-                                                    <tbody>
-                                                        @for (int i = 0; i < groupItems.Count; i++)
-                                                        {
-                                                            <tr>
-                                                                <td class="text-center py-0 px-1 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                    <a asp-action="Edit"
-                                                                       asp-route-id="@groupItems[i].SMCConfigId"
-                                                                       class="btn btn-sm btn-light border open-modal-btn"
-                                                                       data-title="Edit SMC Config">
-                                                                        <i class="fas fa-pen"></i>
-                                                                    </a>
-
-                                                                    <a asp-action="Delete"
-                                                                       asp-route-id="@groupItems[i].SMCConfigId"
-                                                                       class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
-                                                                       data-title="Delete SMC Config">
-                                                                        <i class="fas fa-trash-alt"></i>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-
-                                        sn++;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="8" class="text-center">No SMC Config entries found.</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+    <div class="card-body p-2">
+        <div class="row mb-2">
+            <div class="col-md-8"></div>
+            <div class="col-md-4">
+                <input type="text"
+                       id="customSearch"
+                       class="form-control"
+                       placeholder="Search entries..." />
             </div>
         </div>
+
+        <div class="table-responsive">
+            <table id="smcConfigTable" class="table table-sm table-bordered table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 70px;">SN</th>
+                        <th class="text-center" style="width: 24%;">SMC Product</th>
+                        <th class="text-center" style="width: 16%;">Item</th>
+                        <th class="text-center" style="width: 14%;">Date</th>
+                        <th class="text-center" style="width: 10%;">Value</th>
+                        <th class="text-center" style="width: 10%;">Check</th>
+                        <th class="text-center" style="width: 10%;">Status</th>
+                        <th class="text-center" style="width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var product in Model)
+                        {
+                            if (!shownProductNames.Contains(product.SMCProductName))
+                            {
+                                shownProductNames.Add(product.SMCProductName);
+
+                                var groupItems = new List<EmployeeAccessSystem.Models.SMCConfig>();
+
+                                foreach (var item in Model)
+                                {
+                                    if (item.SMCProductName == product.SMCProductName)
+                                    {
+                                        groupItems.Add(item);
+                                    }
+                                }
+
+                                string combinedSearchText = "";
+                                bool firstText = true;
+
+                                foreach (var groupItem in groupItems)
+                                {
+                                    string rowText =
+                                        groupItem.SMCProductName + " " +
+                                        groupItem.ItemName + " " +
+                                        groupItem.EntryDate.ToString("yyyy-MM-dd") + " " +
+                                        (string.IsNullOrWhiteSpace(groupItem.ConfigValue) ? "-" : groupItem.ConfigValue) + " " +
+                                        (groupItem.EntryMode == "Checkbox" ? (groupItem.IsChecked ? "Checked" : "Unchecked") : "-") + " " +
+                                        (groupItem.IsActive ? "Active" : "Inactive");
+
+                                    if (firstText)
+                                    {
+                                        combinedSearchText = rowText;
+                                        firstText = false;
+                                    }
+                                    else
+                                    {
+                                        combinedSearchText = combinedSearchText + " " + rowText;
+                                    }
+                                }
+
+                                <tr data-search="@combinedSearchText">
+                                    <td class="text-center align-top pt-3">
+                                        @sn
+                                    </td>
+
+                                    <td class="align-top pt-3">
+                                        @product.SMCProductName
+                                    </td>
+
+                                    <td class="p-0 align-top">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            @groupItems[i].ItemName
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                    <td class="p-0 align-top">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            @groupItems[i].EntryDate.ToString("yyyy-MM-dd")
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                    <td class="p-0 align-top">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            @if (!string.IsNullOrWhiteSpace(groupItems[i].ConfigValue))
+                                                            {
+                                                                @groupItems[i].ConfigValue
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>-</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                    <td class="p-0 align-top">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            @if (groupItems[i].EntryMode == "Checkbox")
+                                                            {
+                                                                if (groupItems[i].IsChecked)
+                                                                {
+                                                                    <i class="fas fa-check text-success"></i>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <i class="fas fa-times text-danger"></i>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>-</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                    <td class="p-0 align-top">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            @if (groupItems[i].IsActive)
+                                                            {
+                                                                <span class="badge badge-success">Active</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge badge-secondary">Inactive</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                    <td class="p-0 align-top">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center py-0 px-1 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            <a asp-action="Edit"
+                                                               asp-route-id="@groupItems[i].SMCConfigId"
+                                                               class="btn btn-sm btn-light border open-modal-btn"
+                                                               data-title="Edit SMC Config">
+                                                                <i class="fas fa-pen"></i>
+                                                            </a>
+
+                                                            <a asp-action="Delete"
+                                                               asp-route-id="@groupItems[i].SMCConfigId"
+                                                               class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
+                                                               data-title="Delete SMC Config">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                sn++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center">No SMC Config entries found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-</section>
+</div>
 
 <div class="modal fade" id="mainActionModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered" role="document">

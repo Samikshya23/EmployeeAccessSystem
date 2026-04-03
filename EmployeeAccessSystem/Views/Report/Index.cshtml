@@ -27,39 +27,28 @@
     }
 }
 
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Reports</h1>
-            </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item">
-                        <a asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="breadcrumb-item active">Reports</li>
-                </ol>
+<div class="card shadow-sm mb-0 h-100">
+    <div class="card-header bg-white py-2">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3 class="mb-0">Reports</h3>
             </div>
         </div>
     </div>
-</section>
 
-<section class="content">
-    <div class="container-fluid">
+    <div class="card-body p-2">
 
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-body">
                 <form asp-controller="Report" asp-action="Index" method="get">
                     <div class="row">
 
                         <div class="col-md-4">
-                            <div class="form-group">
+                            <div class="form-group mb-2">
                                 <label for="selectedProductId">Product</label>
                                 <select id="selectedProductId"
                                         name="selectedProductId"
-                                        class="form-control select2bs4"
-                                        data-placeholder="Select Product">
+                                        class="form-control select2bs4">
                                     <option value=""></option>
                                     @for (int i = 0; i < Model.ProductList.Count; i++)
                                     {
@@ -81,7 +70,7 @@
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="form-group mb-2">
                                 <label for="fromDate">From Date</label>
                                 <input type="date"
                                        id="fromDate"
@@ -93,7 +82,7 @@
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="form-group mb-2">
                                 <label for="toDate">To Date</label>
                                 <input type="date"
                                        id="toDate"
@@ -105,7 +94,7 @@
                         </div>
 
                         <div class="col-md-2">
-                            <div class="form-group">
+                            <div class="form-group mb-2">
                                 <label>&nbsp;</label>
                                 <button type="submit" class="btn btn-primary btn-block">
                                     <i class="fas fa-chart-bar mr-1"></i> Generate
@@ -120,21 +109,21 @@
 
         @if (!Model.SelectedProductId.HasValue)
         {
-            <div class="alert alert-info">
+            <div class="alert alert-info mb-0">
                 Please select a product to generate report.
             </div>
         }
         else if (!Model.HasData || Model.ReportData == null || Model.ReportData.Count == 0)
         {
-            <div class="alert alert-warning">
+            <div class="alert alert-warning mb-0">
                 No report data found for the selected criteria.
             </div>
         }
         else
         {
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">@Model.ReportTitle</h3>
+            <div class="card mb-0">
+                <div class="card-header py-2">
+                    <h3 class="card-title mb-0">@Model.ReportTitle</h3>
                 </div>
 
                 <div class="card-body p-0">
@@ -255,15 +244,17 @@
             </div>
         }
     </div>
-</section>
+</div>
 
 @section Scripts {
     <script>
         $(function () {
+            if ($('#selectedProductId').hasClass('select2-hidden-accessible')) {
+                $('#selectedProductId').select2('destroy');
+            }
+
             $('#selectedProductId').select2({
                 theme: 'bootstrap4',
-                placeholder: 'Select Product',
-                allowClear: true,
                 minimumResultsForSearch: 0,
                 width: '100%'
             });

@@ -5,84 +5,81 @@
     int sn = 1;
 }
 
-<div class="container-fluid pt-2">
-    <div class="card shadow-sm">
+<div class="card shadow-sm mb-0 h-100">
+    <div class="card-header bg-white py-2">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3 class="mb-0">SMC Product</h3>
+            </div>
 
-        <div class="card-header bg-white py-2">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h3 class="mb-0">SMC Product</h3>
-                </div>
+            <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                <a asp-action="Create"
+                   asp-controller="SMCProduct"
+                   class="btn btn-primary rounded-pill open-modal-btn"
+                   data-title="Add SMC Product">
+                    <i class="fas fa-plus mr-1"></i> Add
+                </a>
+            </div>
+        </div>
+    </div>
 
-                <div class="col-md-6 text-md-right mt-2 mt-md-0">
-                    <a asp-action="Create"
-                       asp-controller="SMCProduct"
-                       class="btn btn-primary rounded-pill open-modal-btn"
-                       data-title="Add SMC Product">
-                        <i class="fas fa-plus mr-1"></i> Add
-                    </a>
-                </div>
+    <div class="card-body p-2">
+        <div class="row mb-2">
+            <div class="col-md-8"></div>
+            <div class="col-md-4">
+                <input type="text" id="customSearch" class="form-control" placeholder="Search SMC products..." />
             </div>
         </div>
 
-        <div class="card-body p-2">
-            <div class="row mb-2">
-                <div class="col-md-8"></div>
-                <div class="col-md-4">
-                    <input type="text" id="customSearch" class="form-control" placeholder="Search SMC products..." />
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table id="smcProductTable" class="table table-sm table-bordered table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-center">SN</th>
-                            <th class="text-center">SMC Product Name</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td class="text-center">@sn</td>
-                                    <td>@item.SMCProductName</td>
-                                    <td class="text-center">
-                                        <a asp-action="Edit"
-                                           asp-controller="SMCProduct"
-                                           asp-route-id="@item.SMCProductId"
-                                           class="btn btn-sm btn-light border open-modal-btn"
-                                           data-title="Edit SMC Product"
-                                           title="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </a>
-
-                                        <a asp-action="Delete"
-                                           asp-controller="SMCProduct"
-                                           asp-route-id="@item.SMCProductId"
-                                           class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
-                                           data-title="Delete SMC Product"
-                                           title="Delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                sn++;
-                            }
-                        }
-                        else
+        <div class="table-responsive">
+            <table id="smcProductTable" class="table table-sm table-bordered table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center">SN</th>
+                        <th class="text-center">SMC Product Name</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
                         {
                             <tr>
-                                <td colspan="3" class="text-center">No SMC Products found.</td>
+                                <td class="text-center">@sn</td>
+                                <td>@item.SMCProductName</td>
+                                <td class="text-center">
+                                    <a asp-action="Edit"
+                                       asp-controller="SMCProduct"
+                                       asp-route-id="@item.SMCProductId"
+                                       class="btn btn-sm btn-light border open-modal-btn"
+                                       data-title="Edit SMC Product"
+                                       title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-controller="SMCProduct"
+                                       asp-route-id="@item.SMCProductId"
+                                       class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
+                                       data-title="Delete SMC Product"
+                                       title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
                             </tr>
+
+                            sn++;
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center">No SMC Products found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -174,7 +171,7 @@
 
                 $('#mainActionModalBody').load(url, function (response, status) {
                     if (status === "error") {
-                        $('#mainActionModalBody').html('<div class="alert alert-danger">Failed to load content.</div>');
+                        $('#mainActionModalBody').html('<div class="alert alert-danger mb-0">Failed to load content.</div>');
                         return;
                     }
 

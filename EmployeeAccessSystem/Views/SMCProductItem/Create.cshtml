@@ -1,16 +1,13 @@
 ﻿@model EmployeeAccessSystem.Models.SMCProductItem
-
 @{
     Layout = null;
 }
-
 <form asp-action="Create" method="post" id="createSMCProductItemForm">
     @Html.AntiForgeryToken()
     @if (ViewBag.Error != null)
     {
         <div class="alert alert-danger">@ViewBag.Error</div>
     }
-
     <div class="form-group">
         <label asp-for="SMCProductId" class="font-weight-bold">SMC Product</label>
         <select asp-for="SMCProductId" asp-items="ViewBag.SMCProductList" class="form-control">
@@ -18,13 +15,11 @@
         </select>
         <span asp-validation-for="SMCProductId" class="text-danger small"></span>
     </div>
-
     <div class="form-group">
         <label asp-for="ItemName" class="font-weight-bold">Item Name</label>
         <input asp-for="ItemName" class="form-control" placeholder="Enter item name" />
         <span asp-validation-for="ItemName" class="text-danger small"></span>
     </div>
-
     <div class="form-group mb-4">
         <div class="custom-control custom-switch">
             <input asp-for="IsActive" class="custom-control-input" id="CreateIsActive" />
@@ -38,5 +33,4 @@
         <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </form>
-
 <partial name="_ValidationScriptsPartial" />

@@ -1,152 +1,146 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.SMCProductItem>
-
 @{
     ViewData["Title"] = "SMC Product Item";
     int sn = 1;
     var shownProductIds = new List<int>();
 }
+<div class="card shadow-sm mb-0 h-100">
+    <div class="card-header bg-white py-2">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3 class="mb-0">SMC Product Item</h3>
+            </div>
 
-<div class="container-fluid pt-2">
-    <div class="card shadow-sm">
-        <div class="card-header bg-white py-2">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h3 class="mb-0">SMC Product Item</h3>
-                </div>
-
-                <div class="col-md-6 text-md-right mt-2 mt-md-0">
-                    <a asp-action="Create"
-                       asp-controller="SMCProductItem"
-                       class="btn btn-primary rounded-pill open-modal-btn"
-                       data-title="Add SMC Product Item">
-                        <i class="fas fa-plus mr-1"></i> Add
-                    </a>
-                </div>
+            <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                <a asp-action="Create"
+                   asp-controller="SMCProductItem"
+                   class="btn btn-primary rounded-pill open-modal-btn"
+                   data-title="Add SMC Product Item">
+                    <i class="fas fa-plus mr-1"></i> Add
+                </a>
             </div>
         </div>
-
-        <div class="card-body p-2">
-            <div class="row mb-2">
-                <div class="col-md-9"></div>
-                <div class="col-md-3">
-                    <input type="text" id="customSearch" class="form-control" placeholder="Search item..." />
-                </div>
+    </div>
+    <div class="card-body p-2">
+        <div class="row mb-2">
+            <div class="col-md-8"></div>
+            <div class="col-md-4">
+                <input type="text" id="customSearch" class="form-control" placeholder="Search item..." />
             </div>
-
-            <div class="table-responsive">
-                <table id="smcProductItemTable" class="table table-bordered table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-center align-middle" style="width:80px;">SN</th>
-                            <th class="text-center align-middle" style="width:36%;">SMC Product</th>
-                            <th class="text-center align-middle" style="width:34%;">Item Name</th>
-                            <th class="text-center align-middle" style="width:170px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
+        </div>
+        <div class="table-responsive">
+            <table id="smcProductItemTable" class="table table-bordered table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center align-middle" style="width:80px;">SN</th>
+                        <th class="text-center align-middle" style="width:36%;">SMC Product</th>
+                        <th class="text-center align-middle" style="width:34%;">Item Name</th>
+                        <th class="text-center align-middle" style="width:170px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var product in Model)
                         {
-                            foreach (var product in Model)
+                            if (!shownProductIds.Contains(product.SMCProductId))
                             {
-                                if (!shownProductIds.Contains(product.SMCProductId))
+                                shownProductIds.Add(product.SMCProductId);
+
+                                var groupItems = new List<EmployeeAccessSystem.Models.SMCProductItem>();
+
+                                foreach (var item in Model)
                                 {
-                                    shownProductIds.Add(product.SMCProductId);
-
-                                    var groupItems = new List<EmployeeAccessSystem.Models.SMCProductItem>();
-
-                                    foreach (var item in Model)
+                                    if (item.SMCProductId == product.SMCProductId)
                                     {
-                                        if (item.SMCProductId == product.SMCProductId)
-                                        {
-                                            groupItems.Add(item);
-                                        }
+                                        groupItems.Add(item);
                                     }
-
-                                    string combinedItemNames = "";
-                                    bool firstText = true;
-
-                                    foreach (var groupItem in groupItems)
-                                    {
-                                        if (firstText)
-                                        {
-                                            combinedItemNames = groupItem.ItemName;
-                                            firstText = false;
-                                        }
-                                        else
-                                        {
-                                            combinedItemNames = combinedItemNames + " " + groupItem.ItemName;
-                                        }
-                                    }
-
-                                    <tr>
-                                        <td class="text-center align-top pt-3">
-                                            @sn
-                                        </td>
-
-                                        <td class="align-top pt-3">
-                                            @product.SMCProductName
-                                        </td>
-
-                                        <td class="p-0 align-top" data-order="@combinedItemNames">
-                                            <table class="table table-sm mb-0">
-                                                <tbody>
-                                                    @for (int i = 0; i < groupItems.Count; i++)
-                                                    {
-                                                        <tr>
-                                                            <td class="py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                @groupItems[i].ItemName
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </td>
-
-                                        <td class="p-0 align-top">
-                                            <table class="table table-sm mb-0">
-                                                <tbody>
-                                                    @for (int i = 0; i < groupItems.Count; i++)
-                                                    {
-                                                        <tr>
-                                                            <td class="text-center py-0 px-1 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                <a asp-action="Edit"
-                                                                   asp-controller="SMCProductItem"
-                                                                   asp-route-id="@groupItems[i].SMCProductItemId"
-                                                                   class="btn btn-sm btn-light border open-modal-btn"
-                                                                   data-title="Edit SMC Product Item"
-                                                                   title="Edit">
-                                                                    <i class="fas fa-pen"></i>
-                                                                </a>
-
-                                                                <a asp-action="Delete"
-                                                                   asp-controller="SMCProductItem"
-                                                                   asp-route-id="@groupItems[i].SMCProductItemId"
-                                                                   class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
-                                                                   data-title="Delete SMC Product Item"
-                                                                   title="Delete">
-                                                                    <i class="fas fa-trash-alt"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-
-                                    sn++;
                                 }
+
+                                string combinedItemNames = "";
+                                bool firstText = true;
+
+                                foreach (var groupItem in groupItems)
+                                {
+                                    if (firstText)
+                                    {
+                                        combinedItemNames = groupItem.ItemName;
+                                        firstText = false;
+                                    }
+                                    else
+                                    {
+                                        combinedItemNames = combinedItemNames + " " + groupItem.ItemName;
+                                    }
+                                }
+
+                                <tr>
+                                    <td class="text-center align-top pt-3">
+                                        @sn
+                                    </td>
+
+                                    <td class="align-top pt-3">
+                                        @product.SMCProductName
+                                    </td>
+
+                                    <td class="p-0 align-top" data-order="@combinedItemNames">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            @groupItems[i].ItemName
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                    <td class="p-0 align-top">
+                                        <table class="table table-sm mb-0">
+                                            <tbody>
+                                                @for (int i = 0; i < groupItems.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center py-0 px-1 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                            <a asp-action="Edit"
+                                                               asp-controller="SMCProductItem"
+                                                               asp-route-id="@groupItems[i].SMCProductItemId"
+                                                               class="btn btn-sm btn-light border open-modal-btn"
+                                                               data-title="Edit SMC Product Item"
+                                                               title="Edit">
+                                                                <i class="fas fa-pen"></i>
+                                                            </a>
+
+                                                            <a asp-action="Delete"
+                                                               asp-controller="SMCProductItem"
+                                                               asp-route-id="@groupItems[i].SMCProductItemId"
+                                                               class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
+                                                               data-title="Delete SMC Product Item"
+                                                               title="Delete">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                sn++;
                             }
                         }
-                        else
-                        {
-                            <tr>
-                                <td colspan="4" class="text-center">No SMC Product Items found.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center">No SMC Product Items found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

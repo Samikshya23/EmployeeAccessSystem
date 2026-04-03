@@ -1,5 +1,4 @@
 ﻿@model EmployeeAccessSystem.Models.SMCConfig
-
 @{
     bool isModal = ViewBag.IsModal != null && (bool)ViewBag.IsModal;
 
@@ -12,24 +11,19 @@
         ViewData["Title"] = "SMC Config Entry";
     }
 }
-
 @if (isModal)
 {
     <form asp-action="Create" method="post" id="createSmcConfigForm">
         @Html.AntiForgeryToken()
-
         <input type="hidden" name="isModal" value="true" />
         <input asp-for="IsChecked" type="hidden" id="IsCheckedHidden" />
-
         @if (ViewBag.Error != null)
         {
             <div class="alert alert-danger">
                 @ViewBag.Error
             </div>
         }
-
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -42,7 +36,6 @@
                     <span asp-validation-for="ProductId" class="text-danger small"></span>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label asp-for="SMCProductId" class="font-weight-bold">SMC Product</label>
@@ -54,7 +47,6 @@
                     <span asp-validation-for="SMCProductId" class="text-danger small"></span>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label asp-for="SMCProductItemId" class="font-weight-bold">SMC Product Item</label>
@@ -66,7 +58,6 @@
                     <span asp-validation-for="SMCProductItemId" class="text-danger small"></span>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
@@ -78,7 +69,6 @@
                     <span asp-validation-for="EntryMode" class="text-danger small"></span>
                 </div>
             </div>
-
             <div class="col-md-6" id="valueSection">
                 <div class="form-group">
                     <label id="dynamicLabel" class="font-weight-bold">Value</label>
@@ -89,7 +79,6 @@
                     <span asp-validation-for="ConfigValue" class="text-danger small"></span>
                 </div>
             </div>
-
             <div class="col-md-6" id="checkboxSection" style="display:none;">
                 <div class="form-group">
                     <label class="font-weight-bold">Status</label>
@@ -104,7 +93,6 @@
                                 <i class="fas fa-check text-success mr-1"></i>Tick
                             </label>
                         </div>
-
                         <div class="custom-control custom-radio">
                             <input type="radio"
                                    id="statusCross"
@@ -118,7 +106,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-12">
                 <div class="form-group mb-2">
                     <div class="custom-control custom-checkbox">
@@ -128,7 +115,6 @@
                 </div>
             </div>
         </div>
-
         <div class="modal-footer px-0 pb-0 pt-2">
             <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
             <button type="submit" class="btn btn-primary">
@@ -156,7 +142,6 @@ else
             </div>
         </div>
     </section>
-
     <section class="content">
         <div class="container-fluid">
             <div class="card">
@@ -173,9 +158,7 @@ else
                                 @ViewBag.Error
                             </div>
                         }
-
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -188,7 +171,6 @@ else
                                     <span asp-validation-for="ProductId" class="text-danger small"></span>
                                 </div>
                             </div>
-
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label asp-for="SMCProductId" class="font-weight-bold">SMC Product</label>
@@ -200,7 +182,6 @@ else
                                     <span asp-validation-for="SMCProductId" class="text-danger small"></span>
                                 </div>
                             </div>
-
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label asp-for="SMCProductItemId" class="font-weight-bold">SMC Product Item</label>
@@ -212,7 +193,6 @@ else
                                     <span asp-validation-for="SMCProductItemId" class="text-danger small"></span>
                                 </div>
                             </div>
-
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
@@ -224,7 +204,6 @@ else
                                     <span asp-validation-for="EntryMode" class="text-danger small"></span>
                                 </div>
                             </div>
-
                             <div class="col-md-6" id="valueSection">
                                 <div class="form-group">
                                     <label id="dynamicLabel" class="font-weight-bold">Value</label>
@@ -235,7 +214,6 @@ else
                                     <span asp-validation-for="ConfigValue" class="text-danger small"></span>
                                 </div>
                             </div>
-
                             <div class="col-md-6" id="checkboxSection" style="display:none;">
                                 <div class="form-group">
                                     <label class="font-weight-bold">Status</label>
@@ -250,7 +228,6 @@ else
                                                 <i class="fas fa-check text-success mr-1"></i>Tick
                                             </label>
                                         </div>
-
                                         <div class="custom-control custom-radio">
                                             <input type="radio"
                                                    id="statusCross"
@@ -264,7 +241,6 @@ else
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <div class="custom-control custom-checkbox">
@@ -274,7 +250,6 @@ else
                                 </div>
                             </div>
                         </div>
-
                         <div class="clearfix">
                             <a asp-action="Index" class="btn btn-default float-left">
                                 <i class="fas fa-arrow-left mr-1"></i>Back
@@ -289,9 +264,7 @@ else
         </div>
     </section>
 }
-
 <partial name="_ValidationScriptsPartial" />
-
 <script>
     $(document).ready(function () {
 
