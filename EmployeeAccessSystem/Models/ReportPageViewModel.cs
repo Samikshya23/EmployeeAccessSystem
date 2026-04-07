@@ -13,6 +13,7 @@ namespace EmployeeAccessSystem.Models
         public List<DateTime> Dates { get; set; }
         public List<ReportModel> ReportData { get; set; }
         public bool HasData { get; set; }
+        public string Message { get; set; }
 
         public ReportPageViewModel()
         {
@@ -20,6 +21,7 @@ namespace EmployeeAccessSystem.Models
             Dates = new List<DateTime>();
             ReportData = new List<ReportModel>();
             ReportTitle = "Monitoring Report";
+            Message = "";
         }
     }
 }

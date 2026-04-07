@@ -16,9 +16,9 @@ namespace EmployeeAccessSystem.Services
 
         public async Task<ReportPageViewModel> GetReportPageAsync(int? selectedProductId, DateTime? fromDate, DateTime? toDate)
         {
-            ReportPageViewModel vm = new ReportPageViewModel();
+            ReportPageViewModel model = new ReportPageViewModel();
 
-            vm.ProductList = (await _productSetupService.GetAllAsync()).ToList();
+            model.ProductList = (await _productSetupService.GetAllAsync()).ToList();
 
             if (!fromDate.HasValue)
             {
@@ -30,28 +30,41 @@ namespace EmployeeAccessSystem.Services
                 toDate = DateTime.Today;
             }
 
-            vm.SelectedProductId = selectedProductId;
-            vm.FromDate = fromDate;
-            vm.ToDate = toDate;
+            model.SelectedProductId = selectedProductId;
+            model.FromDate = fromDate;
+            model.ToDate = toDate;
 
             if (!selectedProductId.HasValue)
             {
-                vm.HasData = false;
-                vm.ReportTitle = "Monitoring Report";
-                return vm;
+                model.HasData = false;
+                return model;
             }
 
-            vm.ReportData = await _reportRepository.GetReportDataAsync(
+            int days = (toDate.Value - fromDate.Value).Days;
+
+            if (days < 0)
+            {
+                model.Message = "From Date cannot be greater than To Date.";
+                return model;
+            }
+
+            if (days > 31)
+            {
+                model.Message = "Maximum 31 days allowed.";
+                return model;
+            }
+
+            model.ReportData = await _reportRepository.GetReportDataAsync(
                 selectedProductId.Value,
                 fromDate.Value,
                 toDate.Value
             );
 
-            vm.ReportTitle = GetProductName(vm.ProductList, selectedProductId.Value) + " Report Summary";
-            vm.Dates = GetUniqueDates(vm.ReportData);
-            vm.HasData = vm.ReportData.Count > 0;
+            model.ReportTitle = GetProductName(model.ProductList, selectedProductId.Value) + " Report Summary";
+            model.Dates = GetUniqueDates(model.ReportData);
+            model.HasData = model.ReportData.Count > 0;
 
-            return vm;
+            return model;
         }
 
         private string GetProductName(List<ProductSetup> products, int productId)

@@ -48,9 +48,7 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
-                "dbo.sp_ProductSetup_Manage",
-                new
+            return await conn.ExecuteAsync(                "dbo.sp_ProductSetup_Manage",                new
                 {
                     Flag = "ADD",
                     productSetup.ProductName,

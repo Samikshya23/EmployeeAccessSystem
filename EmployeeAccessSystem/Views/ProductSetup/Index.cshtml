@@ -3,38 +3,43 @@
     ViewData["Title"] = "Product Setup";
     int sn = 1;
 }
-@* <div class="container-fluid p-0"> *@
-<div class="card shadow-sm mb-0 h-100">
-        <div class="card-header bg-white py-2">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h3 class="mb-0">Product Setup</h3>
-                </div>
 
-                <div class="col-md-6 text-md-right mt-2 mt-md-0">
-                    <a asp-action="Create"
-                       asp-controller="ProductSetup"
-                       class="btn btn-primary rounded-pill open-modal-btn"
-                       data-title="Add Product Setup">
-                        <i class="fas fa-plus mr-1"></i> Add
-                    </a>
-                </div>
+<section class="content pt-2 pb-0">
+    <div class="container-fluid px-0">
+
+        <div class="row mb-2 mx-0 align-items-center">
+            <div class="col-sm-6 px-0">
+                <h3 class="mb-0">Product Setup</h3>
+            </div>
+            <div class="col-sm-6 text-right px-0">
+                <a asp-action="Create"
+                   asp-controller="ProductSetup"
+                   class="btn btn-primary rounded-pill open-modal-btn"
+                   data-title="Add Product Setup">
+                    <i class="fas fa-plus mr-1"></i> Add
+                </a>
             </div>
         </div>
-        <div class="card-body p-2">
-            <div class="row mb-2">
-                <div class="col-md-8"></div>
-                <div class="col-md-4">
-                    <input type="text" id="customSearch" class="form-control" placeholder="Search products"/>
+
+        <div class="card mb-0 border-left border-right border-bottom shadow-none rounded-0">
+            <div class="card-header bg-white border-bottom-0 py-1 px-2 rounded-0">
+                <div class="d-flex justify-content-end">
+                    <div class="col-md-3 px-0">
+                        <input type="text"
+                               id="customSearch"
+                               class="form-control form-control-sm"
+                               placeholder="Search" />
+                    </div>
                 </div>
             </div>
-            <div class="table-responsive">
-                <table id="productSetupTable" class="table table-sm table-bordered table-hover mb-0">
-                    <thead>
+
+            <div class="card-body p-0">
+                <table id="productSetupTable" class="table table-bordered table-hover table-sm mb-0 border border-secondary rounded-0">
+                    <thead class="bg-light border-bottom border-secondary">
                         <tr>
-                            <th class="text-center">SN</th>
-                            <th class="text-center">Product Name</th>
-                            <th class="text-center">Actions</th>
+                            <th class="text-center align-middle" style="width: 70px;">SN</th>
+                            <th class="text-center align-middle">Product Name</th>
+                            <th class="text-center align-middle" style="width: 140px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,9 +48,9 @@
                             foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="text-center">@sn</td>
-                                    <td>@item.ProductName</td>
-                                    <td class="text-center">
+                                    <td class="text-center align-middle">@sn</td>
+                                    <td class="align-middle">@item.ProductName</td>
+                                    <td class="text-center align-middle">
                                         <a asp-action="Edit"
                                            asp-controller="ProductSetup"
                                            asp-route-id="@item.ProductId"
@@ -54,6 +59,7 @@
                                            title="Edit">
                                             <i class="fas fa-pen"></i>
                                         </a>
+
                                         <a asp-action="Delete"
                                            asp-controller="ProductSetup"
                                            asp-route-id="@item.ProductId"
@@ -72,15 +78,17 @@
                 </table>
             </div>
         </div>
+
     </div>
-@* </div> *@
-<div class="modal fade" id="mainActionModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
+</section>
+
+<div class="modal fade" id="mainActionModal" tabindex="-1" role="dialog" aria-labelledby="mainActionModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content rounded-0">
             <div class="modal-header">
                 <h5 class="modal-title" id="mainActionModalTitle">Product Setup</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
@@ -92,6 +100,7 @@
         </div>
     </div>
 </div>
+
 @if (TempData["Success"] != null || TempData["Error"] != null)
 {
     <div class="position-fixed" style="top: 15px; right: 15px; z-index: 1055;">
@@ -101,8 +110,8 @@
                 <div class="toast-header bg-success text-white border-0">
                     <strong class="mr-auto">Success</strong>
                     <small>Now</small>
-                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast">
-                        <span>&times;</span>
+                    <button type="button" class="close text-white" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="toast-body">
@@ -117,8 +126,8 @@
                 <div class="toast-header bg-danger text-white border-0">
                     <strong class="mr-auto">Error</strong>
                     <small>Now</small>
-                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast">
-                        <span>&times;</span>
+                    <button type="button" class="close text-white" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="toast-body">
@@ -128,23 +137,25 @@
         }
     </div>
 }
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
         $(document).ready(function () {
+
             var table = $('#productSetupTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
                 info: false,
                 lengthChange: false,
-                pageLength: 10,
+                pageLength: 7,
                 autoWidth: false,
                 columnDefs: [
                     { orderable: false, targets: 2 }
                 ],
-                dom: 't<"row mt-2"<"col-md-6"><"col-md-6 text-right"p>>'
+                dom: 't<"row mt-2 mx-0"<"col-md-6 px-0"><"col-md-6 text-right px-0"p>>'
             });
 
             $('#customSearch').on('keyup', function () {
@@ -158,10 +169,10 @@
                 var title = $(this).data('title') || 'Product Setup';
 
                 $('#mainActionModalTitle').text(title);
-                $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i> Loading</div>');
+                $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>');
 
                 $('#mainActionModalBody').load(url, function (response, status) {
-                    if (status === "error") {
+                    if (status === 'error') {
                         $('#mainActionModalBody').html('<div class="alert alert-danger mb-0">Failed to load content.</div>');
                         return;
                     }
@@ -169,8 +180,14 @@
                     $('#mainActionModal').modal('show');
                 });
             });
-            $('#successToast').toast('show');
-            $('#errorToast').toast('show');
+
+            if ($('#successToast').length) {
+                $('#successToast').toast('show');
+            }
+
+            if ($('#errorToast').length) {
+                $('#errorToast').toast('show');
+            }
         });
     </script>
 }

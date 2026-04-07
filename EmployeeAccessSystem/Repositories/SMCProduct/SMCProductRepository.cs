@@ -21,8 +21,6 @@ namespace EmployeeAccessSystem.Repositories
         {
             return new SqlConnection(_connectionString);
         }
-
-        // 🔹 GET ALL
         public async Task<IEnumerable<SMCProduct>> GetAllAsync()
         {
             using var conn = GetConnection();
@@ -33,8 +31,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
-        // 🔹 GET ACTIVE
         public async Task<IEnumerable<SMCProduct>> GetActiveAsync()
         {
             using var conn = GetConnection();
@@ -45,8 +41,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
-        // 🔹 GET BY PRODUCT (🔥 IMPORTANT FIX)
         public async Task<IEnumerable<SMCProduct>> GetByProductIdAsync(int productId)
         {
             using var conn = GetConnection();
@@ -61,8 +55,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
-        // 🔹 GET BY ID
         public async Task<SMCProduct> GetByIdAsync(int id)
         {
             using var conn = GetConnection();
@@ -77,26 +69,32 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
-        // 🔹 ADD (🔥 FIXED WITH ProductId)
         public async Task<int> AddAsync(SMCProduct smcProduct)
         {
-            using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
-                "dbo.sp_SMCProduct_Manage",
-                new
-                {
-                    Flag = "ADD",
-                    ProductId = smcProduct.ProductId,
-                    SMCProductName = smcProduct.SMCProductName,
-                    IsActive = smcProduct.IsActive
-                },
-                commandType: CommandType.StoredProcedure
-            );
+            try
+            {
+                using var conn = GetConnection();
+
+                return await conn.ExecuteAsync(
+                    "dbo.sp_SMCProduct_Manage",
+                    new
+                    {
+                        Flag = "ADD",
+                        ProductId = smcProduct.ProductId,
+                        SMCProductName = smcProduct.SMCProductName,
+                        IsActive = smcProduct.IsActive
+                    },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            catch (Exception ex)
+            {
+                
+                throw;
+            }
+            
         }
-
-        // 🔹 UPDATE (🔥 FIXED WITH ProductId)
         public async Task<int> UpdateAsync(SMCProduct smcProduct)
         {
             using var conn = GetConnection();
@@ -114,8 +112,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
-        // 🔹 DELETE
         public async Task<int> DeleteAsync(int id)
         {
             using var conn = GetConnection();
@@ -130,8 +126,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
-        // 🔹 TOGGLE
         public async Task ToggleAsync(int id)
         {
             using var conn = GetConnection();

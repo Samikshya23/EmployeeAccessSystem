@@ -6,12 +6,11 @@
     var shownProductNames = new List<string>();
 }
 
-<div class="card shadow-sm mb-0 h-100">
+<div class="card card-primary card-outline mb-0 h-100">
     <div class="card-header bg-white py-2">
         <div class="row align-items-center">
             <div class="col-md-6">
                 <h3 class="mb-0">SMC Config List</h3>
-                <small class="text-muted d-block">View all saved monitoring configuration entries.</small>
             </div>
             <div class="col-md-6 text-md-right mt-2 mt-md-0">
                 <a asp-action="Create"
@@ -26,8 +25,13 @@
 
     <div class="card-body p-2">
         <div class="row mb-2">
-            <div class="col-md-8"></div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <input type="date" id="fromDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <input type="date" id="toDate" class="form-control" />
+            </div>
+            <div class="col-md-6">
                 <input type="text"
                        id="customSearch"
                        class="form-control"
@@ -40,16 +44,15 @@
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 70px;">SN</th>
-                        <th class="text-center" style="width: 24%;">SMC Product</th>
-                        <th class="text-center" style="width: 16%;">Item</th>
+                        <th class="text-center" style="width: 25%;">SMC Product</th>
+                        <th class="text-center" style="width: 18%;">Item</th>
                         <th class="text-center" style="width: 14%;">Date</th>
-                        <th class="text-center" style="width: 10%;">Value</th>
-                        <th class="text-center" style="width: 10%;">Check</th>
-                        <th class="text-center" style="width: 10%;">Status</th>
+                        <th class="text-center" style="width: 12%;">Result</th>
+                        <th class="text-center" style="width: 11%;">Status</th>
                         <th class="text-center" style="width: 120px;">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="smcConfigTableBody">
                     @if (Model != null && Model.Any())
                     {
                         foreach (var product in Model)
@@ -73,12 +76,32 @@
 
                                 foreach (var groupItem in groupItems)
                                 {
+                                    string resultText = "-";
+
+                                    if (groupItem.EntryMode == "Value")
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(groupItem.ConfigValue))
+                                        {
+                                            resultText = groupItem.ConfigValue;
+                                        }
+                                    }
+                                    else if (groupItem.EntryMode == "Checkbox")
+                                    {
+                                        if (groupItem.IsChecked)
+                                        {
+                                            resultText = "Checked";
+                                        }
+                                        else
+                                        {
+                                            resultText = "Cross";
+                                        }
+                                    }
+
                                     string rowText =
                                         groupItem.SMCProductName + " " +
                                         groupItem.ItemName + " " +
                                         groupItem.EntryDate.ToString("yyyy-MM-dd") + " " +
-                                        (string.IsNullOrWhiteSpace(groupItem.ConfigValue) ? "-" : groupItem.ConfigValue) + " " +
-                                        (groupItem.EntryMode == "Checkbox" ? (groupItem.IsChecked ? "Checked" : "Unchecked") : "-") + " " +
+                                        resultText + " " +
                                         (groupItem.IsActive ? "Active" : "Inactive");
 
                                     if (firstText)
@@ -92,8 +115,8 @@
                                     }
                                 }
 
-                                <tr data-search="@combinedSearchText">
-                                    <td class="text-center align-top pt-3">
+                                <tr class="group-row" data-search="@combinedSearchText">
+                                    <td class="text-center align-top pt-3 group-sn">
                                         @sn
                                     </td>
 
@@ -102,11 +125,13 @@
                                     </td>
 
                                     <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0">
+                                        <table class="table table-sm mb-0 inner-table">
                                             <tbody>
                                                 @for (int i = 0; i < groupItems.Count; i++)
                                                 {
-                                                    <tr>
+                                                    <tr class="child-row"
+                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
+                                                        data-row-index="@i">
                                                         <td class="py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
                                                             @groupItems[i].ItemName
                                                         </td>
@@ -117,13 +142,15 @@
                                     </td>
 
                                     <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0">
+                                        <table class="table table-sm mb-0 inner-table">
                                             <tbody>
                                                 @for (int i = 0; i < groupItems.Count; i++)
                                                 {
-                                                    <tr>
+                                                    <tr class="child-row"
+                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
+                                                        data-row-index="@i">
                                                         <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            @groupItems[i].EntryDate.ToString("yyyy-MM-dd")
+                                                            @groupItems[i].EntryDate.ToString("dd MMM yyyy")
                                                         </td>
                                                     </tr>
                                                 }
@@ -132,35 +159,26 @@
                                     </td>
 
                                     <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0">
+                                        <table class="table table-sm mb-0 inner-table">
                                             <tbody>
                                                 @for (int i = 0; i < groupItems.Count; i++)
                                                 {
-                                                    <tr>
+                                                    <tr class="child-row"
+                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
+                                                        data-row-index="@i">
                                                         <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            @if (!string.IsNullOrWhiteSpace(groupItems[i].ConfigValue))
+                                                            @if (groupItems[i].EntryMode == "Value")
                                                             {
-                                                                @groupItems[i].ConfigValue
+                                                                if (!string.IsNullOrWhiteSpace(groupItems[i].ConfigValue))
+                                                                {
+                                                                    <span>@groupItems[i].ConfigValue</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>-</span>
+                                                                }
                                                             }
-                                                            else
-                                                            {
-                                                                <span>-</span>
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-
-                                    <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0">
-                                            <tbody>
-                                                @for (int i = 0; i < groupItems.Count; i++)
-                                                {
-                                                    <tr>
-                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            @if (groupItems[i].EntryMode == "Checkbox")
+                                                            else if (groupItems[i].EntryMode == "Checkbox")
                                                             {
                                                                 if (groupItems[i].IsChecked)
                                                                 {
@@ -183,11 +201,13 @@
                                     </td>
 
                                     <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0">
+                                        <table class="table table-sm mb-0 inner-table">
                                             <tbody>
                                                 @for (int i = 0; i < groupItems.Count; i++)
                                                 {
-                                                    <tr>
+                                                    <tr class="child-row"
+                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
+                                                        data-row-index="@i">
                                                         <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
                                                             @if (groupItems[i].IsActive)
                                                             {
@@ -205,11 +225,13 @@
                                     </td>
 
                                     <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0">
+                                        <table class="table table-sm mb-0 inner-table">
                                             <tbody>
                                                 @for (int i = 0; i < groupItems.Count; i++)
                                                 {
-                                                    <tr>
+                                                    <tr class="child-row"
+                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
+                                                        data-row-index="@i">
                                                         <td class="text-center py-0 px-1 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
                                                             <a asp-action="Edit"
                                                                asp-route-id="@groupItems[i].SMCConfigId"
@@ -238,12 +260,23 @@
                     }
                     else
                     {
-                        <tr>
-                            <td colspan="8" class="text-center">No SMC Config entries found.</td>
+                        <tr id="noDataRow">
+                            <td colspan="7" class="text-center">No SMC Config entries found.</td>
                         </tr>
                     }
                 </tbody>
             </table>
+        </div>
+
+        <div class="row mt-3 align-items-center">
+            <div class="col-md-6">
+                <div id="paginationInfo" class="text-muted"></div>
+            </div>
+            <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                <nav>
+                    <ul class="pagination pagination-sm justify-content-md-end mb-0" id="customPagination"></ul>
+                </nav>
+            </div>
         </div>
     </div>
 </div>
@@ -301,23 +334,200 @@
     <script>
         $(document).ready(function () {
 
-            var table = $('#smcConfigTable').DataTable({
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: false,
-                lengthChange: false,
-                pageLength: 10,
-                autoWidth: false,
-                columnDefs: [
-                    { orderable: false, targets: 7 }
-                ],
-                dom: 't<"row mt-2"<"col-md-6"><"col-md-6 text-right"p>>'
+            var rowsPerPage = 2;
+            var currentPage = 1;
+
+            function formatDateToInputValue(date) {
+                var year = date.getFullYear();
+                var month = (date.getMonth() + 1).toString();
+                var day = date.getDate().toString();
+
+                if (month.length < 2) {
+                    month = '0' + month;
+                }
+
+                if (day.length < 2) {
+                    day = '0' + day;
+                }
+
+                return year + '-' + month + '-' + day;
+            }
+
+            function setDefaultDateRange() {
+                var today = new Date();
+                var from = new Date();
+                from.setDate(today.getDate() - 29);
+
+                $('#toDate').val(formatDateToInputValue(today));
+                $('#fromDate').val(formatDateToInputValue(from));
+            }
+
+            function isDateInRange(entryDate, fromDate, toDate) {
+                if (fromDate !== '' && entryDate < fromDate) {
+                    return false;
+                }
+
+                if (toDate !== '' && entryDate > toDate) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            function applyChildRowFilter() {
+                var fromDate = $('#fromDate').val();
+                var toDate = $('#toDate').val();
+
+                $('#smcConfigTableBody tr.group-row').each(function () {
+                    var groupRow = $(this);
+                    var visibleRowIndexes = [];
+
+                    var dateTable = groupRow.find('table.inner-table').eq(1);
+
+                    dateTable.find('tr.child-row').each(function () {
+                        var entryDate = $(this).attr('data-entry-date');
+                        var rowIndex = $(this).attr('data-row-index');
+
+                        if (isDateInRange(entryDate, fromDate, toDate)) {
+                            visibleRowIndexes.push(rowIndex);
+                        }
+                    });
+
+                    groupRow.find('table.inner-table').each(function () {
+                        $(this).find('tr.child-row').each(function () {
+                            var rowIndex = $(this).attr('data-row-index');
+
+                            if (visibleRowIndexes.indexOf(rowIndex) > -1) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    });
+
+                    if (visibleRowIndexes.length > 0) {
+                        groupRow.attr('data-has-visible-children', 'true');
+                    } else {
+                        groupRow.attr('data-has-visible-children', 'false');
+                    }
+                });
+            }
+
+            function getFilteredRows() {
+                var searchText = $('#customSearch').val().toLowerCase().trim();
+                var filteredRows = [];
+
+                $('#smcConfigTableBody tr.group-row').each(function () {
+                    var rowSearchText = ($(this).attr('data-search') || '').toLowerCase();
+                    var hasVisibleChildren = $(this).attr('data-has-visible-children') === 'true';
+
+                    if (hasVisibleChildren) {
+                        if (searchText === '' || rowSearchText.indexOf(searchText) > -1) {
+                            filteredRows.push(this);
+                        }
+                    }
+                });
+
+                return filteredRows;
+            }
+
+            function updateSerialNumbers(filteredRows) {
+                var i;
+
+                for (i = 0; i < filteredRows.length; i++) {
+                    $(filteredRows[i]).find('.group-sn').text(i + 1);
+                }
+            }
+
+            function renderPagination() {
+                applyChildRowFilter();
+
+                var filteredRows = getFilteredRows();
+                var totalRows = filteredRows.length;
+                var totalPages = Math.ceil(totalRows / rowsPerPage);
+
+                $('#smcConfigTableBody tr.group-row').hide();
+
+                if (totalRows === 0) {
+                    $('#paginationInfo').text('No matching entries found.');
+                    $('#customPagination').html('');
+                    return;
+                }
+
+                updateSerialNumbers(filteredRows);
+
+                if (currentPage > totalPages) {
+                    currentPage = 1;
+                }
+
+                var startIndex = (currentPage - 1) * rowsPerPage;
+                var endIndex = startIndex + rowsPerPage;
+                var i;
+
+                for (i = startIndex; i < endIndex && i < totalRows; i++) {
+                    $(filteredRows[i]).show();
+                }
+
+                var fromRecord = startIndex + 1;
+                var toRecord = endIndex;
+
+                if (toRecord > totalRows) {
+                    toRecord = totalRows;
+                }
+
+                $('#paginationInfo').text('Showing ' + fromRecord + ' to ' + toRecord + ' of ' + totalRows + ' grouped entries');
+
+                var paginationHtml = '';
+                var page;
+
+                if (currentPage > 1) {
+                    paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + (currentPage - 1) + '">Previous</a></li>';
+                } else {
+                    paginationHtml += '<li class="page-item disabled"><span class="page-link">Previous</span></li>';
+                }
+
+                for (page = 1; page <= totalPages; page++) {
+                    if (page === currentPage) {
+                        paginationHtml += '<li class="page-item active"><span class="page-link">' + page + '</span></li>';
+                    } else {
+                        paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + page + '">' + page + '</a></li>';
+                    }
+                }
+
+                if (currentPage < totalPages) {
+                    paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + (currentPage + 1) + '">Next</a></li>';
+                } else {
+                    paginationHtml += '<li class="page-item disabled"><span class="page-link">Next</span></li>';
+                }
+
+                $('#customPagination').html(paginationHtml);
+            }
+
+            $('#fromDate').on('change', function () {
+                currentPage = 1;
+                renderPagination();
+            });
+
+            $('#toDate').on('change', function () {
+                currentPage = 1;
+                renderPagination();
             });
 
             $('#customSearch').on('keyup', function () {
-                table.search(this.value).draw();
+                currentPage = 1;
+                renderPagination();
             });
+
+            $(document).on('click', '.pagination-link', function (e) {
+                e.preventDefault();
+
+                var page = $(this).data('page');
+                currentPage = parseInt(page);
+                renderPagination();
+            });
+
+            setDefaultDateRange();
+            renderPagination();
 
             function openSmcConfigModal(url, title) {
                 $('#mainActionModalTitle').text(title);
