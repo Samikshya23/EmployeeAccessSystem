@@ -1,5 +1,28 @@
-﻿@{
+﻿@using System.Security.Claims
+
+@{
     var isLoggedIn = User.Identity != null && User.Identity.IsAuthenticated;
+    string displayName = "";
+
+    if (isLoggedIn)
+    {
+        displayName = User.FindFirst(ClaimTypes.Name)?.Value;
+
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            displayName = User.Identity.Name;
+        }
+
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            displayName = User.FindFirst(ClaimTypes.Email)?.Value;
+        }
+
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            displayName = "User";
+        }
+    }
 }
 
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -19,7 +42,7 @@
         </li>
     </ul>
 
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto align-items-center">
         @if (!isLoggedIn)
         {
             <li class="nav-item">
@@ -31,8 +54,14 @@
         }
         else
         {
+            <li class="nav-item mr-2 d-none d-sm-flex align-items-center">
+                <span class="nav-link py-0 font-weight-bold text-dark">
+                    <i class="fas fa-user-circle mr-1"></i>@displayName
+                </span>
+            </li>
+
             <li class="nav-item">
-                <a class="nav-link text-danger" asp-controller="Account" asp-action="Logout">
+                <a class="nav-link text-danger" asp-controller="Account" asp-action="Logout" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </li>

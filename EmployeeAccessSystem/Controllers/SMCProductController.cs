@@ -1,13 +1,11 @@
 ﻿using EmployeeAccessSystem.Models;
-using EmployeeAccessSystem.Services;
 using EmployeeAccessSystem.Repositories;
-using Microsoft.AspNetCore.Authorization;
+using EmployeeAccessSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EmployeeAccessSystem.Controllers
 {
-    [Authorize]
     public class SMCProductController : Controller
     {
         private readonly ISMCProductService _service;
@@ -18,9 +16,18 @@ namespace EmployeeAccessSystem.Controllers
             _service = service;
             _productRepo = productRepo;
         }
-
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string successMessage, string errorMessage)
         {
+            if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                TempData["Success"] = successMessage;
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                TempData["Error"] = errorMessage;
+            }
+
             var data = await _service.GetAllAsync();
             return View(data);
         }
@@ -29,7 +36,7 @@ namespace EmployeeAccessSystem.Controllers
         {
             await LoadProducts();
 
-            var model = new SMCProduct();
+            SMCProduct model = new SMCProduct();
             model.IsActive = true;
 
             return PartialView(model);
@@ -37,80 +44,58 @@ namespace EmployeeAccessSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SMCProduct smcProduct)
+        public async Task<IActionResult> Create(SMCProduct model)
         {
-            if (!ModelState.IsValid)
+            var message = await _service.AddAsync(model);
+
+            if (message == "SMC Product added successfully.")
             {
-                await LoadProducts();
-                return PartialView("Create", smcProduct);
+                return Content("success|SMC Product added successfully.");
             }
 
-            var error = await _service.AddAsync(smcProduct);
-
-            if (error != null)
-            {
-                ViewBag.Error = error;
-                await LoadProducts();
-                return PartialView("Create", smcProduct);
-            }
-
-            TempData["Success"] = "SMC Product added successfully.";
-            return RedirectToAction(nameof(Index));
+            ViewBag.Error = message;
+            await LoadProducts();
+            return PartialView(model);
         }
-
         public async Task<IActionResult> Edit(int id)
         {
-            var smcProduct = await _service.GetByIdAsync(id);
+            var data = await _service.GetByIdAsync(id);
 
-            if (smcProduct == null)
+            if (data == null)
             {
                 return NotFound();
             }
 
             await LoadProducts();
-            return PartialView("Edit", smcProduct);
+            return PartialView(data);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SMCProduct smcProduct)
+        public async Task<IActionResult> Edit(SMCProduct model)
         {
-            if (!ModelState.IsValid)
+            var message = await _service.UpdateAsync(model);
+
+            if (message == "SMC Product updated successfully.")
             {
-                await LoadProducts();
-                return PartialView("Edit", smcProduct);
+                return Content("success|SMC Product updated successfully.");
             }
 
-            var existing = await _service.GetByIdAsync(smcProduct.SMCProductId);
-
-            if (existing == null)
-            {
-                return NotFound();
-            }
-
-            var error = await _service.UpdateAsync(smcProduct);
-
-            if (error != null)
-            {
-                ViewBag.Error = error;
-                await LoadProducts();
-                return PartialView("Edit", smcProduct);
-            }
-
-            TempData["Success"] = "SMC Product updated successfully.";
-            return RedirectToAction(nameof(Index));
+            ViewBag.Error = message;
+            await LoadProducts();
+            return PartialView(model);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var smcProduct = await _service.GetByIdAsync(id);
+            var data = await _service.GetByIdAsync(id);
 
-            if (smcProduct == null)
+            if (data == null)
             {
                 return NotFound();
             }
 
-            return PartialView("Delete", smcProduct);
+            return PartialView(data);
         }
 
         [HttpPost]
@@ -118,21 +103,36 @@ namespace EmployeeAccessSystem.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int smcProductId)
         {
-            var error = await _service.DeleteAsync(smcProductId);
+            var message = await _service.DeleteAsync(smcProductId);
 
-            if (error != null)
+            if (message == "SMC Product deleted successfully.")
             {
-                TempData["Error"] = error;
-                return RedirectToAction(nameof(Index));
+                return Content("success|SMC Product deleted successfully.");
             }
 
-            TempData["Success"] = "SMC Product deleted successfully.";
-            return RedirectToAction(nameof(Index));
+            return Content("error|" + message);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Toggle(int id)
+        {
+            var message = await _service.ToggleAsync(id);
+
+            if (message == "Status changed successfully.")
+            {
+                TempData["Success"] = message;
+            }
+            else
+            {
+                TempData["Error"] = message;
+            }
+            return RedirectToAction("Index");
         }
 
         private async Task LoadProducts()
         {
-            var products = await _productRepo.GetAllAsync();
+            var products = await _productRepo.GetActiveAsync();
             ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName");
         }
     }

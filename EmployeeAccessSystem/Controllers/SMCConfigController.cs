@@ -3,7 +3,8 @@ using EmployeeAccessSystem.Repositories;
 using EmployeeAccessSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Linq;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace EmployeeAccessSystem.Controllers
 {
@@ -28,7 +29,7 @@ namespace EmployeeAccessSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var data = await _service.GetAllAsync();
+            IEnumerable<SMCConfig> data = await _service.GetAllAsync();
             return View(data);
         }
 
@@ -36,33 +37,47 @@ namespace EmployeeAccessSystem.Controllers
         {
             ViewBag.IsModal = modal;
 
-            var products = await _productRepo.GetAllAsync();
+            IEnumerable<ProductSetup> products = await _productRepo.GetAllAsync();
+
             int selectedProductId = 0;
             int selectedSMCProductId = 0;
             int selectedSMCProductItemId = 0;
 
-            if (products != null && products.Any())
+            foreach (ProductSetup product in products)
             {
-                selectedProductId = products.First().ProductId;
+                selectedProductId = product.ProductId;
+                break;
             }
 
-            var smcProducts = new List<SMCProduct>();
+            List<SMCProduct> smcProducts = new List<SMCProduct>();
             if (selectedProductId > 0)
             {
-                smcProducts = (await _smcProductRepo.GetByProductIdAsync(selectedProductId)).ToList();
-                if (smcProducts.Any())
+                IEnumerable<SMCProduct> smcProductData = await _smcProductRepo.GetByProductIdAsync(selectedProductId);
+                foreach (SMCProduct item in smcProductData)
                 {
-                    selectedSMCProductId = smcProducts.First().SMCProductId;
+                    smcProducts.Add(item);
+                }
+
+                foreach (SMCProduct item in smcProducts)
+                {
+                    selectedSMCProductId = item.SMCProductId;
+                    break;
                 }
             }
 
-            var smcProductItems = new List<SMCProductItem>();
+            List<SMCProductItem> smcProductItems = new List<SMCProductItem>();
             if (selectedSMCProductId > 0)
             {
-                smcProductItems = (await _smcProductItemRepo.GetByProductAsync(selectedSMCProductId)).ToList();
-                if (smcProductItems.Any())
+                IEnumerable<SMCProductItem> itemData = await _smcProductItemRepo.GetByProductAsync(selectedSMCProductId);
+                foreach (SMCProductItem item in itemData)
                 {
-                    selectedSMCProductItemId = smcProductItems.First().SMCProductItemId;
+                    smcProductItems.Add(item);
+                }
+
+                foreach (SMCProductItem item in smcProductItems)
+                {
+                    selectedSMCProductItemId = item.SMCProductItemId;
+                    break;
                 }
             }
 
@@ -70,22 +85,20 @@ namespace EmployeeAccessSystem.Controllers
             ViewBag.SMCProductList = new SelectList(smcProducts, "SMCProductId", "SMCProductName", selectedSMCProductId);
             ViewBag.SMCProductItemList = new SelectList(smcProductItems, "SMCProductItemId", "ItemName", selectedSMCProductItemId);
 
-            var modes = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "Value", Text = "Value" },
-                new SelectListItem { Value = "Checkbox", Text = "Checkbox" }
-            };
+            List<SelectListItem> modes = new List<SelectListItem>();
+            modes.Add(new SelectListItem { Value = "Value", Text = "Value" });
+            modes.Add(new SelectListItem { Value = "Checkbox", Text = "Checkbox" });
+
             ViewBag.EntryModeList = new SelectList(modes, "Value", "Text", "Value");
 
-            var model = new SMCConfig
-            {
-                ProductId = selectedProductId,
-                SMCProductId = selectedSMCProductId,
-                SMCProductItemId = selectedSMCProductItemId,
-                IsActive = true,
-                EntryMode = "Value",
-                IsChecked = false
-            };
+            SMCConfig model = new SMCConfig();
+            model.ProductId = selectedProductId;
+            model.SMCProductId = selectedSMCProductId;
+            model.SMCProductItemId = selectedSMCProductItemId;
+            model.IsActive = true;
+            model.EntryMode = "Value";
+            model.IsChecked = false;
+            model.EntryDate = DateTime.Today;
 
             return View(model);
         }
@@ -94,50 +107,42 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SMCConfig model, bool isModal = false)
         {
-            try
+            ViewBag.IsModal = isModal;
+            model.EntryDate = DateTime.Now.Date;
+
+            if (!ModelState.IsValid)
             {
-                model.EntryDate = DateTime.Now;
-                ViewBag.IsModal = isModal;
-
-                if (!ModelState.IsValid)
-                {
-                    await LoadProducts(model.ProductId);
-                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
-                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
-                    await LoadEntryModes(model.EntryMode);
-                    return View(model);
-                }
-
-                var result = await _service.AddAsync(model);
-
-                if (result <= 0)
-                {
-                    ViewBag.Error = "Data could not be saved.";
-                    await LoadProducts(model.ProductId);
-                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
-                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
-                    await LoadEntryModes(model.EntryMode);
-                    return View(model);
-                }
-
-                TempData["Success"] = "Saved successfully.";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = ex.Message;
-                ViewBag.IsModal = isModal;
                 await LoadProducts(model.ProductId);
                 await LoadSMCProducts(model.ProductId, model.SMCProductId);
                 await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
                 await LoadEntryModes(model.EntryMode);
                 return View(model);
             }
+
+            string? currentUser = User.FindFirst(ClaimTypes.Name)?.Value;
+            string result = await _service.AddAsync(model, currentUser);
+
+            string[] parts = result.Split('|', 2);
+            string status = parts[0];
+            string message = parts.Length > 1 ? parts[1] : "Operation failed.";
+
+            if (status == "success")
+            {
+                TempData["Success"] = message;
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.Error = message;
+            await LoadProducts(model.ProductId);
+            await LoadSMCProducts(model.ProductId, model.SMCProductId);
+            await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+            await LoadEntryModes(model.EntryMode);
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var data = await _service.GetByIdAsync(id);
+            SMCConfig? data = await _service.GetByIdAsync(id);
 
             if (data == null)
             {
@@ -156,46 +161,39 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SMCConfig model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    await LoadProducts(model.ProductId);
-                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
-                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
-                    await LoadEntryModes(model.EntryMode);
-                    return View(model);
-                }
-
-                var result = await _service.UpdateAsync(model);
-
-                if (result <= 0)
-                {
-                    ViewBag.Error = "Data could not be updated.";
-                    await LoadProducts(model.ProductId);
-                    await LoadSMCProducts(model.ProductId, model.SMCProductId);
-                    await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
-                    await LoadEntryModes(model.EntryMode);
-                    return View(model);
-                }
-
-                TempData["Success"] = "Updated successfully.";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = ex.Message;
                 await LoadProducts(model.ProductId);
                 await LoadSMCProducts(model.ProductId, model.SMCProductId);
                 await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
                 await LoadEntryModes(model.EntryMode);
                 return View(model);
             }
+
+            string? currentUser = User.FindFirst(ClaimTypes.Name)?.Value;
+            string result = await _service.UpdateAsync(model, currentUser);
+
+            string[] parts = result.Split('|', 2);
+            string status = parts[0];
+            string message = parts.Length > 1 ? parts[1] : "Operation failed.";
+
+            if (status == "success")
+            {
+                TempData["Success"] = message;
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.Error = message;
+            await LoadProducts(model.ProductId);
+            await LoadSMCProducts(model.ProductId, model.SMCProductId);
+            await LoadSMCProductItems(model.SMCProductId, model.SMCProductItemId);
+            await LoadEntryModes(model.EntryMode);
+            return View(model);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var data = await _service.GetByIdAsync(id);
+            SMCConfig? data = await _service.GetByIdAsync(id);
 
             if (data == null)
             {
@@ -209,15 +207,20 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, SMCConfig model)
         {
-            var result = await _service.DeleteAsync(id);
+            string? currentUser = User.FindFirst(ClaimTypes.Name)?.Value;
+            string result = await _service.DeleteAsync(id, currentUser);
 
-            if (result > 0)
+            string[] parts = result.Split('|', 2);
+            string status = parts[0];
+            string message = parts.Length > 1 ? parts[1] : "Operation failed.";
+
+            if (status == "success")
             {
-                TempData["Success"] = "Deleted successfully.";
+                TempData["Success"] = message;
             }
             else
             {
-                TempData["Error"] = "Delete failed.";
+                TempData["Error"] = message;
             }
 
             return RedirectToAction(nameof(Index));
@@ -226,42 +229,40 @@ namespace EmployeeAccessSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSMCProductsByProductId(int productId)
         {
-            var data = await _smcProductRepo.GetByProductIdAsync(productId);
+            IEnumerable<SMCProduct> data = await _smcProductRepo.GetByProductIdAsync(productId);
             return Json(data);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetSMCProductItemsBySMCProductId(int smcProductId)
         {
-            var data = await _smcProductItemRepo.GetByProductAsync(smcProductId);
+            IEnumerable<SMCProductItem> data = await _smcProductItemRepo.GetByProductAsync(smcProductId);
             return Json(data);
         }
 
         private async Task LoadProducts(int? selectedProductId = null)
         {
-            var products = await _productRepo.GetAllAsync();
+            IEnumerable<ProductSetup> products = await _productRepo.GetAllAsync();
             ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName", selectedProductId);
         }
 
         private async Task LoadSMCProducts(int productId, int? selectedSMCProductId = null)
         {
-            var data = await _smcProductRepo.GetByProductIdAsync(productId);
+            IEnumerable<SMCProduct> data = await _smcProductRepo.GetByProductIdAsync(productId);
             ViewBag.SMCProductList = new SelectList(data, "SMCProductId", "SMCProductName", selectedSMCProductId);
         }
 
         private async Task LoadSMCProductItems(int smcProductId, int? selectedSMCProductItemId = null)
         {
-            var data = await _smcProductItemRepo.GetByProductAsync(smcProductId);
+            IEnumerable<SMCProductItem> data = await _smcProductItemRepo.GetByProductAsync(smcProductId);
             ViewBag.SMCProductItemList = new SelectList(data, "SMCProductItemId", "ItemName", selectedSMCProductItemId);
         }
 
         private Task LoadEntryModes(string selectedEntryMode = null)
         {
-            var modes = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "Value", Text = "Value" },
-                new SelectListItem { Value = "Checkbox", Text = "Checkbox" }
-            };
+            List<SelectListItem> modes = new List<SelectListItem>();
+            modes.Add(new SelectListItem { Value = "Value", Text = "Value" });
+            modes.Add(new SelectListItem { Value = "Checkbox", Text = "Checkbox" });
 
             ViewBag.EntryModeList = new SelectList(modes, "Value", "Text", selectedEntryMode);
             return Task.CompletedTask;

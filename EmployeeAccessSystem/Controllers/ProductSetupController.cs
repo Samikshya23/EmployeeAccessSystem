@@ -3,7 +3,6 @@ using EmployeeAccessSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-
 namespace EmployeeAccessSystem.Controllers
 {
     [Authorize]
@@ -15,29 +14,44 @@ namespace EmployeeAccessSystem.Controllers
         {
             _service = service;
         }
-
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string successMessage, string errorMessage)
         {
+            if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                TempData["Success"] = successMessage;
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                TempData["Error"] = errorMessage;
+            }
+
             var data = await _service.GetAllAsync();
             return View(data);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Toggle(int id)
         {
-            await _service.ToggleAsync(id);
-            TempData["Success"] = "Product status updated successfully.";
+            var message = await _service.ToggleAsync(id);
+
+            if (message == "Status changed successfully.")
+            {
+                TempData["Success"] = message;
+            }
+            else
+            {
+                TempData["Error"] = message;
+            }
+
             return RedirectToAction(nameof(Index));
         }
-
         public IActionResult Create()
         {
             var model = new ProductSetup();
             model.IsActive = true;
             return PartialView(model);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductSetup productSetup)
@@ -47,12 +61,16 @@ namespace EmployeeAccessSystem.Controllers
                 return PartialView("Create", productSetup);
             }
 
-            await _service.AddAsync(productSetup);
+            var message = await _service.AddAsync(productSetup);
 
-            TempData["Success"] = "Product added successfully.";
-            return RedirectToAction(nameof(Index));
+            if (message == "Product added successfully.")
+            {
+                return Content("success|" + message);
+            }
+
+            ViewBag.Error = message;
+            return PartialView("Create", productSetup);
         }
-
         public async Task<IActionResult> Edit(int id)
         {
             var productSetup = await _service.GetByIdAsync(id);
@@ -64,7 +82,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return PartialView("Edit", productSetup);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProductSetup productSetup)
@@ -74,12 +91,16 @@ namespace EmployeeAccessSystem.Controllers
                 return PartialView("Edit", productSetup);
             }
 
-            await _service.UpdateAsync(productSetup);
+            var message = await _service.UpdateAsync(productSetup);
 
-            TempData["Success"] = "Product updated successfully.";
-            return RedirectToAction(nameof(Index));
+            if (message == "Product updated successfully.")
+            {
+                return Content("success|" + message);
+            }
+
+            ViewBag.Error = message;
+            return PartialView("Edit", productSetup);
         }
-
         public async Task<IActionResult> Delete(int id)
         {
             var productSetup = await _service.GetByIdAsync(id);
@@ -91,16 +112,19 @@ namespace EmployeeAccessSystem.Controllers
 
             return PartialView("Delete", productSetup);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int productId)
         {
-            await _service.DeleteAsync(productId);
+            var message = await _service.DeleteAsync(productId);
 
-            TempData["Success"] = "Product deleted successfully.";
-            return RedirectToAction(nameof(Index));
+            if (message == "Product deleted successfully.")
+            {
+                return Content("success|" + message);
+            }
+
+            return Content("error|" + message);
         }
     }
 }

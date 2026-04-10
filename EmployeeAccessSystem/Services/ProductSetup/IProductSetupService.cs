@@ -6,11 +6,11 @@ namespace EmployeeAccessSystem.Services
 {
     public interface IProductSetupService
     {
-        Task<List<ProductSetup>> GetAllAsync();
-        Task<ProductSetup?> GetByIdAsync(int id);
-        Task AddAsync(ProductSetup productSetup);
-        Task UpdateAsync(ProductSetup productSetup);
-        Task DeleteAsync(int id);
-        Task ToggleAsync(int id);
+        Task<IEnumerable<ProductSetup>> GetAllAsync();
+        Task<ProductSetup> GetByIdAsync(int id);
+        Task<string> AddAsync(ProductSetup productSetup);
+        Task<string> UpdateAsync(ProductSetup productSetup);
+        Task<string> DeleteAsync(int id);
+        Task<string> ToggleAsync(int id);
     }
 }

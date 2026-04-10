@@ -7,6 +7,7 @@
 <form asp-action="Edit" method="post" id="editSMCProductForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="SMCProductId" />
+
     @if (ViewBag.Error != null)
     {
         <div class="alert alert-danger">@ViewBag.Error</div>
@@ -29,7 +30,9 @@
     <div class="form-group mb-4">
         <div class="custom-control custom-switch">
             <input asp-for="IsActive" class="custom-control-input" id="EditIsActive" />
-            <label class="custom-control-label font-weight-bold" for="EditIsActive">Active</label>
+            <label class="custom-control-label font-weight-bold" for="EditIsActive" id="editStatusLabel">
+                Active
+            </label>
         </div>
         <span asp-validation-for="IsActive" class="text-danger small"></span>
     </div>
@@ -41,3 +44,23 @@
 </form>
 
 <partial name="_ValidationScriptsPartial" />
+
+<script>
+    $(document).ready(function () {
+
+        function updateEditStatus() {
+            if ($('#EditIsActive').is(':checked')) {
+                $('#editStatusLabel').text('Active');
+            } else {
+                $('#editStatusLabel').text('Inactive');
+            }
+        }
+
+        updateEditStatus();
+
+        $('#EditIsActive').change(function () {
+            updateEditStatus();
+        });
+
+    });
+</script>

@@ -12,6 +12,7 @@ namespace EmployeeAccessSystem.Excel
         private readonly string _reportTitle;
         private readonly DateTime? _fromDate;
         private readonly DateTime? _toDate;
+
         public ReportExcelDocument(List<ReportModel> reportData, string reportTitle, DateTime? fromDate, DateTime? toDate)
         {
             _reportData = reportData;
@@ -19,6 +20,7 @@ namespace EmployeeAccessSystem.Excel
             _fromDate = fromDate;
             _toDate = toDate;
         }
+
         public byte[] Generate()
         {
             using (XLWorkbook workbook = new XLWorkbook())
@@ -26,7 +28,9 @@ namespace EmployeeAccessSystem.Excel
                 IXLWorksheet worksheet = workbook.Worksheets.Add("Report");
                 List<DateTime> dateList = GetDateList();
                 List<ReportRowItem> uniqueRows = GetUniqueRows();
+
                 int currentRow = 1;
+
                 worksheet.Cell(currentRow, 1).Value = _reportTitle;
                 int totalColumns = 2 + dateList.Count;
                 worksheet.Range(currentRow, 1, currentRow, totalColumns).Merge();
@@ -34,36 +38,49 @@ namespace EmployeeAccessSystem.Excel
                 worksheet.Cell(currentRow, 1).Style.Font.FontSize = 14;
                 worksheet.Cell(currentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.LightGreen;
+
                 currentRow++;
+
                 worksheet.Cell(currentRow, 1).Value = "From Date";
                 worksheet.Cell(currentRow, 2).Value = _fromDate.HasValue ? _fromDate.Value.ToString("dd/MM/yyyy") : "-";
                 worksheet.Cell(currentRow, 3).Value = "To Date";
                 worksheet.Cell(currentRow, 4).Value = _toDate.HasValue ? _toDate.Value.ToString("dd/MM/yyyy") : "-";
                 worksheet.Range(currentRow, 1, currentRow, 4).Style.Font.Bold = true;
+
                 currentRow++;
                 currentRow++;
+
                 int headerRow1 = currentRow;
+
                 worksheet.Cell(headerRow1, 1).Value = "Monitoring Type";
                 worksheet.Cell(headerRow1, 2).Value = "Item";
+
                 for (int i = 0; i < dateList.Count; i++)
                 {
                     worksheet.Cell(headerRow1, i + 3).Value = dateList[i].ToString("dd");
                 }
+
                 currentRow++;
+
                 int headerRow2 = currentRow;
+
                 worksheet.Cell(headerRow2, 1).Value = "";
                 worksheet.Cell(headerRow2, 2).Value = "";
+
                 for (int i = 0; i < dateList.Count; i++)
                 {
                     worksheet.Cell(headerRow2, i + 3).Value = dateList[i].ToString("ddd");
                 }
+
                 worksheet.Range(headerRow1, 1, headerRow2, 2 + dateList.Count).Style.Font.Bold = true;
                 worksheet.Range(headerRow1, 1, headerRow2, 2 + dateList.Count).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 worksheet.Range(headerRow1, 1, headerRow2, 2 + dateList.Count).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                 worksheet.Range(headerRow1, 1, headerRow2, 2 + dateList.Count).Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Range(headerRow1, 1, headerRow2, 2 + dateList.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 worksheet.Range(headerRow1, 1, headerRow2, 2 + dateList.Count).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
                 currentRow++;
+
                 for (int i = 0; i < uniqueRows.Count; i++)
                 {
                     ReportRowItem currentItem = uniqueRows[i];
@@ -78,6 +95,7 @@ namespace EmployeeAccessSystem.Excel
                             break;
                         }
                     }
+
                     int sameTypeCount = 0;
 
                     for (int y = 0; y < uniqueRows.Count; y++)
@@ -87,6 +105,7 @@ namespace EmployeeAccessSystem.Excel
                             sameTypeCount++;
                         }
                     }
+
                     if (showMonitoringType)
                     {
                         worksheet.Cell(currentRow, 1).Value = currentItem.MonitoringTypeName;
@@ -95,13 +114,16 @@ namespace EmployeeAccessSystem.Excel
                         {
                             worksheet.Range(currentRow, 1, currentRow + sameTypeCount - 1, 1).Merge();
                         }
+
                         worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
                         worksheet.Cell(currentRow, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                         worksheet.Cell(currentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                         worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                     }
+
                     worksheet.Cell(currentRow, 2).Value = currentItem.ItemName;
                     worksheet.Cell(currentRow, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
                     for (int d = 0; d < dateList.Count; d++)
                     {
                         string displayText = "-";
@@ -109,6 +131,7 @@ namespace EmployeeAccessSystem.Excel
                         bool isChecked = false;
                         string entryMode = "";
                         string configValue = "";
+
                         for (int r = 0; r < _reportData.Count; r++)
                         {
                             if (_reportData[r].MonitoringTypeName == currentItem.MonitoringTypeName &&
@@ -131,6 +154,7 @@ namespace EmployeeAccessSystem.Excel
                                 break;
                             }
                         }
+
                         if (!foundRow)
                         {
                             displayText = "-";
@@ -168,6 +192,7 @@ namespace EmployeeAccessSystem.Excel
                                 displayText = "-";
                             }
                         }
+
                         worksheet.Cell(currentRow, d + 3).Value = displayText;
                         worksheet.Cell(currentRow, d + 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                         worksheet.Cell(currentRow, d + 3).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
@@ -183,10 +208,28 @@ namespace EmployeeAccessSystem.Excel
                             worksheet.Cell(currentRow, d + 3).Style.Font.Bold = true;
                         }
                     }
+
                     currentRow++;
+
+                    bool isLastOfGroup = true;
+
+                    if (i < uniqueRows.Count - 1)
+                    {
+                        if (uniqueRows[i].MonitoringTypeName == uniqueRows[i + 1].MonitoringTypeName)
+                        {
+                            isLastOfGroup = false;
+                        }
+                    }
+
+                    if (isLastOfGroup)
+                    {
+                        currentRow++;
+                    }
                 }
+
                 worksheet.Range(headerRow1, 1, currentRow - 1, 2 + dateList.Count).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 worksheet.Range(headerRow1, 1, currentRow - 1, 2 + dateList.Count).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
                 worksheet.Column(1).Width = 22;
                 worksheet.Column(2).Width = 22;
 
@@ -204,6 +247,7 @@ namespace EmployeeAccessSystem.Excel
                 }
             }
         }
+
         private List<DateTime> GetDateList()
         {
             List<DateTime> dates = new List<DateTime>();
@@ -222,6 +266,7 @@ namespace EmployeeAccessSystem.Excel
 
             return dates;
         }
+
         private List<ReportRowItem> GetUniqueRows()
         {
             List<ReportRowItem> uniqueRows = new List<ReportRowItem>();
@@ -239,6 +284,7 @@ namespace EmployeeAccessSystem.Excel
                         break;
                     }
                 }
+
                 if (!exists)
                 {
                     ReportRowItem item = new ReportRowItem();
@@ -247,8 +293,10 @@ namespace EmployeeAccessSystem.Excel
                     uniqueRows.Add(item);
                 }
             }
+
             return uniqueRows;
         }
+
         private class ReportRowItem
         {
             public string MonitoringTypeName { get; set; }

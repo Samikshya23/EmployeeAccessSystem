@@ -34,14 +34,17 @@
             </div>
 
             <div class="card-body p-0">
-                <table id="productSetupTable" class="table table-bordered table-hover table-sm mb-0 border border-secondary rounded-0">
-                    <thead class="bg-light border-bottom border-secondary">
+                <table id="productSetupTable"
+                       class="table table-bordered table-hover table-sm mb-0 rounded-0"
+                       style="border-color:#dee2e6;">
+                    <thead class="bg-light border-bottom">
                         <tr>
                             <th class="text-center align-middle" style="width: 70px;">SN</th>
                             <th class="text-center align-middle">Product Name</th>
                             <th class="text-center align-middle" style="width: 140px;">Actions</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
@@ -49,7 +52,15 @@
                             {
                                 <tr>
                                     <td class="text-center align-middle">@sn</td>
-                                    <td class="align-middle">@item.ProductName</td>
+
+                                    <td class="align-middle">
+                                        @item.ProductName
+                                        @if (!item.IsActive)
+                                        {
+                                            <span class="text-muted ml-2">(Inactive)</span>
+                                        }
+                                    </td>
+
                                     <td class="text-center align-middle">
                                         <a asp-action="Edit"
                                            asp-controller="ProductSetup"
@@ -87,8 +98,8 @@
         <div class="modal-content rounded-0">
             <div class="modal-header">
                 <h5 class="modal-title" id="mainActionModalTitle">Product Setup</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
                 </button>
             </div>
 
@@ -104,14 +115,15 @@
 @if (TempData["Success"] != null || TempData["Error"] != null)
 {
     <div class="position-fixed" style="top: 15px; right: 15px; z-index: 1055;">
+
         @if (TempData["Success"] != null)
         {
-            <div class="toast bg-success text-white fade" id="successToast" role="alert" data-delay="3000">
+            <div class="toast bg-success text-white fade" id="successToast" data-delay="3000">
                 <div class="toast-header bg-success text-white border-0">
                     <strong class="mr-auto">Success</strong>
                     <small>Now</small>
-                    <button type="button" class="close text-white" data-dismiss="toast" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button type="button" class="close text-white" data-dismiss="toast">
+                        <span>&times;</span>
                     </button>
                 </div>
                 <div class="toast-body">
@@ -122,12 +134,12 @@
 
         @if (TempData["Error"] != null)
         {
-            <div class="toast bg-danger text-white fade" id="errorToast" role="alert" data-delay="4000">
+            <div class="toast bg-danger text-white fade" id="errorToast" data-delay="4000">
                 <div class="toast-header bg-danger text-white border-0">
                     <strong class="mr-auto">Error</strong>
                     <small>Now</small>
-                    <button type="button" class="close text-white" data-dismiss="toast" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button type="button" class="close text-white" data-dismiss="toast">
+                        <span>&times;</span>
                     </button>
                 </div>
                 <div class="toast-body">
@@ -135,12 +147,11 @@
                 </div>
             </div>
         }
+
     </div>
 }
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
     <script>
         $(document).ready(function () {
 
@@ -171,14 +182,59 @@
                 $('#mainActionModalTitle').text(title);
                 $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>');
 
-                $('#mainActionModalBody').load(url, function (response, status) {
-                    if (status === 'error') {
-                        $('#mainActionModalBody').html('<div class="alert alert-danger mb-0">Failed to load content.</div>');
-                        return;
-                    }
-
+                $('#mainActionModalBody').load(url, function () {
                     $('#mainActionModal').modal('show');
                 });
+            });
+
+            $(document).on('submit', '#createProductForm, #editProductForm, #deleteProductForm', function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var actionUrl = form.attr('action');
+                var formData = form.serialize();
+
+                $.ajax({
+                    type: 'POST',
+                    url: actionUrl,
+                    data: formData,
+                    success: function (response) {
+
+                        if (typeof response === 'string' && response.indexOf('success|') === 0) {
+                            var successMessage = response.substring(8);
+                            $('#mainActionModal').modal('hide');
+                            window.location.href = '@Url.Action("Index", "ProductSetup")?successMessage=' + encodeURIComponent(successMessage);
+                            return;
+                        }
+
+                        if (typeof response === 'string' && response.indexOf('error|') === 0) {
+                            var errorMessage = response.substring(6);
+                            $('#mainActionModal').modal('hide');
+                            window.location.href = '@Url.Action("Index", "ProductSetup")?errorMessage=' + encodeURIComponent(errorMessage);
+                            return;
+                        }
+
+                        var html = $('<div>').html(response);
+                        var hasForm =
+                            html.find('#createProductForm').length > 0 ||
+                            html.find('#editProductForm').length > 0 ||
+                            html.find('#deleteProductForm').length > 0;
+
+                        if (hasForm) {
+                            $('#mainActionModalBody').html(response);
+                        } else {
+                            $('#mainActionModal').modal('hide');
+                            window.location.href = '@Url.Action("Index", "ProductSetup")';
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while processing your request.');
+                    }
+                });
+            });
+
+            $('#mainActionModal').on('hidden.bs.modal', function () {
+                $('#mainActionModalBody').html('');
             });
 
             if ($('#successToast').length) {
@@ -188,6 +244,7 @@
             if ($('#errorToast').length) {
                 $('#errorToast').toast('show');
             }
+
         });
     </script>
 }

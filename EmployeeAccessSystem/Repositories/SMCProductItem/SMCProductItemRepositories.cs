@@ -26,12 +26,12 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "GETALL");
+
             return await conn.QueryAsync<SMCProductItem>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "GETALL"
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -40,12 +40,12 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "GETACTIVE");
+
             return await conn.QueryAsync<SMCProductItem>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "GETACTIVE"
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -54,13 +54,13 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "GETBYPRODUCT");
+            parameters.Add("SMCProductId", smcProductId);
+
             return await conn.QueryAsync<SMCProductItem>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "GETBYPRODUCT",
-                    SMCProductId = smcProductId
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -84,16 +84,15 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "ADD");
+            parameters.Add("SMCProductId", model.SMCProductId);
+            parameters.Add("ItemName", model.ItemName);
+            parameters.Add("IsActive", model.IsActive);
+
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "ADD",
-                    SMCProductId = model.SMCProductId,
-                    ItemName = model.ItemName,
-                    //ValueType = model.ValueType,
-                    IsActive = model.IsActive
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -102,17 +101,16 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "UPDATE");
+            parameters.Add("SMCProductItemId", model.SMCProductItemId);
+            parameters.Add("SMCProductId", model.SMCProductId);
+            parameters.Add("ItemName", model.ItemName);
+            parameters.Add("IsActive", model.IsActive);
+
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "UPDATE",
-                    SMCProductItemId = model.SMCProductItemId,
-                    SMCProductId = model.SMCProductId,
-                    ItemName = model.ItemName,
-                    //ValueType = model.ValueType,
-                    IsActive = model.IsActive
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -121,28 +119,28 @@ namespace EmployeeAccessSystem.Repositories
         {
             using var conn = GetConnection();
 
-            return await conn.ExecuteAsync(
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "DELETE");
+            parameters.Add("SMCProductItemId", id);
+
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "DELETE",
-                    SMCProductItemId = id
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task ToggleAsync(int id)
+        public async Task<int> ToggleAsync(int id)
         {
             using var conn = GetConnection();
 
-            await conn.ExecuteAsync(
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "TOGGLE");
+            parameters.Add("SMCProductItemId", id);
+
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCProductItem_Manage",
-                new
-                {
-                    Flag = "TOGGLE",
-                    SMCProductItemId = id
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }

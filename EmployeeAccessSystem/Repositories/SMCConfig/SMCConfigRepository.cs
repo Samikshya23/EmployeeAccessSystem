@@ -22,109 +22,130 @@ namespace EmployeeAccessSystem.Repositories
 
         public async Task<IEnumerable<SMCConfig>> GetAllAsync()
         {
-            using var conn = GetConnection();
+            using SqlConnection conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "GETALL");
 
             return await conn.QueryAsync<SMCConfig>(
                 "dbo.sp_SMCConfig_Manage",
-                new { Flag = "GETALL" },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
         public async Task<SMCConfig?> GetByIdAsync(int id)
         {
-            using var conn = GetConnection();
+            using SqlConnection conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "GETBYID");
+            parameters.Add("SMCConfigId", id);
 
             return await conn.QueryFirstOrDefaultAsync<SMCConfig>(
                 "dbo.sp_SMCConfig_Manage",
-                new { Flag = "GETBYID", SMCConfigId = id },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
         public async Task<SMCConfig?> GetExistingAsync(int productId, int smcProductId, int itemId, DateTime date)
         {
-            using var conn = GetConnection();
+            using SqlConnection conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "CHECKEXIST");
+            parameters.Add("ProductId", productId);
+            parameters.Add("SMCProductId", smcProductId);
+            parameters.Add("SMCProductItemId", itemId);
+            parameters.Add("EntryDate", date.Date);
 
             return await conn.QueryFirstOrDefaultAsync<SMCConfig>(
                 "dbo.sp_SMCConfig_Manage",
-                new
-                {
-                    Flag = "CHECKEXIST",
-                    ProductId = productId,
-                    SMCProductId = smcProductId,
-                    SMCProductItemId = itemId,
-                    EntryDate = date
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
         public async Task<int> AddAsync(SMCConfig model)
         {
-            using var conn = GetConnection();
+            using SqlConnection conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "ADD");
+            parameters.Add("ProductId", model.ProductId);
+            parameters.Add("SMCProductId", model.SMCProductId);
+            parameters.Add("SMCProductItemId", model.SMCProductItemId);
+            parameters.Add("EntryDate", model.EntryDate.Date);
+            parameters.Add("ConfigValue", model.ConfigValue);
+            parameters.Add("IsChecked", model.IsChecked);
+            parameters.Add("EntryMode", model.EntryMode);
+            parameters.Add("Remarks", model.Remarks);
+            parameters.Add("IsActive", model.IsActive);
+            parameters.Add("CreatedDate", model.CreatedDate);
+            parameters.Add("CreatedBy", model.CreatedBy);
 
             return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
-                new
-                {
-                    Flag = "ADD",
-                    ProductId = model.ProductId,
-                    SMCProductId = model.SMCProductId,
-                    SMCProductItemId = model.SMCProductItemId,
-                    EntryDate = model.EntryDate,
-                    ConfigValue = model.ConfigValue,
-                    IsChecked = model.IsChecked,
-                    EntryMode = model.EntryMode,
-                    Remarks = model.Remarks,
-                    IsActive = model.IsActive
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
         public async Task<int> UpdateAsync(SMCConfig model)
         {
-            using var conn = GetConnection();
+            using SqlConnection conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "UPDATE");
+            parameters.Add("SMCConfigId", model.SMCConfigId);
+            parameters.Add("ProductId", model.ProductId);
+            parameters.Add("SMCProductId", model.SMCProductId);
+            parameters.Add("SMCProductItemId", model.SMCProductItemId);
+            parameters.Add("EntryDate", model.EntryDate.Date);
+            parameters.Add("ConfigValue", model.ConfigValue);
+            parameters.Add("IsChecked", model.IsChecked);
+            parameters.Add("EntryMode", model.EntryMode);
+            parameters.Add("Remarks", model.Remarks);
+            parameters.Add("IsActive", model.IsActive);
+            parameters.Add("ModifiedDate", model.ModifiedDate);
+            parameters.Add("ModifiedBy", model.ModifiedBy);
 
             return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
-                new
-                {
-                    Flag = "UPDATE",
-                    SMCConfigId = model.SMCConfigId,
-                    ProductId = model.ProductId,
-                    SMCProductId = model.SMCProductId,
-                    SMCProductItemId = model.SMCProductItemId,
-                    EntryDate = model.EntryDate,
-                    ConfigValue = model.ConfigValue,
-                    IsChecked = model.IsChecked,
-                    EntryMode = model.EntryMode,
-                    Remarks = model.Remarks,
-                    IsActive = model.IsActive
-                },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<int> DeleteAsync(int id)
+        public async Task<int> DeleteAsync(int id, DateTime? deletedDate, string? deletedBy)
         {
-            using var conn = GetConnection();
+            using SqlConnection conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "DELETE");
+            parameters.Add("SMCConfigId", id);
+            parameters.Add("DeletedDate", deletedDate);
+            parameters.Add("DeletedBy", deletedBy);
 
             return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
-                new { Flag = "DELETE", SMCConfigId = id },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
         public async Task<int> ToggleAsync(int id)
         {
-            using var conn = GetConnection();
+            using SqlConnection conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "TOGGLE");
+            parameters.Add("SMCConfigId", id);
 
             return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_SMCConfig_Manage",
-                new { Flag = "TOGGLE", SMCConfigId = id },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }

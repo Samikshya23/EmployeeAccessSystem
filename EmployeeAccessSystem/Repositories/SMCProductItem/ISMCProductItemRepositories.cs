@@ -11,6 +11,6 @@ namespace EmployeeAccessSystem.Repositories
         Task<int> AddAsync(SMCProductItem model);
         Task<int> UpdateAsync(SMCProductItem model);
         Task<int> DeleteAsync(int id);
-        Task ToggleAsync(int id);
+        Task<int> ToggleAsync(int id);
     }
 }

@@ -29,7 +29,9 @@
     <div class="form-group mb-4">
         <div class="custom-control custom-switch">
             <input asp-for="IsActive" class="custom-control-input" id="CreateIsActive" />
-            <label class="custom-control-label font-weight-bold" for="CreateIsActive">Active</label>
+            <label class="custom-control-label font-weight-bold" for="CreateIsActive" id="createStatusLabel">
+                Active
+            </label>
         </div>
         <span asp-validation-for="IsActive" class="text-danger small"></span>
     </div>
@@ -41,3 +43,23 @@
 </form>
 
 <partial name="_ValidationScriptsPartial" />
+
+<script>
+    $(document).ready(function () {
+
+        function updateCreateStatus() {
+            if ($('#CreateIsActive').is(':checked')) {
+                $('#createStatusLabel').text('Active');
+            } else {
+                $('#createStatusLabel').text('Inactive');
+            }
+        }
+
+        updateCreateStatus();
+
+        $('#CreateIsActive').change(function () {
+            updateCreateStatus();
+        });
+
+    });
+</script>

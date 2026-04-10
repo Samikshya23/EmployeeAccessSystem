@@ -1,62 +1,15 @@
-﻿
-html {
-    font-size: 14px;
+﻿.content-wrapper {
+    padding-bottom: 0 !important;
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
-.form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.content {
+    margin-bottom: 0 !important;
 }
 
-html {
-    position: relative;
-    min-height: 100%;
+.card {
+    margin-bottom: 4px !important;
 }
 
-body {
-    margin-bottom: 60px;
-    height: 100%;
-    overflow: auto; 
-}
-
-.main-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    overflow-y: auto;
-}
-
-.content-wrapper {
-    margin-left: 250px;
-    height: 100vh;
-    overflow-y: auto;
-    padding: 15px;
-}
-
-.table-scroll-container {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: auto;
-    border-radius: 12px;
-}
-
-    .table-scroll-container::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .table-scroll-container::-webkit-scrollbar-thumb {
-        background-color: #ccc;
-        border-radius: 10px;
-    }
-.table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #fff;
-    z-index: 2;
+.table td, .table th {
+    padding: 4px 8px !important;
 }

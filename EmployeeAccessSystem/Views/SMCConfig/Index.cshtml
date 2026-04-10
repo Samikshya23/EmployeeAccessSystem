@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<EmployeeAccessSystem.Models.SMCConfig>
+@using System.Collections.Generic
 
 @{
     ViewData["Title"] = "SMC Config List";
@@ -6,13 +7,14 @@
     var shownProductNames = new List<string>();
 }
 
-<div class="card card-primary card-outline mb-0 h-100">
-    <div class="card-header bg-white py-2">
-        <div class="row align-items-center">
-            <div class="col-md-6">
+<section class="content pt-2 pb-0">
+    <div class="container-fluid px-0">
+
+        <div class="row mb-2 mx-0 align-items-center">
+            <div class="col-sm-6 px-0">
                 <h3 class="mb-0">SMC Config List</h3>
             </div>
-            <div class="col-md-6 text-md-right mt-2 mt-md-0">
+            <div class="col-sm-6 text-right px-0">
                 <a asp-action="Create"
                    asp-route-modal="true"
                    class="btn btn-primary rounded-pill open-modal-btn"
@@ -21,269 +23,316 @@
                 </a>
             </div>
         </div>
-    </div>
 
-    <div class="card-body p-2">
-        <div class="row mb-2">
-            <div class="col-md-3">
-                <input type="date" id="fromDate" class="form-control" />
-            </div>
-            <div class="col-md-3">
-                <input type="date" id="toDate" class="form-control" />
-            </div>
-            <div class="col-md-6">
-                <input type="text"
-                       id="customSearch"
-                       class="form-control"
-                       placeholder="Search entries..." />
-            </div>
-        </div>
+        <div class="card mb-0 border-left border-right border-bottom shadow-none rounded-0">
 
-        <div class="table-responsive">
-            <table id="smcConfigTable" class="table table-sm table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="text-center" style="width: 70px;">SN</th>
-                        <th class="text-center" style="width: 25%;">SMC Product</th>
-                        <th class="text-center" style="width: 18%;">Item</th>
-                        <th class="text-center" style="width: 14%;">Date</th>
-                        <th class="text-center" style="width: 12%;">Result</th>
-                        <th class="text-center" style="width: 11%;">Status</th>
-                        <th class="text-center" style="width: 120px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="smcConfigTableBody">
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var product in Model)
+            <div class="card-header bg-white border-bottom-0 py-2 px-2 rounded-0">
+                <div class="row mx-0 align-items-center">
+                    <div class="col-md-6 px-0">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-2">Show</span>
+                            <select id="entriesPerPage" class="custom-select custom-select-sm w-auto">
+                                <option value="2" selected>2</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span class="ml-2">entries</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 px-0 mt-2 mt-md-0">
+                        <div class="d-flex justify-content-md-end">
+                            <div style="width:220px;">
+                                <input type="text"
+                                       id="customSearch"
+                                       class="form-control form-control-sm"
+                                       placeholder="Search" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <table id="smcConfigTable"
+                       class="table table-bordered table-hover table-sm mb-0 rounded-0"
+                       style="border-color:#dee2e6;">
+
+                    <thead class="bg-light border-bottom">
+                        <tr>
+                            <th class="text-center align-middle sticky-top bg-light" style="width:60px; z-index:2;">SN</th>
+                            <th class="text-center align-middle sticky-top bg-light" style="width:24%; z-index:2;">SMC Product</th>
+                            <th class="text-center align-middle sticky-top bg-light" style="width:22%; z-index:2;">Item</th>
+                            <th class="text-center align-middle sticky-top bg-light" style="width:14%; z-index:2;">Date</th>
+                            <th class="text-center align-middle sticky-top bg-light" style="width:12%; z-index:2;">Result</th>
+                            <th class="text-center align-middle sticky-top bg-light" style="width:12%; z-index:2;">Status</th>
+                            <th class="text-center align-middle sticky-top bg-light" style="width:130px; z-index:2;">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="smcConfigTableBody">
+                        @if (Model != null && Model.Any())
                         {
-                            if (!shownProductNames.Contains(product.SMCProductName))
+                            foreach (var product in Model)
                             {
-                                shownProductNames.Add(product.SMCProductName);
-
-                                var groupItems = new List<EmployeeAccessSystem.Models.SMCConfig>();
-
-                                foreach (var item in Model)
+                                if (!shownProductNames.Contains(product.SMCProductName))
                                 {
-                                    if (item.SMCProductName == product.SMCProductName)
+                                    shownProductNames.Add(product.SMCProductName);
+
+                                    var groupItems = new List<EmployeeAccessSystem.Models.SMCConfig>();
+
+                                    foreach (var item in Model)
                                     {
-                                        groupItems.Add(item);
-                                    }
-                                }
-
-                                string combinedSearchText = "";
-                                bool firstText = true;
-
-                                foreach (var groupItem in groupItems)
-                                {
-                                    string resultText = "-";
-
-                                    if (groupItem.EntryMode == "Value")
-                                    {
-                                        if (!string.IsNullOrWhiteSpace(groupItem.ConfigValue))
+                                        if (item.SMCProductName == product.SMCProductName)
                                         {
-                                            resultText = groupItem.ConfigValue;
+                                            groupItems.Add(item);
                                         }
                                     }
-                                    else if (groupItem.EntryMode == "Checkbox")
+
+                                    string combinedSearchText = "";
+                                    bool firstText = true;
+                                    string groupKey = "group_" + sn;
+
+                                    foreach (var groupItem in groupItems)
                                     {
-                                        if (groupItem.IsChecked)
+                                        string resultText = "-";
+                                        string dateText = groupItem.EntryDate.ToString("dd MMM yyyy");
+
+                                        if (groupItem.EntryMode == "Value")
                                         {
-                                            resultText = "Checked";
+                                            if (!string.IsNullOrWhiteSpace(groupItem.ConfigValue))
+                                            {
+                                                resultText = groupItem.ConfigValue;
+                                            }
+                                        }
+                                        else if (groupItem.EntryMode == "Checkbox")
+                                        {
+                                            if (groupItem.IsChecked)
+                                            {
+                                                resultText = "Checked";
+                                            }
+                                            else
+                                            {
+                                                resultText = "Cross";
+                                            }
+                                        }
+
+                                        string rowText =
+                                            groupItem.SMCProductName + " " +
+                                            groupItem.ItemName + " " +
+                                            dateText + " " +
+                                            resultText + " " +
+                                            (groupItem.IsActive ? "Active" : "Inactive");
+
+                                        if (firstText)
+                                        {
+                                            combinedSearchText = rowText;
+                                            firstText = false;
                                         }
                                         else
                                         {
-                                            resultText = "Cross";
+                                            combinedSearchText = combinedSearchText + " " + rowText;
                                         }
                                     }
 
-                                    string rowText =
-                                        groupItem.SMCProductName + " " +
-                                        groupItem.ItemName + " " +
-                                        groupItem.EntryDate.ToString("yyyy-MM-dd") + " " +
-                                        resultText + " " +
-                                        (groupItem.IsActive ? "Active" : "Inactive");
+                                    <tr class="group-row" data-search="@combinedSearchText" data-group="@groupKey">
+                                        <td class="text-center align-top pt-2 group-sn">
+                                            @sn
+                                        </td>
 
-                                    if (firstText)
-                                    {
-                                        combinedSearchText = rowText;
-                                        firstText = false;
-                                    }
-                                    else
-                                    {
-                                        combinedSearchText = combinedSearchText + " " + rowText;
-                                    }
+                                        <td class="align-top pt-2">
+                                            <div class="d-flex align-items-start px-2">
+                                                @if (groupItems.Count > 4)
+                                                {
+                                                    <a href="javascript:void(0);"
+                                                       class="text-dark mr-2 group-toggle-btn"
+                                                       data-group="@groupKey"
+                                                       data-expanded="false"
+                                                       title="Expand"
+                                                       style="line-height:1;">
+                                                        <i class="fas fa-caret-right"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="mr-3"></span>
+                                                }
+
+                                                <span>@product.SMCProductName</span>
+                                            </div>
+                                        </td>
+
+                                        <td class="p-0 align-top">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        string hiddenClass = i >= 4 ? "d-none extra-row " + groupKey : "";
+                                                        <tr class="child-row @hiddenClass" data-row-index="@i">
+                                                            <td class="p-0 align-middle @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                                <div class="d-flex align-items-center px-2" style="height:34px;">
+                                                                    @groupItems[i].ItemName
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+
+                                        <td class="p-0 align-top">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        string hiddenClass = i >= 4 ? "d-none extra-row " + groupKey : "";
+                                                        <tr class="child-row @hiddenClass" data-row-index="@i">
+                                                            <td class="p-0 align-middle text-center @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                                <div class="d-flex justify-content-center align-items-center px-2" style="height:34px;">
+                                                                    @groupItems[i].EntryDate.ToString("dd MMM yyyy")
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+
+                                        <td class="p-0 align-top">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        string hiddenClass = i >= 4 ? "d-none extra-row " + groupKey : "";
+                                                        <tr class="child-row @hiddenClass" data-row-index="@i">
+                                                            <td class="p-0 align-middle text-center @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                                <div class="d-flex justify-content-center align-items-center px-2" style="height:34px;">
+                                                                    @if (groupItems[i].EntryMode == "Value")
+                                                                    {
+                                                                        if (!string.IsNullOrWhiteSpace(groupItems[i].ConfigValue))
+                                                                        {
+                                                                            <span>@groupItems[i].ConfigValue</span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span>-</span>
+                                                                        }
+                                                                    }
+                                                                    else if (groupItems[i].EntryMode == "Checkbox")
+                                                                    {
+                                                                        if (groupItems[i].IsChecked)
+                                                                        {
+                                                                            <i class="fas fa-check text-success"></i>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <i class="fas fa-times text-danger"></i>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>-</span>
+                                                                    }
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+
+                                        <td class="p-0 align-top">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        string hiddenClass = i >= 4 ? "d-none extra-row " + groupKey : "";
+                                                        <tr class="child-row @hiddenClass" data-row-index="@i">
+                                                            <td class="p-0 align-middle text-center @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                                <div class="d-flex justify-content-center align-items-center px-2" style="height:34px;">
+                                                                    @if (groupItems[i].IsActive)
+                                                                    {
+                                                                        <span class="badge badge-success">Active</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="badge badge-secondary">Inactive</span>
+                                                                    }
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+
+                                        <td class="p-0 align-top">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        string hiddenClass = i >= 4 ? "d-none extra-row " + groupKey : "";
+                                                        <tr class="child-row @hiddenClass" data-row-index="@i">
+                                                            <td class="p-0 align-middle text-center @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                                <div class="d-flex justify-content-center align-items-center" style="height:34px; gap:6px;">
+                                                                    <a asp-action="Edit"
+                                                                       asp-route-id="@groupItems[i].SMCConfigId"
+                                                                       class="btn btn-sm btn-light border open-modal-btn"
+                                                                       data-title="Edit SMC Config"
+                                                                       title="Edit">
+                                                                        <i class="fas fa-pen"></i>
+                                                                    </a>
+
+                                                                    <a asp-action="Delete"
+                                                                       asp-route-id="@groupItems[i].SMCConfigId"
+                                                                       class="btn btn-sm btn-outline-danger open-modal-btn"
+                                                                       data-title="Delete SMC Config"
+                                                                       title="Delete">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                    sn++;
                                 }
-
-                                <tr class="group-row" data-search="@combinedSearchText">
-                                    <td class="text-center align-top pt-3 group-sn">
-                                        @sn
-                                    </td>
-
-                                    <td class="align-top pt-3">
-                                        @product.SMCProductName
-                                    </td>
-
-                                    <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0 inner-table">
-                                            <tbody>
-                                                @for (int i = 0; i < groupItems.Count; i++)
-                                                {
-                                                    <tr class="child-row"
-                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
-                                                        data-row-index="@i">
-                                                        <td class="py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            @groupItems[i].ItemName
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-
-                                    <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0 inner-table">
-                                            <tbody>
-                                                @for (int i = 0; i < groupItems.Count; i++)
-                                                {
-                                                    <tr class="child-row"
-                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
-                                                        data-row-index="@i">
-                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            @groupItems[i].EntryDate.ToString("dd MMM yyyy")
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-
-                                    <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0 inner-table">
-                                            <tbody>
-                                                @for (int i = 0; i < groupItems.Count; i++)
-                                                {
-                                                    <tr class="child-row"
-                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
-                                                        data-row-index="@i">
-                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            @if (groupItems[i].EntryMode == "Value")
-                                                            {
-                                                                if (!string.IsNullOrWhiteSpace(groupItems[i].ConfigValue))
-                                                                {
-                                                                    <span>@groupItems[i].ConfigValue</span>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <span>-</span>
-                                                                }
-                                                            }
-                                                            else if (groupItems[i].EntryMode == "Checkbox")
-                                                            {
-                                                                if (groupItems[i].IsChecked)
-                                                                {
-                                                                    <i class="fas fa-check text-success"></i>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <i class="fas fa-times text-danger"></i>
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                <span>-</span>
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-
-                                    <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0 inner-table">
-                                            <tbody>
-                                                @for (int i = 0; i < groupItems.Count; i++)
-                                                {
-                                                    <tr class="child-row"
-                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
-                                                        data-row-index="@i">
-                                                        <td class="text-center py-1 px-2 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            @if (groupItems[i].IsActive)
-                                                            {
-                                                                <span class="badge badge-success">Active</span>
-                                                            }
-                                                            else
-                                                            {
-                                                                <span class="badge badge-secondary">Inactive</span>
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-
-                                    <td class="p-0 align-top">
-                                        <table class="table table-sm mb-0 inner-table">
-                                            <tbody>
-                                                @for (int i = 0; i < groupItems.Count; i++)
-                                                {
-                                                    <tr class="child-row"
-                                                        data-entry-date="@groupItems[i].EntryDate.ToString("yyyy-MM-dd")"
-                                                        data-row-index="@i">
-                                                        <td class="text-center py-0 px-1 @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                            <a asp-action="Edit"
-                                                               asp-route-id="@groupItems[i].SMCConfigId"
-                                                               class="btn btn-sm btn-light border open-modal-btn"
-                                                               data-title="Edit SMC Config">
-                                                                <i class="fas fa-pen"></i>
-                                                            </a>
-
-                                                            <a asp-action="Delete"
-                                                               asp-route-id="@groupItems[i].SMCConfigId"
-                                                               class="btn btn-sm btn-outline-danger open-modal-btn ml-1"
-                                                               data-title="Delete SMC Config">
-                                                                <i class="fas fa-trash-alt"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-
-                                sn++;
                             }
                         }
-                    }
-                    else
-                    {
-                        <tr id="noDataRow">
-                            <td colspan="7" class="text-center">No SMC Config entries found.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                        else
+                        {
+                            <tr id="noDataRow">
+                                <td colspan="7" class="text-center align-middle">No SMC Config entries found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="row mt-3 align-items-center">
-            <div class="col-md-6">
+        <div class="row mt-2 mx-0 align-items-center">
+            <div class="col-md-6 px-0">
                 <div id="paginationInfo" class="text-muted"></div>
             </div>
-            <div class="col-md-6 text-md-right mt-2 mt-md-0">
+            <div class="col-md-6 text-right px-0 mt-2 mt-md-0">
                 <nav>
                     <ul class="pagination pagination-sm justify-content-md-end mb-0" id="customPagination"></ul>
                 </nav>
             </div>
         </div>
+
     </div>
-</div>
+</section>
 
 <div class="modal fade" id="mainActionModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-        <div class="modal-content">
+        <div class="modal-content rounded-0">
             <div class="modal-header">
                 <h5 class="modal-title" id="mainActionModalTitle">SMC Config</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -293,274 +342,221 @@
 
             <div class="modal-body" id="mainActionModalBody">
                 <div class="text-center py-3">
-                    <i class="fas fa-spinner fa-spin mr-2"></i>Loading...
+                    <i class="fas fa-spinner fa-spin mr-2"></i> Loading...
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="toast-container position-fixed p-3" style="top: 15px; right: 15px; z-index: 9999;">
-    @if (TempData["Success"] != null)
-    {
-        <div class="toast bg-success text-white fade" id="successToast" data-delay="3000">
-            <div class="toast-header bg-success text-white border-0">
-                <strong class="mr-auto">Success</strong>
-                <small>Now</small>
-                <button type="button" class="close text-white" data-dismiss="toast">&times;</button>
-            </div>
-            <div class="toast-body">
-                @TempData["Success"]
-            </div>
-        </div>
-    }
+@if (TempData["Success"] != null || TempData["Error"] != null)
+{
+    <div class="position-fixed" style="top: 15px; right: 15px; z-index: 1055;">
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="toast bg-danger text-white fade" id="errorToast" data-delay="4000">
-            <div class="toast-header bg-danger text-white border-0">
-                <strong class="mr-auto">Error</strong>
-                <small>Now</small>
-                <button type="button" class="close text-white" data-dismiss="toast">&times;</button>
+        @if (TempData["Success"] != null)
+        {
+            <div class="toast bg-success text-white fade" id="successToast" data-delay="3000">
+                <div class="toast-header bg-success text-white border-0">
+                    <strong class="mr-auto">Success</strong>
+                    <small>Now</small>
+                    <button type="button" class="close text-white" data-dismiss="toast">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    @TempData["Success"]
+                </div>
             </div>
-            <div class="toast-body">
-                @TempData["Error"]
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="toast bg-danger text-white fade" id="errorToast" data-delay="4000">
+                <div class="toast-header bg-danger text-white border-0">
+                    <strong class="mr-auto">Error</strong>
+                    <small>Now</small>
+                    <button type="button" class="close text-white" data-dismiss="toast">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    @TempData["Error"]
+                </div>
             </div>
-        </div>
-    }
-</div>
+        }
+
+    </div>
+}
 
 @section Scripts {
-    <script>
-        $(document).ready(function () {
+<script>
+    $(document).ready(function () {
 
-            var rowsPerPage = 2;
-            var currentPage = 1;
+        var rowsPerPage = parseInt($('#entriesPerPage').val());
+        var currentPage = 1;
 
-            function formatDateToInputValue(date) {
-                var year = date.getFullYear();
-                var month = (date.getMonth() + 1).toString();
-                var day = date.getDate().toString();
+        function getFilteredRows() {
+            var searchText = $('#customSearch').val().toLowerCase().trim();
+            var filteredRows = [];
 
-                if (month.length < 2) {
-                    month = '0' + month;
+            $('#smcConfigTableBody tr.group-row').each(function () {
+                var rowSearchText = ($(this).attr('data-search') || '').toLowerCase();
+
+                if (searchText === '' || rowSearchText.indexOf(searchText) > -1) {
+                    filteredRows.push(this);
                 }
+            });
 
-                if (day.length < 2) {
-                    day = '0' + day;
-                }
+            return filteredRows;
+        }
 
-                return year + '-' + month + '-' + day;
+        function updateSerialNumbers(filteredRows) {
+            var i;
+
+            for (i = 0; i < filteredRows.length; i++) {
+                $(filteredRows[i]).find('.group-sn').text(i + 1);
+            }
+        }
+
+        function renderPagination() {
+            var filteredRows = getFilteredRows();
+            var totalRows = filteredRows.length;
+            var totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            $('#smcConfigTableBody tr.group-row').hide();
+
+            if (totalRows === 0) {
+                $('#paginationInfo').text('No matching entries found.');
+                $('#customPagination').html('');
+                return;
             }
 
-            function setDefaultDateRange() {
-                var today = new Date();
-                var from = new Date();
-                from.setDate(today.getDate() - 29);
+            updateSerialNumbers(filteredRows);
 
-                $('#toDate').val(formatDateToInputValue(today));
-                $('#fromDate').val(formatDateToInputValue(from));
+            if (currentPage > totalPages) {
+                currentPage = 1;
             }
 
-            function isDateInRange(entryDate, fromDate, toDate) {
-                if (fromDate !== '' && entryDate < fromDate) {
-                    return false;
-                }
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+            var i;
 
-                if (toDate !== '' && entryDate > toDate) {
-                    return false;
-                }
-
-                return true;
+            for (i = startIndex; i < endIndex && i < totalRows; i++) {
+                $(filteredRows[i]).show();
             }
 
-            function applyChildRowFilter() {
-                var fromDate = $('#fromDate').val();
-                var toDate = $('#toDate').val();
+            var fromRecord = startIndex + 1;
+            var toRecord = endIndex;
 
-                $('#smcConfigTableBody tr.group-row').each(function () {
-                    var groupRow = $(this);
-                    var visibleRowIndexes = [];
-
-                    var dateTable = groupRow.find('table.inner-table').eq(1);
-
-                    dateTable.find('tr.child-row').each(function () {
-                        var entryDate = $(this).attr('data-entry-date');
-                        var rowIndex = $(this).attr('data-row-index');
-
-                        if (isDateInRange(entryDate, fromDate, toDate)) {
-                            visibleRowIndexes.push(rowIndex);
-                        }
-                    });
-
-                    groupRow.find('table.inner-table').each(function () {
-                        $(this).find('tr.child-row').each(function () {
-                            var rowIndex = $(this).attr('data-row-index');
-
-                            if (visibleRowIndexes.indexOf(rowIndex) > -1) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    });
-
-                    if (visibleRowIndexes.length > 0) {
-                        groupRow.attr('data-has-visible-children', 'true');
-                    } else {
-                        groupRow.attr('data-has-visible-children', 'false');
-                    }
-                });
+            if (toRecord > totalRows) {
+                toRecord = totalRows;
             }
 
-            function getFilteredRows() {
-                var searchText = $('#customSearch').val().toLowerCase().trim();
-                var filteredRows = [];
+            $('#paginationInfo').text('Showing ' + fromRecord + ' to ' + toRecord + ' of ' + totalRows + ' grouped entries');
 
-                $('#smcConfigTableBody tr.group-row').each(function () {
-                    var rowSearchText = ($(this).attr('data-search') || '').toLowerCase();
-                    var hasVisibleChildren = $(this).attr('data-has-visible-children') === 'true';
+            var paginationHtml = '';
+            var page;
 
-                    if (hasVisibleChildren) {
-                        if (searchText === '' || rowSearchText.indexOf(searchText) > -1) {
-                            filteredRows.push(this);
-                        }
-                    }
-                });
-
-                return filteredRows;
+            if (currentPage > 1) {
+                paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + (currentPage - 1) + '">Previous</a></li>';
+            } else {
+                paginationHtml += '<li class="page-item disabled"><span class="page-link">Previous</span></li>';
             }
 
-            function updateSerialNumbers(filteredRows) {
-                var i;
-
-                for (i = 0; i < filteredRows.length; i++) {
-                    $(filteredRows[i]).find('.group-sn').text(i + 1);
-                }
-            }
-
-            function renderPagination() {
-                applyChildRowFilter();
-
-                var filteredRows = getFilteredRows();
-                var totalRows = filteredRows.length;
-                var totalPages = Math.ceil(totalRows / rowsPerPage);
-
-                $('#smcConfigTableBody tr.group-row').hide();
-
-                if (totalRows === 0) {
-                    $('#paginationInfo').text('No matching entries found.');
-                    $('#customPagination').html('');
-                    return;
-                }
-
-                updateSerialNumbers(filteredRows);
-
-                if (currentPage > totalPages) {
-                    currentPage = 1;
-                }
-
-                var startIndex = (currentPage - 1) * rowsPerPage;
-                var endIndex = startIndex + rowsPerPage;
-                var i;
-
-                for (i = startIndex; i < endIndex && i < totalRows; i++) {
-                    $(filteredRows[i]).show();
-                }
-
-                var fromRecord = startIndex + 1;
-                var toRecord = endIndex;
-
-                if (toRecord > totalRows) {
-                    toRecord = totalRows;
-                }
-
-                $('#paginationInfo').text('Showing ' + fromRecord + ' to ' + toRecord + ' of ' + totalRows + ' grouped entries');
-
-                var paginationHtml = '';
-                var page;
-
-                if (currentPage > 1) {
-                    paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + (currentPage - 1) + '">Previous</a></li>';
+            for (page = 1; page <= totalPages; page++) {
+                if (page === currentPage) {
+                    paginationHtml += '<li class="page-item active"><span class="page-link">' + page + '</span></li>';
                 } else {
-                    paginationHtml += '<li class="page-item disabled"><span class="page-link">Previous</span></li>';
+                    paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + page + '">' + page + '</a></li>';
                 }
-
-                for (page = 1; page <= totalPages; page++) {
-                    if (page === currentPage) {
-                        paginationHtml += '<li class="page-item active"><span class="page-link">' + page + '</span></li>';
-                    } else {
-                        paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + page + '">' + page + '</a></li>';
-                    }
-                }
-
-                if (currentPage < totalPages) {
-                    paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + (currentPage + 1) + '">Next</a></li>';
-                } else {
-                    paginationHtml += '<li class="page-item disabled"><span class="page-link">Next</span></li>';
-                }
-
-                $('#customPagination').html(paginationHtml);
             }
 
-            $('#fromDate').on('change', function () {
-                currentPage = 1;
-                renderPagination();
-            });
+            if (currentPage < totalPages) {
+                paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + (currentPage + 1) + '">Next</a></li>';
+            } else {
+                paginationHtml += '<li class="page-item disabled"><span class="page-link">Next</span></li>';
+            }
 
-            $('#toDate').on('change', function () {
-                currentPage = 1;
-                renderPagination();
-            });
+            $('#customPagination').html(paginationHtml);
+        }
 
-            $('#customSearch').on('keyup', function () {
-                currentPage = 1;
-                renderPagination();
-            });
-
-            $(document).on('click', '.pagination-link', function (e) {
-                e.preventDefault();
-
-                var page = $(this).data('page');
-                currentPage = parseInt(page);
-                renderPagination();
-            });
-
-            setDefaultDateRange();
+        $('#customSearch').on('keyup', function () {
+            currentPage = 1;
             renderPagination();
+        });
 
-            function openSmcConfigModal(url, title) {
-                $('#mainActionModalTitle').text(title);
-                $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</div>');
+        $('#entriesPerPage').on('change', function () {
+            rowsPerPage = parseInt($(this).val());
+            currentPage = 1;
+            renderPagination();
+        });
 
-                $('#mainActionModalBody').load(url, function () {
-                    $.validator.unobtrusive.parse('#mainActionModalBody');
-                });
+        $(document).on('click', '.pagination-link', function (e) {
+            e.preventDefault();
 
-                $('#mainActionModal').modal('show');
+            var page = $(this).data('page');
+            currentPage = parseInt(page);
+            renderPagination();
+        });
+
+        $(document).on('click', '.group-toggle-btn', function (e) {
+            e.preventDefault();
+
+            var groupKey = $(this).data('group');
+            var isExpanded = $(this).attr('data-expanded') === 'true';
+
+            if (isExpanded) {
+                $('.' + groupKey).addClass('d-none');
+                $(this).attr('data-expanded', 'false');
+                $(this).attr('title', 'Expand');
+                $(this).find('i').removeClass('fa-caret-down').addClass('fa-caret-right');
+            } else {
+                $('.' + groupKey).removeClass('d-none');
+                $(this).attr('data-expanded', 'true');
+                $(this).attr('title', 'Collapse');
+                $(this).find('i').removeClass('fa-caret-right').addClass('fa-caret-down');
             }
+        });
 
-            $(document).on('click', '.open-modal-btn', function (e) {
-                e.preventDefault();
+        renderPagination();
 
-                var url = $(this).attr('href');
-                var title = $(this).data('title') || 'SMC Config';
+        function openSmcConfigModal(url, title) {
+            $('#mainActionModalTitle').text(title);
+            $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>');
 
-                openSmcConfigModal(url, title);
+            $('#mainActionModalBody').load(url, function () {
+                $.validator.unobtrusive.parse('#mainActionModalBody');
             });
 
-            var shouldOpenCreate = '@Context.Request.Query["openCreate"]';
+            $('#mainActionModal').modal('show');
+        }
 
-            if (shouldOpenCreate === 'true') {
-                openSmcConfigModal('/SMCConfig/Create?modal=true', 'Add SMC Config');
+        $(document).on('click', '.open-modal-btn', function (e) {
+            e.preventDefault();
 
-                if (window.history.replaceState) {
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-            }
+            var url = $(this).attr('href');
+            var title = $(this).data('title') || 'SMC Config';
 
-            $('#successToast').toast('show');
-            $('#errorToast').toast('show');
+            openSmcConfigModal(url, title);
         });
-    </script>
+
+        var shouldOpenCreate = '@Context.Request.Query["openCreate"]';
+
+        if (shouldOpenCreate === 'true') {
+            openSmcConfigModal('/SMCConfig/Create?modal=true', 'Add SMC Config');
+
+            if (window.history.replaceState) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        if ($('#successToast').length) {
+            $('#successToast').toast('show');
+        }
+
+        if ($('#errorToast').length) {
+            $('#errorToast').toast('show');
+        }
+    });
+</script>
 }

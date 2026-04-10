@@ -6,10 +6,10 @@ namespace EmployeeAccessSystem.Services
     {
         Task<IEnumerable<SMCConfig>> GetAllAsync();
         Task<SMCConfig?> GetByIdAsync(int id);
-        Task<int> AddAsync(SMCConfig model);
-        Task<int> UpdateAsync(SMCConfig model);
-        Task<int> DeleteAsync(int id);
-        Task<int> ToggleAsync(int id);
         Task<SMCConfig?> GetExistingAsync(int productId, int smcProductId, int itemId, DateTime date);
+        Task<string> AddAsync(SMCConfig model, string? currentUser);
+        Task<string> UpdateAsync(SMCConfig model, string? currentUser);
+        Task<string> DeleteAsync(int id, string? currentUser);
+        Task<string> ToggleAsync(int id);
     }
 }
