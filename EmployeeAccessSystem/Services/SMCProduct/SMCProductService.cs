@@ -6,7 +6,6 @@ namespace EmployeeAccessSystem.Services
     public class SMCProductService : ISMCProductService
     {
         private readonly ISMCProductRepository _repository;
-
         public SMCProductService(ISMCProductRepository repository)
         {
             _repository = repository;
@@ -139,7 +138,7 @@ namespace EmployeeAccessSystem.Services
                 }
 
                 if (ex.Number == 2601 || ex.Number == 2627)
-                {
+                { 
                     return "SMC Product name already exists for this product.";
                 }
 
@@ -185,6 +184,7 @@ namespace EmployeeAccessSystem.Services
         public async Task<string> ToggleAsync(int id)
         {
             if (id <= 0)
+
             {
                 return "Invalid SMC Product.";
             }

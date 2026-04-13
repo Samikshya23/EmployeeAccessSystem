@@ -35,18 +35,18 @@ namespace EmployeeAccessSystem.Pdf.Documents
 
             page.Content().Column(delegate (ColumnDescriptor col)
             {
-                col.Item().Text(GetReportTitle()).Bold().FontSize(14);
+                col.Item().AlignCenter().Text(GetReportTitle()).Bold().FontSize(14);
 
-                col.Item().Text("Product: " + GetSelectedProductName());
+                col.Item().AlignCenter().Text("Product: " + GetSelectedProductName());
 
                 if (_model.FromDate.HasValue && _model.ToDate.HasValue)
                 {
-                    col.Item().Text(
-                        "Date Range: " +
-                        _model.FromDate.Value.ToString("dd MMM yyyy") +
-                        " to " +
-                        _model.ToDate.Value.ToString("dd MMM yyyy")
-                    );
+                    col.Item().AlignCenter().Text(
+                        "From Date : " +
+                        _model.FromDate.Value.ToString("dd/MM/yyyy") +
+                        "    To Date : " +
+                        _model.ToDate.Value.ToString("dd/MM/yyyy")
+                    ).Bold();
                 }
 
                 col.Item().PaddingTop(8).Element(BuildTable);
@@ -87,7 +87,7 @@ namespace EmployeeAccessSystem.Pdf.Documents
 
                         table.Cell().Element(HeaderStyle).Column(delegate (ColumnDescriptor col)
                         {
-                            col.Item().AlignCenter().Text(d.ToString("dd/MM")).Bold();
+                            col.Item().AlignCenter().Text(d.ToString("dd")).Bold();
                             col.Item().AlignCenter().Text(d.ToString("ddd"));
                         });
 
@@ -150,7 +150,34 @@ namespace EmployeeAccessSystem.Pdf.Documents
                         }
                     }
 
+                    bool isLastOfGroup = true;
+
+                    if (rowIndex < uniqueRows.Count - 1)
+                    {
+                        if (uniqueRows[rowIndex].MonitoringTypeName == uniqueRows[rowIndex + 1].MonitoringTypeName)
+                        {
+                            isLastOfGroup = false;
+                        }
+                    }
+
                     rowIndex++;
+
+                    if (isLastOfGroup)
+                    {
+                        table.Cell().Element(GapCellStyle).Text("");
+                        table.Cell().Element(GapCellStyle).Text("");
+
+                        if (_model.Dates != null)
+                        {
+                            int g = 0;
+
+                            while (g < _model.Dates.Count)
+                            {
+                                table.Cell().Element(GapCellStyle).Text("");
+                                g++;
+                            }
+                        }
+                    }
                 }
             });
         }
@@ -327,7 +354,7 @@ namespace EmployeeAccessSystem.Pdf.Documents
 
         private IContainer TypeStyle(IContainer c)
         {
-            return c.Border(1).Padding(2).Background(Colors.Grey.Lighten4);
+            return c.Border(1).Padding(2).AlignCenter().Background(Colors.Grey.Lighten3);
         }
 
         private IContainer ItemStyle(IContainer c)
@@ -338,6 +365,11 @@ namespace EmployeeAccessSystem.Pdf.Documents
         private IContainer ValueStyle(IContainer c)
         {
             return c.Border(1).Padding(2).AlignCenter();
+        }
+
+        private IContainer GapCellStyle(IContainer c)
+        {
+            return c.Padding(3);
         }
     }
 }

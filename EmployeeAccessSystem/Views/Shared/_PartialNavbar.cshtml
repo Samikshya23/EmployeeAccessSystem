@@ -1,28 +1,8 @@
-﻿@using System.Security.Claims
+﻿@using EmployeeAccessSystem.Helpers
 
 @{
     var isLoggedIn = User.Identity != null && User.Identity.IsAuthenticated;
-    string displayName = "";
-
-    if (isLoggedIn)
-    {
-        displayName = User.FindFirst(ClaimTypes.Name)?.Value;
-
-        if (string.IsNullOrWhiteSpace(displayName))
-        {
-            displayName = User.Identity.Name;
-        }
-
-        if (string.IsNullOrWhiteSpace(displayName))
-        {
-            displayName = User.FindFirst(ClaimTypes.Email)?.Value;
-        }
-
-        if (string.IsNullOrWhiteSpace(displayName))
-        {
-            displayName = "User";
-        }
-    }
+    string displayName = Helper.GetDisplayName(User);
 }
 
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -54,11 +34,11 @@
         }
         else
         {
-            <li class="nav-item mr-2 d-none d-sm-flex align-items-center">
-                <span class="nav-link py-0 font-weight-bold text-dark">
-                    <i class="fas fa-user-circle mr-1"></i>@displayName
-                </span>
-            </li>
+            <li class="nav-item d-flex align-items-center mr-3">
+    <span class="font-weight-bold text-dark mb-0">
+        @displayName
+    </span>
+</li>
 
             <li class="nav-item">
                 <a class="nav-link text-danger" asp-controller="Account" asp-action="Logout" title="Logout">

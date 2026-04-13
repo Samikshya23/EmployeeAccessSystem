@@ -119,7 +119,10 @@ namespace EmployeeAccessSystem.Controllers
                 return View(model);
             }
 
-            string? currentUser = User.FindFirst(ClaimTypes.Name)?.Value;
+            string? currentUser = User.FindFirst(ClaimTypes.Email)?.Value
+                                  ?? User.FindFirst("email")?.Value
+                                  ?? User.Identity?.Name;
+
             string result = await _service.AddAsync(model, currentUser);
 
             string[] parts = result.Split('|', 2);
@@ -170,7 +173,10 @@ namespace EmployeeAccessSystem.Controllers
                 return View(model);
             }
 
-            string? currentUser = User.FindFirst(ClaimTypes.Name)?.Value;
+            string? currentUser = User.FindFirst(ClaimTypes.Email)?.Value
+                                  ?? User.FindFirst("email")?.Value
+                                  ?? User.Identity?.Name;
+
             string result = await _service.UpdateAsync(model, currentUser);
 
             string[] parts = result.Split('|', 2);
@@ -207,7 +213,10 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, SMCConfig model)
         {
-            string? currentUser = User.FindFirst(ClaimTypes.Name)?.Value;
+            string? currentUser = User.FindFirst(ClaimTypes.Email)?.Value
+                                  ?? User.FindFirst("email")?.Value
+                                  ?? User.Identity?.Name;
+
             string result = await _service.DeleteAsync(id, currentUser);
 
             string[] parts = result.Split('|', 2);

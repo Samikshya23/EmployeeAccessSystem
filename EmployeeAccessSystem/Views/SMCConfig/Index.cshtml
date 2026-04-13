@@ -32,8 +32,7 @@
                         <div class="d-flex align-items-center">
                             <span class="mr-2">Show</span>
                             <select id="entriesPerPage" class="custom-select custom-select-sm w-auto">
-                                <option value="2" selected>2</option>
-                                <option value="10">10</option>
+                                <option value="10" selected>10</option>
                                 <option value="15">15</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
@@ -58,17 +57,69 @@
             <div class="card-body p-0">
                 <table id="smcConfigTable"
                        class="table table-bordered table-hover table-sm mb-0 rounded-0"
-                       style="border-color:#dee2e6;">
+                       style="border-color:#dee2e6; table-layout:fixed; width:100%;">
 
                     <thead class="bg-light border-bottom">
                         <tr>
-                            <th class="text-center align-middle sticky-top bg-light" style="width:60px; z-index:2;">SN</th>
-                            <th class="text-center align-middle sticky-top bg-light" style="width:24%; z-index:2;">SMC Product</th>
-                            <th class="text-center align-middle sticky-top bg-light" style="width:22%; z-index:2;">Item</th>
-                            <th class="text-center align-middle sticky-top bg-light" style="width:14%; z-index:2;">Date</th>
-                            <th class="text-center align-middle sticky-top bg-light" style="width:12%; z-index:2;">Result</th>
-                            <th class="text-center align-middle sticky-top bg-light" style="width:12%; z-index:2;">Status</th>
-                            <th class="text-center align-middle sticky-top bg-light" style="width:130px; z-index:2;">Actions</th>
+                            <th class="text-center align-middle sticky-top bg-light sort-header"
+                                data-sort="sn"
+                                style="width:60px; z-index:2; cursor:pointer;">
+                                SN
+                                <span class="ml-1 sort-icon" data-for="sn" style="display:inline-flex; align-items:center;">
+                                    <span class="sort-up" style="font-size:13px; line-height:1; color:#bcbcbc;">↑</span>
+                                    <span class="sort-down" style="font-size:13px; line-height:1; color:#bcbcbc;">↓</span>
+                                </span>
+                            </th>
+
+                            <th class="text-center align-middle sticky-top bg-light sort-header"
+                                data-sort="product"
+                                style="width:17%; z-index:2; cursor:pointer;">
+                                SMC Product
+                                <span class="ml-1 sort-icon" data-for="product" style="display:inline-flex; align-items:center;">
+                                    <span class="sort-up" style="font-size:13px; line-height:1; color:#bcbcbc;">↑</span>
+                                    <span class="sort-down" style="font-size:13px; line-height:1; color:#bcbcbc;">↓</span>
+                                </span>
+                            </th>
+
+                            <th class="text-center align-middle sticky-top bg-light"
+                                style="width:18%; z-index:2;">
+                                Item
+                            </th>
+
+                            <th class="text-center align-middle sticky-top bg-light sort-header"
+                                data-sort="date"
+                                style="width:12%; z-index:2; cursor:pointer;">
+                                Date
+                                <span class="ml-1 sort-icon" data-for="date" style="display:inline-flex; align-items:center;">
+                                    <span class="sort-up" style="font-size:13px; line-height:1; color:#bcbcbc;">↑</span>
+                                    <span class="sort-down" style="font-size:13px; line-height:1; color:#bcbcbc;">↓</span>
+                                </span>
+                            </th>
+
+                            <th class="text-center align-middle sticky-top bg-light sort-header"
+                                data-sort="user"
+                                style="width:23%; z-index:2; cursor:pointer;">
+                                User
+                                <span class="ml-1 sort-icon" data-for="user" style="display:inline-flex; align-items:center;">
+                                    <span class="sort-up" style="font-size:13px; line-height:1; color:#bcbcbc;">↑</span>
+                                    <span class="sort-down" style="font-size:13px; line-height:1; color:#bcbcbc;">↓</span>
+                                </span>
+                            </th>
+
+                            <th class="text-center align-middle sticky-top bg-light"
+                                style="width:8%; z-index:2;">
+                                Result
+                            </th>
+
+                            <th class="text-center align-middle sticky-top bg-light"
+                                style="width:8%; z-index:2;">
+                                Status
+                            </th>
+
+                            <th class="text-center align-middle sticky-top bg-light text-nowrap"
+                                style="width:110px; z-index:2;">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
 
@@ -95,10 +146,26 @@
                                     bool firstText = true;
                                     string groupKey = "group_" + sn;
 
+                                    DateTime latestDate = groupItems[0].EntryDate;
+                                    string firstUser = "";
+                                    bool firstUserFound = false;
+
                                     foreach (var groupItem in groupItems)
                                     {
+                                        if (groupItem.EntryDate > latestDate)
+                                        {
+                                            latestDate = groupItem.EntryDate;
+                                        }
+
+                                        if (!firstUserFound && !string.IsNullOrWhiteSpace(groupItem.CreatedBy))
+                                        {
+                                            firstUser = groupItem.CreatedBy;
+                                            firstUserFound = true;
+                                        }
+
                                         string resultText = "-";
-                                        string dateText = groupItem.EntryDate.ToString("dd MMM yyyy");
+                                        string dateText = groupItem.EntryDate.ToString("dd-MM-yyyy");
+                                        string userText = string.IsNullOrWhiteSpace(groupItem.CreatedBy) ? "-" : groupItem.CreatedBy;
 
                                         if (groupItem.EntryMode == "Value")
                                         {
@@ -123,6 +190,7 @@
                                             groupItem.SMCProductName + " " +
                                             groupItem.ItemName + " " +
                                             dateText + " " +
+                                            userText + " " +
                                             resultText + " " +
                                             (groupItem.IsActive ? "Active" : "Inactive");
 
@@ -137,13 +205,26 @@
                                         }
                                     }
 
-                                    <tr class="group-row" data-search="@combinedSearchText" data-group="@groupKey">
-                                        <td class="text-center align-top pt-2 group-sn">
-                                            @sn
+                                    if (string.IsNullOrWhiteSpace(firstUser))
+                                    {
+                                        firstUser = "-";
+                                    }
+
+                                    <tr class="group-row"
+                                        data-search="@combinedSearchText"
+                                        data-group="@groupKey"
+                                        data-sn="@sn"
+                                        data-product="@product.SMCProductName"
+                                        data-date="@latestDate.ToString("yyyyMMdd")"
+                                        data-user="@firstUser">
+                                        <td class="text-center align-middle p-0 group-sn">
+                                            <div class="d-flex align-items-center justify-content-center px-2 group-sn-wrap" style="height:136px;">
+                                                @sn
+                                            </div>
                                         </td>
 
-                                        <td class="align-top pt-2">
-                                            <div class="d-flex align-items-start px-2">
+                                        <td class="align-middle p-0">
+                                            <div class="d-flex align-items-center px-2 group-product-wrap" style="height:136px;">
                                                 @if (groupItems.Count > 4)
                                                 {
                                                     <a href="javascript:void(0);"
@@ -151,7 +232,7 @@
                                                        data-group="@groupKey"
                                                        data-expanded="false"
                                                        title="Expand"
-                                                       style="line-height:1;">
+                                                       style="display:flex; align-items:center; line-height:1;">
                                                         <i class="fas fa-caret-right"></i>
                                                     </a>
                                                 }
@@ -165,7 +246,7 @@
                                         </td>
 
                                         <td class="p-0 align-top">
-                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed; width:100%;">
                                                 <tbody>
                                                     @for (int i = 0; i < groupItems.Count; i++)
                                                     {
@@ -183,7 +264,7 @@
                                         </td>
 
                                         <td class="p-0 align-top">
-                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed; width:100%;">
                                                 <tbody>
                                                     @for (int i = 0; i < groupItems.Count; i++)
                                                     {
@@ -191,7 +272,7 @@
                                                         <tr class="child-row @hiddenClass" data-row-index="@i">
                                                             <td class="p-0 align-middle text-center @(i != groupItems.Count - 1 ? "border-bottom" : "")">
                                                                 <div class="d-flex justify-content-center align-items-center px-2" style="height:34px;">
-                                                                    @groupItems[i].EntryDate.ToString("dd MMM yyyy")
+                                                                    @groupItems[i].EntryDate.ToString("dd-MM-yyyy")
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -201,7 +282,38 @@
                                         </td>
 
                                         <td class="p-0 align-top">
-                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed; width:100%;">
+                                                <tbody>
+                                                    @for (int i = 0; i < groupItems.Count; i++)
+                                                    {
+                                                        string hiddenClass = i >= 4 ? "d-none extra-row " + groupKey : "";
+                                                        string createdByText = string.IsNullOrWhiteSpace(groupItems[i].CreatedBy) ? "-" : groupItems[i].CreatedBy;
+
+                                                        <tr class="child-row @hiddenClass" data-row-index="@i">
+                                                            <td class="p-0 align-middle @(i != groupItems.Count - 1 ? "border-bottom" : "")">
+                                                                @if (createdByText == "-")
+                                                                {
+                                                                    <div class="d-flex justify-content-center align-items-center" style="height:34px;">
+                                                                        -
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="px-2"
+                                                                         style="height:34px; line-height:34px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                                                                         title="@createdByText">
+                                                                        @createdByText
+                                                                    </div>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+
+                                        <td class="p-0 align-top">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed; width:100%;">
                                                 <tbody>
                                                     @for (int i = 0; i < groupItems.Count; i++)
                                                     {
@@ -244,7 +356,7 @@
                                         </td>
 
                                         <td class="p-0 align-top">
-                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed; width:100%;">
                                                 <tbody>
                                                     @for (int i = 0; i < groupItems.Count; i++)
                                                     {
@@ -269,28 +381,30 @@
                                         </td>
 
                                         <td class="p-0 align-top">
-                                            <table class="table table-sm mb-0" style="table-layout:fixed;">
+                                            <table class="table table-sm mb-0" style="table-layout:fixed; width:100%;">
                                                 <tbody>
                                                     @for (int i = 0; i < groupItems.Count; i++)
                                                     {
                                                         string hiddenClass = i >= 4 ? "d-none extra-row " + groupKey : "";
                                                         <tr class="child-row @hiddenClass" data-row-index="@i">
                                                             <td class="p-0 align-middle text-center @(i != groupItems.Count - 1 ? "border-bottom" : "")">
-                                                                <div class="d-flex justify-content-center align-items-center" style="height:34px; gap:6px;">
+                                                                <div class="d-flex justify-content-center align-items-center" style="height:34px; gap:3px;">
                                                                     <a asp-action="Edit"
                                                                        asp-route-id="@groupItems[i].SMCConfigId"
-                                                                       class="btn btn-sm btn-light border open-modal-btn"
+                                                                       class="btn btn-light border open-modal-btn p-0"
                                                                        data-title="Edit SMC Config"
-                                                                       title="Edit">
-                                                                        <i class="fas fa-pen"></i>
+                                                                       title="Edit"
+                                                                       style="width:24px; height:24px; line-height:22px;">
+                                                                        <i class="fas fa-pen" style="font-size:10px;"></i>
                                                                     </a>
 
                                                                     <a asp-action="Delete"
                                                                        asp-route-id="@groupItems[i].SMCConfigId"
-                                                                       class="btn btn-sm btn-outline-danger open-modal-btn"
+                                                                       class="btn btn-outline-danger open-modal-btn p-0"
                                                                        data-title="Delete SMC Config"
-                                                                       title="Delete">
-                                                                        <i class="fas fa-trash-alt"></i>
+                                                                       title="Delete"
+                                                                       style="width:24px; height:24px; line-height:22px;">
+                                                                        <i class="fas fa-trash-alt" style="font-size:10px;"></i>
                                                                     </a>
                                                                 </div>
                                                             </td>
@@ -308,7 +422,7 @@
                         else
                         {
                             <tr id="noDataRow">
-                                <td colspan="7" class="text-center align-middle">No SMC Config entries found.</td>
+                                <td colspan="8" class="text-center align-middle">No SMC Config entries found.</td>
                             </tr>
                         }
                     </tbody>
@@ -352,7 +466,6 @@
 @if (TempData["Success"] != null || TempData["Error"] != null)
 {
     <div class="position-fixed" style="top: 15px; right: 15px; z-index: 1055;">
-
         @if (TempData["Success"] != null)
         {
             <div class="toast bg-success text-white fade" id="successToast" data-delay="3000">
@@ -384,7 +497,6 @@
                 </div>
             </div>
         }
-
     </div>
 }
 
@@ -394,6 +506,8 @@
 
         var rowsPerPage = parseInt($('#entriesPerPage').val());
         var currentPage = 1;
+        var currentSortColumn = 'sn';
+        var currentSortDirection = 'asc';
 
         function getFilteredRows() {
             var searchText = $('#customSearch').val().toLowerCase().trim();
@@ -412,14 +526,80 @@
 
         function updateSerialNumbers(filteredRows) {
             var i;
-
             for (i = 0; i < filteredRows.length; i++) {
-                $(filteredRows[i]).find('.group-sn').text(i + 1);
+                $(filteredRows[i]).find('.group-sn-wrap').text(i + 1);
+            }
+        }
+
+        function syncGroupHeights() {
+            $('#smcConfigTableBody tr.group-row:visible').each(function () {
+                var $row = $(this);
+                var visibleRowCount = 0;
+
+                $row.find('td:eq(2) tbody tr').each(function () {
+                    if (!$(this).hasClass('d-none')) {
+                        visibleRowCount++;
+                    }
+                });
+
+                if (visibleRowCount < 1) {
+                    visibleRowCount = 1;
+                }
+
+                var calculatedHeight = visibleRowCount * 34;
+
+                $row.find('.group-sn-wrap').css('height', calculatedHeight + 'px');
+                $row.find('.group-product-wrap').css('height', calculatedHeight + 'px');
+            });
+        }
+
+        function sortRows(rows) {
+            rows.sort(function (a, b) {
+
+                var valueA = $(a).attr('data-' + currentSortColumn) || '';
+                var valueB = $(b).attr('data-' + currentSortColumn) || '';
+
+                if (currentSortColumn === 'sn' || currentSortColumn === 'date') {
+                    valueA = parseInt(valueA);
+                    valueB = parseInt(valueB);
+                } else {
+                    valueA = valueA.toLowerCase();
+                    valueB = valueB.toLowerCase();
+                }
+
+                if (valueA < valueB) {
+                    return currentSortDirection === 'asc' ? -1 : 1;
+                }
+
+                if (valueA > valueB) {
+                    return currentSortDirection === 'asc' ? 1 : -1;
+                }
+
+                return 0;
+            });
+
+            return rows;
+        }
+
+        function updateSortIcons() {
+            $('.sort-icon').each(function () {
+                $(this).find('.sort-up').css('color', '#bcbcbc');
+                $(this).find('.sort-down').css('color', '#bcbcbc');
+            });
+
+            var activeIcon = $('.sort-icon[data-for="' + currentSortColumn + '"]');
+
+            if (currentSortDirection === 'asc') {
+                activeIcon.find('.sort-up').css('color', '#1f2d3d');
+            } else {
+                activeIcon.find('.sort-down').css('color', '#1f2d3d');
             }
         }
 
         function renderPagination() {
             var filteredRows = getFilteredRows();
+            filteredRows = sortRows(filteredRows);
+
             var totalRows = filteredRows.length;
             var totalPages = Math.ceil(totalRows / rowsPerPage);
 
@@ -478,6 +658,9 @@
             }
 
             $('#customPagination').html(paginationHtml);
+
+            updateSortIcons();
+            syncGroupHeights();
         }
 
         $('#customSearch').on('keyup', function () {
@@ -493,9 +676,21 @@
 
         $(document).on('click', '.pagination-link', function (e) {
             e.preventDefault();
+            currentPage = parseInt($(this).data('page'));
+            renderPagination();
+        });
 
-            var page = $(this).data('page');
-            currentPage = parseInt(page);
+        $(document).on('click', '.sort-header', function () {
+            var clickedColumn = $(this).data('sort');
+
+            if (currentSortColumn === clickedColumn) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = clickedColumn;
+                currentSortDirection = 'asc';
+            }
+
+            currentPage = 1;
             renderPagination();
         });
 
@@ -516,6 +711,8 @@
                 $(this).attr('title', 'Collapse');
                 $(this).find('i').removeClass('fa-caret-right').addClass('fa-caret-down');
             }
+
+            syncGroupHeights();
         });
 
         renderPagination();

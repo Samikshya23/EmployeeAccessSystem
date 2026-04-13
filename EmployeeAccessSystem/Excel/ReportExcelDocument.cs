@@ -41,11 +41,30 @@ namespace EmployeeAccessSystem.Excel
 
                 currentRow++;
 
-                worksheet.Cell(currentRow, 1).Value = "From Date";
-                worksheet.Cell(currentRow, 2).Value = _fromDate.HasValue ? _fromDate.Value.ToString("dd/MM/yyyy") : "-";
-                worksheet.Cell(currentRow, 3).Value = "To Date";
-                worksheet.Cell(currentRow, 4).Value = _toDate.HasValue ? _toDate.Value.ToString("dd/MM/yyyy") : "-";
-                worksheet.Range(currentRow, 1, currentRow, 4).Style.Font.Bold = true;
+                int midStart = (totalColumns / 2) - 2;
+                int midEnd = (totalColumns / 2) + 1;
+
+                if (midStart < 1)
+                {
+                    midStart = 1;
+                }
+
+                if (midEnd > totalColumns)
+                {
+                    midEnd = totalColumns;
+                }
+
+                worksheet.Range(currentRow, midStart, currentRow, midEnd).Merge();
+
+                string dateText = "From Date : " +
+                                  (_fromDate.HasValue ? _fromDate.Value.ToString("dd/MM/yyyy") : "-") +
+                                  "        To Date : " +
+                                  (_toDate.HasValue ? _toDate.Value.ToString("dd/MM/yyyy") : "-");
+
+                worksheet.Cell(currentRow, midStart).Value = dateText;
+                worksheet.Cell(currentRow, midStart).Style.Font.Bold = true;
+                worksheet.Cell(currentRow, midStart).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell(currentRow, midStart).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
                 currentRow++;
                 currentRow++;

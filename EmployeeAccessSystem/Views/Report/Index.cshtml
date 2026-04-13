@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Reports";
-    var todayDate = DateTime.Today.ToString("yyyy-MM-dd");
 
     var uniqueRows = new List<EmployeeAccessSystem.Models.ReportModel>();
 
@@ -83,26 +82,30 @@
                             </div>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <div class="form-group mb-2">
-                                <label for="fromDate">From Date</label>
-                                <input type="date"
+                                <label for="dateRange">Date Range</label>
+                                <div class="input-group">
+                                    <input type="text"
+                                           id="dateRange"
+                                           class="form-control"
+                                           readonly
+                                           placeholder="Pick date range" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="dateRangeIcon" style="cursor:pointer;">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <input type="hidden"
                                        id="fromDate"
                                        name="fromDate"
-                                       class="form-control"
-                                       max="@todayDate"
                                        value="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")" />
-                            </div>
-                        </div>
 
-                        <div class="col-md-3">
-                            <div class="form-group mb-2">
-                                <label for="toDate">To Date</label>
-                                <input type="date"
+                                <input type="hidden"
                                        id="toDate"
                                        name="toDate"
-                                       class="form-control"
-                                       max="@todayDate"
                                        value="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")" />
                             </div>
                         </div>
@@ -371,80 +374,68 @@
                 width: '100%'
             });
 
-            var today = '@todayDate';
-
-            $('#fromDate').attr('max', today);
-            $('#toDate').attr('max', today);
-
-            function formatDate(date) {
-                var year = date.getFullYear();
-                var month = (date.getMonth() + 1).toString().padStart(2, '0');
-                var day = date.getDate().toString().padStart(2, '0');
-                return year + '-' + month + '-' + day;
+            function setRangeValues(start, end) {
+                $('#fromDate').val(start.format('YYYY-MM-DD'));
+                $('#toDate').val(end.format('YYYY-MM-DD'));
+                $('#dateRange').val(start.format('DD MMM YYYY') + ' - ' + end.format('DD MMM YYYY'));
             }
 
-            function updateToDateLimits() {
-                var fromDateValue = $('#fromDate').val();
+            var today = moment();
+            var startDate;
+            var endDate;
 
-                if (fromDateValue !== '') {
-                    var fromDate = new Date(fromDateValue);
-
-                    var maxToDate = new Date(fromDate);
-                    maxToDate.setDate(maxToDate.getDate() + 31);
-
-                    var todayDateObj = new Date(today);
-
-                    if (maxToDate > todayDateObj) {
-                        maxToDate = todayDateObj;
-                    }
-
-                    $('#toDate').attr('min', formatDate(fromDate));
-                    $('#toDate').attr('max', formatDate(maxToDate));
-
-                    var toDateValue = $('#toDate').val();
-
-                    if (toDateValue !== '') {
-                        if (toDateValue < formatDate(fromDate)) {
-                            $('#toDate').val(formatDate(fromDate));
-                        }
-
-                        if (toDateValue > formatDate(maxToDate)) {
-                            $('#toDate').val(formatDate(maxToDate));
-                        }
-                    }
-                }
-                else {
-                    $('#toDate').removeAttr('min');
-                    $('#toDate').attr('max', today);
-                }
+            if ($('#fromDate').val() !== '' && $('#toDate').val() !== '') {
+                startDate = moment($('#fromDate').val(), 'YYYY-MM-DD');
+                endDate = moment($('#toDate').val(), 'YYYY-MM-DD');
+            }
+            else {
+                startDate = today.clone();
+                endDate = today.clone();
             }
 
-            function updateFromDateLimits() {
-                var toDateValue = $('#toDate').val();
-
-                if (toDateValue !== '') {
-                    $('#fromDate').attr('max', toDateValue);
+            $('#dateRange').daterangepicker({
+                autoUpdateInput: false,
+                opens: 'center',
+                drops: 'down',
+                linkedCalendars: false,
+                alwaysShowCalendars: true,
+                showDropdowns: true,
+                autoApply: false,
+                maxDate: today,
+                startDate: startDate,
+                endDate: endDate,
+                maxSpan: {
+                    days: 31
+                },
+                locale: {
+                    format: 'DD MMM YYYY',
+                    cancelLabel: 'Clear',
+                    applyLabel: 'Apply'
                 }
-                else {
-                    $('#fromDate').attr('max', today);
-                }
-            }
-
-            updateToDateLimits();
-            updateFromDateLimits();
-
-            $('#fromDate').on('change', function () {
-                updateToDateLimits();
             });
 
-            $('#toDate').on('change', function () {
-                updateFromDateLimits();
+            if ($('#fromDate').val() !== '' && $('#toDate').val() !== '') {
+                setRangeValues(startDate, endDate);
+            }
+
+            $('#dateRange').on('apply.daterangepicker', function (ev, picker) {
+                setRangeValues(picker.startDate, picker.endDate);
+            });
+
+            $('#dateRange').on('cancel.daterangepicker', function () {
+                $('#dateRange').val('');
+                $('#fromDate').val('');
+                $('#toDate').val('');
+            });
+
+            $('#dateRangeIcon').on('click', function () {
+                $('#dateRange').trigger('click');
             });
 
             $('#reportForm').on('submit', function (e) {
+                var productId = $('#selectedProductId').val();
                 var fromDate = $('#fromDate').val();
                 var toDate = $('#toDate').val();
-                var productId = $('#selectedProductId').val();
 
                 if (productId === '' || productId === null) {
                     alert('Please select product.');
@@ -453,22 +444,21 @@
                 }
 
                 if (fromDate === '' || toDate === '') {
-                    alert('Please select both from date and to date.');
+                    alert('Please select date range.');
                     e.preventDefault();
                     return false;
                 }
 
-                var from = new Date(fromDate);
-                var to = new Date(toDate);
+                var from = moment(fromDate, 'YYYY-MM-DD');
+                var to = moment(toDate, 'YYYY-MM-DD');
 
-                var timeDifference = to.getTime() - from.getTime();
-                var dayDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-
-                if (dayDifference < 0) {
-                    alert('From Date cannot be greater than To Date.');
+                if (to.isBefore(from)) {
+                    alert('Start date cannot be greater than end date.');
                     e.preventDefault();
                     return false;
                 }
+
+                var dayDifference = to.diff(from, 'days');
 
                 if (dayDifference > 31) {
                     alert('Maximum report range is 31 days only.');

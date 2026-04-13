@@ -1,5 +1,6 @@
 ﻿using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
+using System.Globalization;
 
 namespace EmployeeAccessSystem.Services
 {
@@ -214,6 +215,31 @@ namespace EmployeeAccessSystem.Services
 
                 model.ConfigValue = model.ConfigValue.Trim();
                 model.IsChecked = false;
+
+                decimal number;
+                bool isValidNumber = decimal.TryParse(
+                    model.ConfigValue,
+                    NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture,
+                    out number
+                );
+
+                if (!isValidNumber)
+                {
+                    return "Value must be numeric only.";
+                }
+
+                if (number < 0)
+                {
+                    return "Value cannot be less than 0.";
+                }
+
+                if (number > 100)
+                {
+                    return "Value cannot be greater than 100.";
+                }
+
+                model.ConfigValue = number.ToString("0.##", CultureInfo.InvariantCulture);
             }
             else if (model.EntryMode == "Checkbox")
             {
