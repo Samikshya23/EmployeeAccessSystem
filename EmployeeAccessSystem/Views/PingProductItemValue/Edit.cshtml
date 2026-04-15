@@ -1,0 +1,74 @@
+﻿@model EmployeeAccessSystem.Models.PingProductItemValue
+
+@{
+    Layout = null;
+}
+
+<form asp-action="Edit" method="post" id="editPingProductItemValueForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PingProductItemValueId" />
+    <input type="hidden" asp-for="PingProductItemId" />
+    <input type="hidden" asp-for="PingProductFieldId" />
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <div class="form-group">
+        <label class="font-weight-bold">Ping Product</label>
+        <input class="form-control" value="@Model.PingProductName" readonly />
+    </div>
+
+    <div class="form-group">
+        <label class="font-weight-bold">Item Name</label>
+        <input class="form-control" value="@Model.ItemName" readonly />
+    </div>
+
+    <div class="form-group">
+        <label class="font-weight-bold">Ping Product Field</label>
+        <input class="form-control" value="@Model.FieldName" readonly />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FieldValue" class="font-weight-bold">Field Value</label>
+        <input asp-for="FieldValue" class="form-control" placeholder="Enter Field Value" />
+        <span asp-validation-for="FieldValue" class="text-danger small"></span>
+    </div>
+
+    <div class="form-group mb-4">
+        <div class="custom-control custom-switch">
+            <input asp-for="IsActive" class="custom-control-input" id="EditIsActive" />
+            <label class="custom-control-label font-weight-bold" for="EditIsActive" id="editStatusLabel">
+                Active
+            </label>
+        </div>
+    </div>
+
+    <div class="modal-footer px-0 pb-0">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn btn-warning">Update</button>
+    </div>
+</form>
+
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    $(document).ready(function () {
+
+        function updateEditStatus() {
+            if ($('#EditIsActive').is(':checked')) {
+                $('#editStatusLabel').text('Active');
+            } else {
+                $('#editStatusLabel').text('Inactive');
+            }
+        }
+
+        updateEditStatus();
+
+        $('#EditIsActive').change(function () {
+            updateEditStatus();
+        });
+
+    });
+</script>

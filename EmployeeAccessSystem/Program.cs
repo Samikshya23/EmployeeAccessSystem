@@ -26,8 +26,18 @@ builder.Services.AddScoped<IProductSetupRepositories, ProductSetupRepositories>(
 builder.Services.AddScoped<ISMCProductRepository, SMCProductRepository>();
 builder.Services.AddScoped<ISMCProductItemRepositories, SMCProductItemRepositories>();
 builder.Services.AddScoped<ISMCConfigRepository, SMCConfigRepository>();
-builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>(); 
+builder.Services.AddScoped<IPingProductRepository, PingProductRepository>();
+builder.Services.AddScoped<IPingProductItemRepository, PingProductItemRepository>();
+builder.Services.AddScoped<IPingProductFieldRepository, PingProductFieldRepository>();
+builder.Services.AddScoped<IPingProductFieldService, PingProductFieldService>();
+builder.Services.AddScoped<IPingProductItemValueRepository, PingProductItemValueRepository>();
+builder.Services.AddScoped<IPingConfigRepository, PingConfigRepository>();
+builder.Services.AddScoped<IPingConfigService, PingConfigService>();
 
+builder.Services.AddScoped<IPingProductItemValueService, PingProductItemValueService>();
+builder.Services.AddScoped<IPingProductItemService, PingProductItemService>();
+builder.Services.AddScoped<IPingProductService, PingProductService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ISMCConfigService, SMCConfigService>();
 builder.Services.AddScoped<ISMCProductItemService, SMCProductItemService>();

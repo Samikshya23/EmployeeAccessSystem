@@ -5,11 +5,11 @@
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-   <a asp-controller="Home" asp-action="Index" class="brand-link text-center">
-    <img src="~/images/swiftlogo.svg"
-         alt="Logo"
-         style="height:70px; width:150px; object-fit:contain;" />
-</a>
+    <a asp-controller="Home" asp-action="Index" class="brand-link text-center">
+        <img src="~/images/swiftlogo.svg"
+             alt="Logo"
+             style="height:70px; width:150px; object-fit:contain;" />
+    </a>
 
     <div class="sidebar">
         <nav class="mt-2">
@@ -55,10 +55,28 @@
                             <p>Sub Category</p>
                         </a>
                     </li>
+                    <li class="nav-item has-treeview @((currentController == "ProductSetup" ||
+                                                        currentController == "SMCProduct" ||
+                                                        currentController == "SMCProductItem" ||
+                                                        currentController == "SMCConfig" ||
+                                                        currentController == "PingProduct" ||
+                                                        currentController == "PingProductField" ||
+                                                        currentController == "PingProductItem" ||
+                                                        currentController == "PingProductItemValue" ||
+                                                        currentController == "PingConfig" ||
+                                                        currentController == "Report") ? "menu-open" : "")">
 
-                    <li class="nav-item has-treeview @((currentController == "ProductSetup" || currentController == "SMCProduct" || currentController == "SMCProductItem" || currentController == "SMCConfig" || currentController == "Report") ? "menu-open" : "")">
                         <a href="#"
-                           class="nav-link @((currentController == "ProductSetup" || currentController == "SMCProduct" || currentController == "SMCProductItem" || currentController == "SMCConfig" || currentController == "Report") ? "active" : "")">
+                           class="nav-link @((currentController == "ProductSetup" ||
+                                               currentController == "SMCProduct" ||
+                                               currentController == "SMCProductItem" ||
+                                               currentController == "SMCConfig" ||
+                                               currentController == "PingProduct" ||
+                                               currentController == "PingProductField" ||
+                                               currentController == "PingProductItem" ||
+                                               currentController == "PingProductItemValue" ||
+                                               currentController == "PingConfig" ||
+                                               currentController == "Report") ? "active" : "")">
                             <i class="nav-icon fas fa-network-wired"></i>
                             <p>
                                 Network Setup
@@ -75,34 +93,116 @@
                                     <p>Product Setup</p>
                                 </a>
                             </li>
+                            <li class="nav-item has-treeview @((currentController == "SMCProduct" ||
+                                                                currentController == "SMCProductItem" ||
+                                                                currentController == "SMCConfig") ? "menu-open" : "")">
 
-                            <li class="nav-item">
-                                <a asp-controller="SMCProduct"
-                                   asp-action="Index"
-                                   class="nav-link @(currentController == "SMCProduct" ? "active" : "")">
+                                <a href="#"
+                                   class="nav-link @((currentController == "SMCProduct" ||
+                                                       currentController == "SMCProductItem" ||
+                                                       currentController == "SMCConfig") ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>SMC Product</p>
+                                    <p>
+                                        SMC Setup
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
                                 </a>
-                            </li>
 
-                            <li class="nav-item">
-                                <a asp-controller="SMCProductItem"
-                                   asp-action="Index"
-                                   class="nav-link @(currentController == "SMCProductItem" ? "active" : "")">
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a asp-controller="SMCProduct"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "SMCProduct" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>SMC Product</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="SMCProductItem"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "SMCProductItem" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>SMC Product Item</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="SMCConfig"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "SMCConfig" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>SMC Config</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-treeview @((currentController == "PingProduct" ||
+                                                                currentController == "PingProductField" ||
+                                                                currentController == "PingProductItem" ||
+                                                                currentController == "PingProductItemValue" ||
+                                                                currentController == "PingConfig") ? "menu-open" : "")">
+
+                                <a href="#"
+                                   class="nav-link @((currentController == "PingProduct" ||
+                                                       currentController == "PingProductField" ||
+                                                       currentController == "PingProductItem" ||
+                                                       currentController == "PingProductItemValue" ||
+                                                       currentController == "PingConfig") ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>SMC Product Item</p>
+                                    <p>
+                                        Ping Setup
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
                                 </a>
-                            </li>
 
-                            <li class="nav-item">
-                                <a asp-controller="SMCConfig"
-                                   asp-action="Index"
-                                   class="nav-link @(currentController == "SMCConfig" ? "active" : "")">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>SMC Config</p>
-                                </a>
-                            </li>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a asp-controller="PingProduct"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "PingProduct" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Ping Product</p>
+                                        </a>
+                                    </li>
 
+                                    <li class="nav-item">
+                                        <a asp-controller="PingProductField"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "PingProductField" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Ping Product Field</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="PingProductItem"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "PingProductItem" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Ping Product Item</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="PingProductItemValue"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "PingProductItemValue" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Ping Product Item Value</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="PingConfig"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "PingConfig" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Ping Config</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                             <li class="nav-item">
                                 <a asp-controller="Report"
                                    asp-action="Index"
@@ -111,6 +211,7 @@
                                     <p>Reports</p>
                                 </a>
                             </li>
+
                         </ul>
                     </li>
                 }
