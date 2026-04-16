@@ -1,353 +1,163 @@
 ﻿@model EmployeeAccessSystem.Models.PingConfig
 @{
-    bool isModal = ViewBag.IsModal != null && (bool)ViewBag.IsModal;
+    Layout = null;
+}
 
-    if (isModal)
+<form asp-action="Create" method="post" id="createPingConfigForm">
+    @Html.AntiForgeryToken()
+    <input asp-for="IsChecked" type="hidden" id="IsCheckedHidden" />
+
+    @if (ViewBag.Error != null)
     {
-        Layout = null;
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
     }
-    else
-    {
-        ViewData["Title"] = "Ping Config Entry";
-    }
-}
 
-@if (isModal)
-{
-    <form asp-action="Create" method="post" id="createPingConfigForm">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="isModal" value="true" />
-        <input asp-for="IsChecked" type="hidden" id="IsCheckedHidden" />
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">
-                @ViewBag.Error
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="ProductId" class="font-weight-bold">Product</label>
+                <select asp-for="ProductId"
+                        asp-items="ViewBag.ProductList"
+                        class="form-control"
+                        id="ProductId">
+                    <option value="0">Select Product</option>
+                </select>
+                <span asp-validation-for="ProductId" class="text-danger small"></span>
             </div>
-        }
+        </div>
 
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="ProductId" class="font-weight-bold">Product</label>
-                    <select asp-for="ProductId"
-                            asp-items="ViewBag.ProductList"
-                            class="form-control select2bs4"
-                            id="ProductId">
-                    </select>
-                    <span asp-validation-for="ProductId" class="text-danger small"></span>
-                </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="font-weight-bold">IP Address</label>
+                <select class="form-control" id="IPAddress" name="IPAddress">
+                    <option value="">Select IP Address</option>
+                </select>
+                <span asp-validation-for="IPAddress" class="text-danger small"></span>
             </div>
+        </div>
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="PingProductId" class="font-weight-bold">Ping Product</label>
-                    <select asp-for="PingProductId"
-                            asp-items="ViewBag.PingProductList"
-                            class="form-control select2bs4"
-                            id="PingProductId">
-                    </select>
-                    <span asp-validation-for="PingProductId" class="text-danger small"></span>
-                </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="PingProductId" class="font-weight-bold">Server Host Name</label>
+                <select asp-for="PingProductId" class="form-control" id="PingProductId">
+                    <option value="0">Select Server Host Name</option>
+                </select>
+                <span asp-validation-for="PingProductId" class="text-danger small"></span>
             </div>
+        </div>
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="PingProductItemId" class="font-weight-bold">Ping Product Item</label>
-                    <select asp-for="PingProductItemId"
-                            asp-items="ViewBag.PingProductItemList"
-                            class="form-control select2bs4"
-                            id="PingProductItemId">
-                    </select>
-                    <span asp-validation-for="PingProductItemId" class="text-danger small"></span>
-                </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
+                <select asp-for="EntryMode" class="form-control" id="EntryMode">
+                    <option value="Checkbox">Checkbox</option>
+                    <option value="Value">Value</option>
+                </select>
+                <span asp-validation-for="EntryMode" class="text-danger small"></span>
             </div>
+        </div>
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
-                    <select asp-for="EntryMode"
-                            asp-items="ViewBag.EntryModeList"
-                            class="form-control"
-                            id="EntryMode">
-                    </select>
-                    <span asp-validation-for="EntryMode" class="text-danger small"></span>
-                </div>
+        <div class="col-md-6" id="valueSection" style="display:none;">
+            <div class="form-group">
+                <label class="font-weight-bold">Value</label>
+                <input asp-for="ConfigValue"
+                       class="form-control"
+                       id="ConfigValue"
+                       placeholder="Enter value"
+                       autocomplete="off" />
+                <span asp-validation-for="ConfigValue" class="text-danger small"></span>
             </div>
+        </div>
 
-            <div class="col-md-6" id="valueSection">
-                <div class="form-group">
-                    <label id="dynamicLabel" class="font-weight-bold">Value</label>
-                    <input asp-for="ConfigValue"
-                           class="form-control"
-                           id="ConfigValue"
-                           placeholder="Enter value"
-                           autocomplete="off"
-                           inputmode="decimal" />
-                    <span asp-validation-for="ConfigValue" class="text-danger small"></span>
-                </div>
-            </div>
+        <div class="col-md-6" id="checkboxSection" style="display:none;">
+            <div class="form-group">
+                <label class="font-weight-bold">Status</label>
+                <div class="border rounded p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="custom-control custom-radio mr-4">
+                            <input type="radio"
+                                   id="statusTick"
+                                   name="StatusChoice"
+                                   value="true"
+                                   class="custom-control-input" />
+                            <label class="custom-control-label" for="statusTick">
+                                <i class="fas fa-check text-success mr-1"></i>Tick
+                            </label>
+                        </div>
 
-            <div class="col-md-6" id="checkboxSection" style="display:none;">
-                <div class="form-group">
-                    <label class="font-weight-bold">Status</label>
-                    <div class="border rounded p-3">
-                        <div class="d-flex align-items-center">
-                            <div class="custom-control custom-radio mr-4">
-                                <input type="radio"
-                                       id="statusTick"
-                                       name="StatusChoice"
-                                       value="true"
-                                       class="custom-control-input" />
-                                <label class="custom-control-label" for="statusTick">
-                                    <i class="fas fa-check text-success mr-1"></i>Tick
-                                </label>
-                            </div>
-
-                            <div class="custom-control custom-radio">
-                                <input type="radio"
-                                       id="statusCross"
-                                       name="StatusChoice"
-                                       value="false"
-                                       class="custom-control-input" />
-                                <label class="custom-control-label" for="statusCross">
-                                    <i class="fas fa-times text-danger mr-1"></i>Cross
-                                </label>
-                            </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio"
+                                   id="statusCross"
+                                   name="StatusChoice"
+                                   value="false"
+                                   class="custom-control-input" />
+                            <label class="custom-control-label" for="statusCross">
+                                <i class="fas fa-times text-danger mr-1"></i>Cross
+                            </label>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-12">
-                <div class="form-group mb-2">
-                    <div class="custom-control custom-checkbox">
-                        <input asp-for="IsActive" class="custom-control-input" id="CreateIsActive" />
-                        <label class="custom-control-label font-weight-bold" for="CreateIsActive">Active Entry</label>
-                    </div>
-                </div>
+                <span asp-validation-for="IsChecked" class="text-danger small"></span>
             </div>
         </div>
 
-        <div class="modal-footer px-0 pb-0 pt-2">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save mr-1"></i>Save Entry
-            </button>
-        </div>
-    </form>
-}
-else
-{
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Ping Config Entry</h1>
-                    <small class="text-muted">Save ping monitoring configuration values.</small>
-                </div>
-                <div class="col-sm-6">
-                    <div class="float-sm-right mt-2 mt-sm-0">
-                        <a asp-action="Index" class="btn btn-default btn-sm">
-                            <i class="fas fa-list mr-1"></i>View List
-                        </a>
-                    </div>
+        <div class="col-12">
+            <div class="form-group mb-2">
+                <div class="custom-control custom-switch">
+                    <input asp-for="IsActive" type="checkbox" class="custom-control-input" id="CreateIsActive" />
+                    <label class="custom-control-label font-weight-bold" for="CreateIsActive">Active Entry</label>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section class="content">
-        <div class="container-fluid">
-            <div class="card">
-                <div class="card-body">
-                    <form asp-action="Create" method="post" id="createPingConfigForm">
-                        @Html.AntiForgeryToken()
-
-                        <input type="hidden" name="isModal" value="false" />
-                        <input asp-for="IsChecked" type="hidden" id="IsCheckedHidden" />
-
-                        @if (ViewBag.Error != null)
-                        {
-                            <div class="alert alert-danger">
-                                @ViewBag.Error
-                            </div>
-                        }
-
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="ProductId" class="font-weight-bold">Product</label>
-                                    <select asp-for="ProductId"
-                                            asp-items="ViewBag.ProductList"
-                                            class="form-control select2bs4"
-                                            id="ProductId">
-                                    </select>
-                                    <span asp-validation-for="ProductId" class="text-danger small"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="PingProductId" class="font-weight-bold">Ping Product</label>
-                                    <select asp-for="PingProductId"
-                                            asp-items="ViewBag.PingProductList"
-                                            class="form-control select2bs4"
-                                            id="PingProductId">
-                                    </select>
-                                    <span asp-validation-for="PingProductId" class="text-danger small"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="PingProductItemId" class="font-weight-bold">Ping Product Item</label>
-                                    <select asp-for="PingProductItemId"
-                                            asp-items="ViewBag.PingProductItemList"
-                                            class="form-control select2bs4"
-                                            id="PingProductItemId">
-                                    </select>
-                                    <span asp-validation-for="PingProductItemId" class="text-danger small"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
-                                    <select asp-for="EntryMode"
-                                            asp-items="ViewBag.EntryModeList"
-                                            class="form-control"
-                                            id="EntryMode">
-                                    </select>
-                                    <span asp-validation-for="EntryMode" class="text-danger small"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6" id="valueSection">
-                                <div class="form-group">
-                                    <label id="dynamicLabel" class="font-weight-bold">Value</label>
-                                    <input asp-for="ConfigValue"
-                                           class="form-control"
-                                           id="ConfigValue"
-                                           placeholder="Enter value"
-                                           autocomplete="off"
-                                           inputmode="decimal" />
-                                    <span asp-validation-for="ConfigValue" class="text-danger small"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6" id="checkboxSection" style="display:none;">
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Status</label>
-                                    <div class="border rounded p-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="custom-control custom-radio mr-4">
-                                                <input type="radio"
-                                                       id="statusTick"
-                                                       name="StatusChoice"
-                                                       value="true"
-                                                       class="custom-control-input" />
-                                                <label class="custom-control-label" for="statusTick">
-                                                    <i class="fas fa-check text-success mr-1"></i>Tick
-                                                </label>
-                                            </div>
-
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio"
-                                                       id="statusCross"
-                                                       name="StatusChoice"
-                                                       value="false"
-                                                       class="custom-control-input" />
-                                                <label class="custom-control-label" for="statusCross">
-                                                    <i class="fas fa-times text-danger mr-1"></i>Cross
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group mb-3">
-                                    <div class="custom-control custom-checkbox">
-                                        <input asp-for="IsActive" class="custom-control-input" id="CreateIsActive" />
-                                        <label class="custom-control-label font-weight-bold" for="CreateIsActive">Active Entry</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="clearfix">
-                            <a asp-action="Index" class="btn btn-default float-left">
-                                <i class="fas fa-arrow-left mr-1"></i>Back
-                            </a>
-                            <button type="submit" class="btn btn-primary float-right">
-                                <i class="fas fa-save mr-1"></i>Save Entry
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-}
+    <div class="modal-footer px-0 pb-0 pt-2">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save mr-1"></i>Save Entry
+        </button>
+    </div>
+</form>
 
 <partial name="_ValidationScriptsPartial" />
 
 <script>
     $(document).ready(function () {
 
-        if (@(isModal.ToString().ToLower())) {
-            $('.select2bs4').select2({
-                theme: 'bootstrap4',
-                width: '100%',
-                dropdownParent: $('#mainActionModal')
-            });
-        }
-        else {
-            $('.select2bs4').select2({
-                theme: 'bootstrap4',
-                width: '100%'
-            });
-        }
-
         $("#ProductId").change(function () {
             var productId = $(this).val();
 
+            $("#IPAddress").empty();
+            $("#IPAddress").append('<option value="">Select IP Address</option>');
+
             $("#PingProductId").empty();
-            $("#PingProductItemId").empty();
+            $("#PingProductId").append('<option value="0">Select Server Host Name</option>');
 
-            if (productId !== "") {
-                $.get('/PingConfig/GetPingProductsByProductId', { productId: productId }, function (data) {
+            if (productId !== "" && productId !== "0") {
+                $.get('/PingConfig/GetIPsByProduct', { productId: productId }, function (data) {
                     $.each(data, function (i, item) {
-                        $("#PingProductId").append('<option value="' + item.pingProductId + '">' + item.pingProductName + '</option>');
+                        $("#IPAddress").append('<option value="' + item + '">' + item + '</option>');
                     });
-
-                    if (data.length > 0) {
-                        $("#PingProductId").val(data[0].pingProductId).trigger('change');
-                    }
                 });
             }
         });
 
-        $("#PingProductId").change(function () {
-            var pingProductId = $(this).val();
+        $("#IPAddress").change(function () {
+            var productId = $("#ProductId").val();
+            var ipAddress = $(this).val();
 
-            $("#PingProductItemId").empty();
+            $("#PingProductId").empty();
+            $("#PingProductId").append('<option value="0">Select Server Host Name</option>');
 
-            if (pingProductId !== "") {
-                $.get('/PingConfig/GetPingProductItemsByPingProductId', { pingProductId: pingProductId }, function (data) {
+            if (productId !== "" && productId !== "0" && ipAddress !== "") {
+                $.get('/PingConfig/GetHostsByProductAndIP', { productId: productId, ipAddress: ipAddress }, function (data) {
                     $.each(data, function (i, item) {
-                        $("#PingProductItemId").append('<option value="' + item.pingProductItemId + '">' + item.itemName + '</option>');
+                        $("#PingProductId").append('<option value="' + item.pingProductId + '">' + item.serverHostName + '</option>');
                     });
-
-                    if (data.length > 0) {
-                        $("#PingProductItemId").val(data[0].pingProductItemId).trigger('change');
-                    }
                 });
             }
         });
@@ -364,61 +174,34 @@ else
             $("#IsCheckedHidden").val("false");
         });
 
-        $("#ConfigValue").on("input", function () {
-            var value = $(this).val();
-            value = value.replace(/[^0-9.]/g, '');
-
-            var parts = value.split('.');
-            if (parts.length > 2) {
-                value = parts[0] + '.' + parts[1];
-            }
-
-            if (value !== '') {
-                var number = parseFloat(value);
-                if (!isNaN(number) && number > 100) {
-                    value = '100';
-                }
-            }
-
-            $(this).val(value);
-        });
-
         function toggleEntryMode() {
             var mode = $("#EntryMode").val();
 
             if (mode === "Value") {
                 $("#valueSection").show();
                 $("#checkboxSection").hide();
-                $("#dynamicLabel").text("Value");
-                $("#IsCheckedHidden").val("false");
                 $("#statusTick").prop("checked", false);
                 $("#statusCross").prop("checked", false);
+                $("#IsCheckedHidden").val("false");
             }
-            else if (mode === "Checkbox") {
+            else {
                 $("#valueSection").hide();
                 $("#checkboxSection").show();
                 $("#ConfigValue").val("");
 
-                if ($("#IsCheckedHidden").val() === "true") {
-                    $("#statusTick").prop("checked", true);
-                    $("#statusCross").prop("checked", false);
-                }
-                else {
+                if ($("#IsCheckedHidden").val() === "false") {
                     $("#statusTick").prop("checked", false);
                     $("#statusCross").prop("checked", true);
                 }
-            }
-            else {
-                $("#valueSection").hide();
-                $("#checkboxSection").hide();
-                $("#dynamicLabel").text("Input");
-                $("#ConfigValue").val("");
-                $("#IsCheckedHidden").val("false");
-                $("#statusTick").prop("checked", false);
-                $("#statusCross").prop("checked", false);
+                else {
+                    $("#statusTick").prop("checked", true);
+                    $("#statusCross").prop("checked", false);
+                    $("#IsCheckedHidden").val("true");
+                }
             }
         }
 
+        $("#IsCheckedHidden").val("true");
         toggleEntryMode();
     });
 </script>

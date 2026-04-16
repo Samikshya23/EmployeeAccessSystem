@@ -60,9 +60,7 @@
                                                         currentController == "SMCProductItem" ||
                                                         currentController == "SMCConfig" ||
                                                         currentController == "PingProduct" ||
-                                                        currentController == "PingProductField" ||
-                                                        currentController == "PingProductItem" ||
-                                                        currentController == "PingProductItemValue" ||
+                                                      
                                                         currentController == "PingConfig" ||
                                                         currentController == "Report") ? "menu-open" : "")">
 
@@ -72,9 +70,7 @@
                                                currentController == "SMCProductItem" ||
                                                currentController == "SMCConfig" ||
                                                currentController == "PingProduct" ||
-                                               currentController == "PingProductField" ||
-                                               currentController == "PingProductItem" ||
-                                               currentController == "PingProductItemValue" ||
+                                         
                                                currentController == "PingConfig" ||
                                                currentController == "Report") ? "active" : "")">
                             <i class="nav-icon fas fa-network-wired"></i>
@@ -138,16 +134,12 @@
                                 </ul>
                             </li>
                             <li class="nav-item has-treeview @((currentController == "PingProduct" ||
-                                                                currentController == "PingProductField" ||
-                                                                currentController == "PingProductItem" ||
-                                                                currentController == "PingProductItemValue" ||
+                                                          
                                                                 currentController == "PingConfig") ? "menu-open" : "")">
 
                                 <a href="#"
                                    class="nav-link @((currentController == "PingProduct" ||
-                                                       currentController == "PingProductField" ||
-                                                       currentController == "PingProductItem" ||
-                                                       currentController == "PingProductItemValue" ||
+                                                   
                                                        currentController == "PingConfig") ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>
@@ -166,32 +158,7 @@
                                         </a>
                                     </li>
 
-                                    <li class="nav-item">
-                                        <a asp-controller="PingProductField"
-                                           asp-action="Index"
-                                           class="nav-link @(currentController == "PingProductField" ? "active" : "")">
-                                            <i class="far fa-dot-circle nav-icon"></i>
-                                            <p>Ping Product Field</p>
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a asp-controller="PingProductItem"
-                                           asp-action="Index"
-                                           class="nav-link @(currentController == "PingProductItem" ? "active" : "")">
-                                            <i class="far fa-dot-circle nav-icon"></i>
-                                            <p>Ping Product Item</p>
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a asp-controller="PingProductItemValue"
-                                           asp-action="Index"
-                                           class="nav-link @(currentController == "PingProductItemValue" ? "active" : "")">
-                                            <i class="far fa-dot-circle nav-icon"></i>
-                                            <p>Ping Product Item Value</p>
-                                        </a>
-                                    </li>
+                                
 
                                     <li class="nav-item">
                                         <a asp-controller="PingConfig"

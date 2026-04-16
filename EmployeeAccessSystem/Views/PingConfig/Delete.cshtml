@@ -5,23 +5,18 @@
 
 <form asp-action="Delete" method="post" id="deletePingConfigForm">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="id" value="@Model.PingConfigId" />
+    <input type="hidden" name="pingConfigId" value="@Model.PingConfigId" />
 
-    <h5 class="text-center mb-2">
-        Are you sure?
-    </h5>
-
-    <p class="text-center mb-4" style="color:#000;">
-        You want to delete this configuration
-        <span>"@Model.ItemName"</span>
-    </p>
+    <div class="text-center">
+        <h5 class="mb-2">Are you sure?</h5>
+        <p class="mb-4">
+            You want to delete this configuration
+            <strong>"@Model.ServerHostName"</strong>
+        </p>
+    </div>
 
     <div class="modal-footer justify-content-center border-0 pt-0">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-            Cancel
-        </button>
-        <button type="submit" class="btn btn-danger">
-            Confirm
-        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger">Confirm</button>
     </div>
 </form>

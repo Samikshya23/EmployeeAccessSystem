@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Ping Config List";
     int sn = 1;
-    var shownProductNames = new List<string>();
+    var shownIPAddresses = new List<string>();
 }
 
 <section class="content pt-2 pb-0">
@@ -16,7 +16,6 @@
             </div>
             <div class="col-sm-6 text-right px-0">
                 <a asp-action="Create"
-                   asp-route-modal="true"
                    class="btn btn-primary rounded-pill open-modal-btn"
                    data-title="Add Ping Config">
                     <i class="fas fa-plus mr-1"></i> Add
@@ -72,10 +71,10 @@
                             </th>
 
                             <th class="text-center align-middle sticky-top bg-light sort-header"
-                                data-sort="product"
-                                style="width:17%; z-index:2; cursor:pointer;">
-                                Ping Product
-                                <span class="ml-1 sort-icon" data-for="product" style="display:inline-flex; align-items:center;">
+                                data-sort="ip"
+                                style="width:18%; z-index:2; cursor:pointer;">
+                                IP Address
+                                <span class="ml-1 sort-icon" data-for="ip" style="display:inline-flex; align-items:center;">
                                     <span class="sort-up" style="font-size:13px; line-height:1; color:#bcbcbc;">↑</span>
                                     <span class="sort-down" style="font-size:13px; line-height:1; color:#bcbcbc;">↓</span>
                                 </span>
@@ -83,7 +82,7 @@
 
                             <th class="text-center align-middle sticky-top bg-light"
                                 style="width:18%; z-index:2;">
-                                Item
+                                Server Host Name
                             </th>
 
                             <th class="text-center align-middle sticky-top bg-light sort-header"
@@ -124,19 +123,22 @@
                     </thead>
 
                     <tbody id="pingConfigTableBody">
-                        @if (Model != null && Model.Any())
+                        @if (Model != null)
                         {
-                            foreach (var product in Model)
+                            bool hasData = false;
+
+                            foreach (var ping in Model)
                             {
-                                if (!shownProductNames.Contains(product.PingProductName))
+                                if (!shownIPAddresses.Contains(ping.IPAddress))
                                 {
-                                    shownProductNames.Add(product.PingProductName);
+                                    hasData = true;
+                                    shownIPAddresses.Add(ping.IPAddress);
 
                                     var groupItems = new List<EmployeeAccessSystem.Models.PingConfig>();
 
                                     foreach (var item in Model)
                                     {
-                                        if (item.PingProductName == product.PingProductName)
+                                        if (item.IPAddress == ping.IPAddress)
                                         {
                                             groupItems.Add(item);
                                         }
@@ -178,7 +180,7 @@
                                         {
                                             if (groupItem.IsChecked)
                                             {
-                                                resultText = "Checked";
+                                                resultText = "Tick";
                                             }
                                             else
                                             {
@@ -187,8 +189,8 @@
                                         }
 
                                         string rowText =
-                                            groupItem.PingProductName + " " +
-                                            groupItem.ItemName + " " +
+                                            groupItem.IPAddress + " " +
+                                            groupItem.ServerHostName + " " +
                                             dateText + " " +
                                             userText + " " +
                                             resultText + " " +
@@ -214,17 +216,17 @@
                                         data-search="@combinedSearchText"
                                         data-group="@groupKey"
                                         data-sn="@sn"
-                                        data-product="@product.PingProductName"
+                                        data-ip="@ping.IPAddress"
                                         data-date="@latestDate.ToString("yyyyMMdd")"
                                         data-user="@firstUser">
-                                        <td class="text-center align-middle p-0 group-sn">
+                                        <td class="text-center align-middle p-0">
                                             <div class="d-flex align-items-center justify-content-center px-2 group-sn-wrap" style="height:136px;">
                                                 @sn
                                             </div>
                                         </td>
 
                                         <td class="align-middle p-0">
-                                            <div class="d-flex align-items-center px-2 group-product-wrap" style="height:136px;">
+                                            <div class="d-flex align-items-center px-2 group-ip-wrap" style="height:136px;">
                                                 @if (groupItems.Count > 4)
                                                 {
                                                     <a href="javascript:void(0);"
@@ -241,7 +243,7 @@
                                                     <span class="mr-3"></span>
                                                 }
 
-                                                <span>@product.PingProductName</span>
+                                                <span>@ping.IPAddress</span>
                                             </div>
                                         </td>
 
@@ -254,7 +256,7 @@
                                                         <tr class="child-row @hiddenClass" data-row-index="@i">
                                                             <td class="p-0 align-middle @(i != groupItems.Count - 1 ? "border-bottom" : "")">
                                                                 <div class="d-flex align-items-center px-2" style="height:34px;">
-                                                                    @groupItems[i].ItemName
+                                                                    @groupItems[i].ServerHostName
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -418,6 +420,13 @@
                                     sn++;
                                 }
                             }
+
+                            if (!hasData)
+                            {
+                                <tr id="noDataRow">
+                                    <td colspan="8" class="text-center align-middle">No Ping Config entries found.</td>
+                                </tr>
+                            }
                         }
                         else
                         {
@@ -499,7 +508,6 @@
         }
     </div>
 }
-
 @section Scripts {
 <script>
     $(document).ready(function () {
@@ -525,8 +533,7 @@
         }
 
         function updateSerialNumbers(filteredRows) {
-            var i;
-            for (i = 0; i < filteredRows.length; i++) {
+            for (var i = 0; i < filteredRows.length; i++) {
                 $(filteredRows[i]).find('.group-sn-wrap').text(i + 1);
             }
         }
@@ -549,7 +556,7 @@
                 var calculatedHeight = visibleRowCount * 34;
 
                 $row.find('.group-sn-wrap').css('height', calculatedHeight + 'px');
-                $row.find('.group-product-wrap').css('height', calculatedHeight + 'px');
+                $row.find('.group-ip-wrap').css('height', calculatedHeight + 'px');
             });
         }
 
@@ -567,13 +574,8 @@
                     valueB = valueB.toLowerCase();
                 }
 
-                if (valueA < valueB) {
-                    return currentSortDirection === 'asc' ? -1 : 1;
-                }
-
-                if (valueA > valueB) {
-                    return currentSortDirection === 'asc' ? 1 : -1;
-                }
+                if (valueA < valueB) return currentSortDirection === 'asc' ? -1 : 1;
+                if (valueA > valueB) return currentSortDirection === 'asc' ? 1 : -1;
 
                 return 0;
             });
@@ -619,23 +621,17 @@
 
             var startIndex = (currentPage - 1) * rowsPerPage;
             var endIndex = startIndex + rowsPerPage;
-            var i;
 
-            for (i = startIndex; i < endIndex && i < totalRows; i++) {
+            for (var i = startIndex; i < endIndex && i < totalRows; i++) {
                 $(filteredRows[i]).show();
             }
 
             var fromRecord = startIndex + 1;
-            var toRecord = endIndex;
-
-            if (toRecord > totalRows) {
-                toRecord = totalRows;
-            }
+            var toRecord = Math.min(endIndex, totalRows);
 
             $('#paginationInfo').text('Showing ' + fromRecord + ' to ' + toRecord + ' of ' + totalRows + ' grouped entries');
 
             var paginationHtml = '';
-            var page;
 
             if (currentPage > 1) {
                 paginationHtml += '<li class="page-item"><a href="#" class="page-link pagination-link" data-page="' + (currentPage - 1) + '">Previous</a></li>';
@@ -643,7 +639,7 @@
                 paginationHtml += '<li class="page-item disabled"><span class="page-link">Previous</span></li>';
             }
 
-            for (page = 1; page <= totalPages; page++) {
+            for (var page = 1; page <= totalPages; page++) {
                 if (page === currentPage) {
                     paginationHtml += '<li class="page-item active"><span class="page-link">' + page + '</span></li>';
                 } else {
@@ -703,19 +699,15 @@
             if (isExpanded) {
                 $('.' + groupKey).addClass('d-none');
                 $(this).attr('data-expanded', 'false');
-                $(this).attr('title', 'Expand');
                 $(this).find('i').removeClass('fa-caret-down').addClass('fa-caret-right');
             } else {
                 $('.' + groupKey).removeClass('d-none');
                 $(this).attr('data-expanded', 'true');
-                $(this).attr('title', 'Collapse');
                 $(this).find('i').removeClass('fa-caret-right').addClass('fa-caret-down');
             }
 
             syncGroupHeights();
         });
-
-        renderPagination();
 
         function openPingConfigModal(url, title) {
             $('#mainActionModalTitle').text(title);
@@ -730,22 +722,72 @@
 
         $(document).on('click', '.open-modal-btn', function (e) {
             e.preventDefault();
-
             var url = $(this).attr('href');
             var title = $(this).data('title') || 'Ping Config';
-
             openPingConfigModal(url, title);
         });
 
-        var shouldOpenCreate = '@Context.Request.Query["openCreate"]';
+        $(document).on('submit', '#createPingConfigForm', function (e) {
+            e.preventDefault();
+            var form = $(this);
 
-        if (shouldOpenCreate === 'true') {
-            openPingConfigModal('/PingConfig/Create?modal=true', 'Add Ping Config');
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $('#mainActionModal').modal('hide');
+                        window.location.href = '/PingConfig/Index?successMessage=' + encodeURIComponent(response.message);
+                    } else {
+                        $('#mainActionModalBody').html(response);
+                        $.validator.unobtrusive.parse('#mainActionModalBody');
+                    }
+                }
+            });
+        });
 
-            if (window.history.replaceState) {
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        }
+        $(document).on('submit', '#editPingConfigForm', function (e) {
+            e.preventDefault();
+            var form = $(this);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $('#mainActionModal').modal('hide');
+                        window.location.href = '/PingConfig/Index?successMessage=' + encodeURIComponent(response.message);
+                    } else {
+                        $('#mainActionModalBody').html(response);
+                        $.validator.unobtrusive.parse('#mainActionModalBody');
+                    }
+                }
+            });
+        });
+
+        $(document).on('submit', '#deletePingConfigForm', function (e) {
+            e.preventDefault();
+            var form = $(this);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $('#mainActionModal').modal('hide');
+                        window.location.href = '/PingConfig/Index?successMessage=' + encodeURIComponent(response.message);
+                    } else {
+                        $('#mainActionModalBody').html(response);
+                        $.validator.unobtrusive.parse('#mainActionModalBody');
+                    }
+                }
+            });
+        });
+
+        renderPagination();
 
         if ($('#successToast').length) {
             $('#successToast').toast('show');

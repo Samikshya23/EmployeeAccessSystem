@@ -47,11 +47,11 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PingProduct model)
         {
-            var message = await _service.AddAsync(model);
+            string message = await _service.AddAsync(model);
 
             if (message == "Ping Product added successfully.")
             {
-                return Content("success|Ping Product added successfully.");
+                return Content("success|" + message);
             }
 
             ViewBag.Error = message;
@@ -76,11 +76,11 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PingProduct model)
         {
-            var message = await _service.UpdateAsync(model);
+            string message = await _service.UpdateAsync(model);
 
             if (message == "Ping Product updated successfully.")
             {
-                return Content("success|Ping Product updated successfully.");
+                return Content("success|" + message);
             }
 
             ViewBag.Error = message;
@@ -105,11 +105,11 @@ namespace EmployeeAccessSystem.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int pingProductId)
         {
-            var message = await _service.DeleteAsync(pingProductId);
+            string message = await _service.DeleteAsync(pingProductId);
 
             if (message == "Ping Product deleted successfully.")
             {
-                return Content("success|Ping Product deleted successfully.");
+                return Content("success|" + message);
             }
 
             return Content("error|" + message);
@@ -119,7 +119,7 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Toggle(int id)
         {
-            var message = await _service.ToggleAsync(id);
+            string message = await _service.ToggleAsync(id);
 
             if (message == "Status changed successfully.")
             {

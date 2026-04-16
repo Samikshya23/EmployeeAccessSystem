@@ -1,280 +1,341 @@
-﻿using EmployeeAccessSystem.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
 using EmployeeAccessSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Security.Claims;
 
 namespace EmployeeAccessSystem.Controllers
 {
     public class PingConfigController : Controller
     {
         private readonly IPingConfigService _service;
+        private readonly IPingProductRepository _pingProductRepository;
         private readonly IProductSetupRepositories _productRepo;
-        private readonly IPingProductRepository _pingProductRepo;
-        private readonly IPingProductItemRepository _pingProductItemRepo;
 
         public PingConfigController(
             IPingConfigService service,
-            IProductSetupRepositories productRepo,
-            IPingProductRepository pingProductRepo,
-            IPingProductItemRepository pingProductItemRepo)
+            IPingProductRepository pingProductRepository,
+            IProductSetupRepositories productRepo)
         {
             _service = service;
+            _pingProductRepository = pingProductRepository;
             _productRepo = productRepo;
-            _pingProductRepo = pingProductRepo;
-            _pingProductItemRepo = pingProductItemRepo;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string successMessage, string errorMessage)
         {
-            IEnumerable<PingConfig> data = await _service.GetAllAsync();
+            if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                TempData["Success"] = successMessage;
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                TempData["Error"] = errorMessage;
+            }
+
+            var data = await _service.GetAllAsync();
             return View(data);
         }
 
-        public async Task<IActionResult> Create(bool modal = false)
+        public async Task<IActionResult> Create()
         {
-            ViewBag.IsModal = modal;
+            await LoadProducts();
 
-            IEnumerable<ProductSetup> products = await _productRepo.GetAllAsync();
-
-            int selectedProductId = 0;
-            int selectedPingProductId = 0;
-            int selectedPingProductItemId = 0;
-
-            foreach (ProductSetup product in products)
-            {
-                selectedProductId = product.ProductId;
-                break;
-            }
-
-            List<PingProduct> pingProducts = new List<PingProduct>();
-            if (selectedProductId > 0)
-            {
-                IEnumerable<PingProduct> pingProductData = await _pingProductRepo.GetByProductIdAsync(selectedProductId);
-                foreach (PingProduct item in pingProductData)
-                {
-                    pingProducts.Add(item);
-                }
-
-                foreach (PingProduct item in pingProducts)
-                {
-                    selectedPingProductId = item.PingProductId;
-                    break;
-                }
-            }
-
-            List<PingProductItem> pingProductItems = new List<PingProductItem>();
-            if (selectedPingProductId > 0)
-            {
-                IEnumerable<PingProductItem> itemData = await _pingProductItemRepo.GetByPingProductIdAsync(selectedPingProductId);
-                foreach (PingProductItem item in itemData)
-                {
-                    pingProductItems.Add(item);
-                }
-
-                foreach (PingProductItem item in pingProductItems)
-                {
-                    selectedPingProductItemId = item.PingProductItemId;
-                    break;
-                }
-            }
-
-            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName", selectedProductId);
-            ViewBag.PingProductList = new SelectList(pingProducts, "PingProductId", "PingProductName", selectedPingProductId);
-            ViewBag.PingProductItemList = new SelectList(pingProductItems, "PingProductItemId", "ItemName", selectedPingProductItemId);
-
-            List<SelectListItem> modes = new List<SelectListItem>();
-            modes.Add(new SelectListItem { Value = "Value", Text = "Value" });
-            modes.Add(new SelectListItem { Value = "Checkbox", Text = "Checkbox" });
-
-            ViewBag.EntryModeList = new SelectList(modes, "Value", "Text", "Value");
+            string[] emptyIPs = new string[0];
+            ViewBag.IPList = new SelectList(emptyIPs);
 
             PingConfig model = new PingConfig();
-            model.ProductId = selectedProductId;
-            model.PingProductId = selectedPingProductId;
-            model.PingProductItemId = selectedPingProductItemId;
             model.IsActive = true;
-            model.EntryMode = "Value";
-            model.IsChecked = false;
-            model.EntryDate = DateTime.Today;
+            model.EntryMode = "Checkbox";
+            model.IsChecked = true;
 
-            return View(model);
+            return PartialView(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PingConfig model, bool isModal = false)
+        public async Task<IActionResult> Create(PingConfig model)
         {
-            ViewBag.IsModal = isModal;
-            model.EntryDate = DateTime.Now.Date;
+            string currentUser = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "System";
+            model.EntryDate = DateTime.Now;
+
+            if (model.ProductId <= 0)
+            {
+                ModelState.AddModelError("ProductId", "Please select a product.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.IPAddress))
+            {
+                ModelState.AddModelError("IPAddress", "Please select IP address.");
+            }
+
+            if (model.PingProductId <= 0)
+            {
+                ModelState.AddModelError("PingProductId", "Please select server host name.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.EntryMode))
+            {
+                ModelState.AddModelError("EntryMode", "Please select save option.");
+            }
+
+            if (model.EntryMode == "Value" && string.IsNullOrWhiteSpace(model.ConfigValue))
+            {
+                ModelState.AddModelError("ConfigValue", "Please enter value.");
+            }
 
             if (!ModelState.IsValid)
             {
-                await LoadProducts(model.ProductId);
-                await LoadPingProducts(model.ProductId, model.PingProductId);
-                await LoadPingProductItems(model.PingProductId, model.PingProductItemId);
-                await LoadEntryModes(model.EntryMode);
-                return View(model);
+                await LoadProducts();
+                await LoadDistinctIPs(model.ProductId);
+                await LoadHosts(model.ProductId, model.IPAddress);
+                return PartialView(model);
             }
 
-            string? currentUser = User.FindFirst(ClaimTypes.Email)?.Value
-                                  ?? User.FindFirst("email")?.Value
-                                  ?? User.Identity?.Name;
+            string message = await _service.AddAsync(model, currentUser);
 
-            string result = await _service.AddAsync(model, currentUser);
-
-            string[] parts = result.Split('|', 2);
-            string status = parts[0];
-            string message = parts.Length > 1 ? parts[1] : "Operation failed.";
-
-            if (status == "success")
+            if (message == "Ping Config added successfully.")
             {
-                TempData["Success"] = message;
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = message });
             }
 
             ViewBag.Error = message;
-            await LoadProducts(model.ProductId);
-            await LoadPingProducts(model.ProductId, model.PingProductId);
-            await LoadPingProductItems(model.PingProductId, model.PingProductItemId);
-            await LoadEntryModes(model.EntryMode);
-            return View(model);
+            await LoadProducts();
+            await LoadDistinctIPs(model.ProductId);
+            await LoadHosts(model.ProductId, model.IPAddress);
+
+            return PartialView(model);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            PingConfig? data = await _service.GetByIdAsync(id);
+            PingConfig data = await _service.GetByIdAsync(id);
 
             if (data == null)
             {
                 return NotFound();
             }
 
-            await LoadProducts(data.ProductId);
-            await LoadPingProducts(data.ProductId, data.PingProductId);
-            await LoadPingProductItems(data.PingProductId, data.PingProductItemId);
-            await LoadEntryModes(data.EntryMode);
+            await LoadProducts();
+            await LoadDistinctIPs(data.ProductId);
+            await LoadHosts(data.ProductId, data.IPAddress);
 
-            return View(data);
+            return PartialView(data);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PingConfig model)
         {
-            if (!ModelState.IsValid)
+            string currentUser = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "System";
+
+            if (model.ProductId <= 0)
             {
-                await LoadProducts(model.ProductId);
-                await LoadPingProducts(model.ProductId, model.PingProductId);
-                await LoadPingProductItems(model.PingProductId, model.PingProductItemId);
-                await LoadEntryModes(model.EntryMode);
-                return View(model);
+                ModelState.AddModelError("ProductId", "Please select a product.");
             }
 
-            string? currentUser = User.FindFirst(ClaimTypes.Email)?.Value
-                                  ?? User.FindFirst("email")?.Value
-                                  ?? User.Identity?.Name;
-
-            string result = await _service.UpdateAsync(model, currentUser);
-
-            string[] parts = result.Split('|', 2);
-            string status = parts[0];
-            string message = parts.Length > 1 ? parts[1] : "Operation failed.";
-
-            if (status == "success")
+            if (string.IsNullOrWhiteSpace(model.IPAddress))
             {
-                TempData["Success"] = message;
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("IPAddress", "Please select IP address.");
+            }
+
+            if (model.PingProductId <= 0)
+            {
+                ModelState.AddModelError("PingProductId", "Please select server host name.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.EntryMode))
+            {
+                ModelState.AddModelError("EntryMode", "Please select save option.");
+            }
+
+            if (model.EntryMode == "Value" && string.IsNullOrWhiteSpace(model.ConfigValue))
+            {
+                ModelState.AddModelError("ConfigValue", "Please enter value.");
+            }
+
+            PingConfig existingData = await _service.GetByIdAsync(model.PingConfigId);
+            if (existingData != null)
+            {
+                model.EntryDate = existingData.EntryDate;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await LoadProducts();
+                await LoadDistinctIPs(model.ProductId);
+                await LoadHosts(model.ProductId, model.IPAddress);
+                return PartialView(model);
+            }
+
+            string message = await _service.UpdateAsync(model, currentUser);
+
+            if (message == "Ping Config updated successfully.")
+            {
+                return Json(new { success = true, message = message });
             }
 
             ViewBag.Error = message;
-            await LoadProducts(model.ProductId);
-            await LoadPingProducts(model.ProductId, model.PingProductId);
-            await LoadPingProductItems(model.PingProductId, model.PingProductItemId);
-            await LoadEntryModes(model.EntryMode);
-            return View(model);
+            await LoadProducts();
+            await LoadDistinctIPs(model.ProductId);
+            await LoadHosts(model.ProductId, model.IPAddress);
+
+            return PartialView(model);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            PingConfig? data = await _service.GetByIdAsync(id);
+            PingConfig data = await _service.GetByIdAsync(id);
 
             if (data == null)
             {
                 return NotFound();
             }
 
-            return View(data);
+            return PartialView(data);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, PingConfig model)
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int pingConfigId)
         {
-            string? currentUser = User.FindFirst(ClaimTypes.Email)?.Value
-                                  ?? User.FindFirst("email")?.Value
-                                  ?? User.Identity?.Name;
+            string currentUser = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "System";
 
-            string result = await _service.DeleteAsync(id, currentUser);
+            string message = await _service.DeleteAsync(pingConfigId, currentUser);
 
-            string[] parts = result.Split('|', 2);
-            string status = parts[0];
-            string message = parts.Length > 1 ? parts[1] : "Operation failed.";
-
-            if (status == "success")
+            if (message == "Ping Config deleted successfully.")
             {
-                TempData["Success"] = message;
-            }
-            else
-            {
-                TempData["Error"] = message;
+                return Json(new { success = true, message = message });
             }
 
-            return RedirectToAction(nameof(Index));
+            PingConfig data = await _service.GetByIdAsync(pingConfigId);
+            if (data == null)
+            {
+                data = new PingConfig();
+                data.PingConfigId = pingConfigId;
+            }
+
+            ViewBag.Error = message;
+            return PartialView("Delete", data);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPingProductsByProductId(int productId)
+        public async Task<JsonResult> GetIPsByProduct(int productId)
         {
-            IEnumerable<PingProduct> data = await _pingProductRepo.GetByProductIdAsync(productId);
-            return Json(data);
+            var data = await _pingProductRepository.GetByProductIdAsync(productId);
+
+            List<string> result = new List<string>();
+            HashSet<string> seenIPs = new HashSet<string>();
+
+            foreach (var item in data)
+            {
+                if (item.IsActive && !string.IsNullOrWhiteSpace(item.IPAddress))
+                {
+                    if (!seenIPs.Contains(item.IPAddress))
+                    {
+                        seenIPs.Add(item.IPAddress);
+                        result.Add(item.IPAddress);
+                    }
+                }
+            }
+
+            result.Sort();
+
+            return Json(result);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPingProductItemsByPingProductId(int pingProductId)
+        public async Task<JsonResult> GetHostsByProductAndIP(int productId, string ipAddress)
         {
-            IEnumerable<PingProductItem> data = await _pingProductItemRepo.GetByPingProductIdAsync(pingProductId);
-            return Json(data);
+            var data = await _pingProductRepository.GetByProductIdAsync(productId);
+
+            List<object> result = new List<object>();
+
+            foreach (var item in data)
+            {
+                if (item.IsActive && item.IPAddress == ipAddress)
+                {
+                    result.Add(new
+                    {
+                        pingProductId = item.PingProductId,
+                        serverHostName = item.ServerHostName
+                    });
+                }
+            }
+
+            return Json(result);
         }
 
-        private async Task LoadProducts(int? selectedProductId = null)
+        private async Task LoadProducts()
         {
-            IEnumerable<ProductSetup> products = await _productRepo.GetAllAsync();
-            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName", selectedProductId);
+            var products = await _productRepo.GetActiveAsync();
+            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName");
         }
 
-        private async Task LoadPingProducts(int productId, int? selectedPingProductId = null)
+        private async Task LoadDistinctIPs(int productId)
         {
-            IEnumerable<PingProduct> data = await _pingProductRepo.GetByProductIdAsync(productId);
-            ViewBag.PingProductList = new SelectList(data, "PingProductId", "PingProductName", selectedPingProductId);
+            if (productId <= 0)
+            {
+                ViewBag.IPList = new SelectList(new List<string>());
+                return;
+            }
+
+            var data = await _pingProductRepository.GetByProductIdAsync(productId);
+
+            List<string> ipList = new List<string>();
+            HashSet<string> seenIPs = new HashSet<string>();
+
+            foreach (var item in data)
+            {
+                if (item.IsActive && !string.IsNullOrWhiteSpace(item.IPAddress))
+                {
+                    if (!seenIPs.Contains(item.IPAddress))
+                    {
+                        seenIPs.Add(item.IPAddress);
+                        ipList.Add(item.IPAddress);
+                    }
+                }
+            }
+
+            ipList.Sort();
+
+            ViewBag.IPList = new SelectList(ipList);
         }
 
-        private async Task LoadPingProductItems(int pingProductId, int? selectedPingProductItemId = null)
+        private async Task LoadHosts(int productId, string ipAddress)
         {
-            IEnumerable<PingProductItem> data = await _pingProductItemRepo.GetByPingProductIdAsync(pingProductId);
-            ViewBag.PingProductItemList = new SelectList(data, "PingProductItemId", "ItemName", selectedPingProductItemId);
-        }
+            if (productId <= 0 || string.IsNullOrWhiteSpace(ipAddress))
+            {
+                ViewBag.HostList = new SelectList(new List<PingProduct>(), "PingProductId", "ServerHostName");
+                return;
+            }
 
-        private Task LoadEntryModes(string selectedEntryMode = null)
-        {
-            List<SelectListItem> modes = new List<SelectListItem>();
-            modes.Add(new SelectListItem { Value = "Value", Text = "Value" });
-            modes.Add(new SelectListItem { Value = "Checkbox", Text = "Checkbox" });
+            var data = await _pingProductRepository.GetByProductIdAsync(productId);
 
-            ViewBag.EntryModeList = new SelectList(modes, "Value", "Text", selectedEntryMode);
-            return Task.CompletedTask;
+            List<PingProduct> hostList = new List<PingProduct>();
+
+            foreach (var item in data)
+            {
+                if (item.IsActive && item.IPAddress == ipAddress)
+                {
+                    hostList.Add(item);
+                }
+            }
+
+            hostList.Sort(delegate (PingProduct x, PingProduct y)
+            {
+                string name1 = x.ServerHostName ?? "";
+                string name2 = y.ServerHostName ?? "";
+                return string.Compare(name1, name2, StringComparison.OrdinalIgnoreCase);
+            });
+
+            ViewBag.HostList = new SelectList(hostList, "PingProductId", "ServerHostName");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿@model EmployeeAccessSystem.Models.PingProduct
-
 @{
     Layout = null;
 }
@@ -9,57 +8,57 @@
 
     @if (ViewBag.Error != null)
     {
-        <div class="alert alert-danger">@ViewBag.Error</div>
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
     }
 
-    <div class="form-group">
-        <label asp-for="ProductId" class="font-weight-bold">Product</label>
-        <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-control">
-            <option value="">Select Product</option>
-        </select>
-        <span asp-validation-for="ProductId" class="text-danger small"></span>
-    </div>
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="form-group">
-        <label asp-for="PingProductName" class="font-weight-bold">Ping Product Name</label>
-        <input asp-for="PingProductName" class="form-control" placeholder="Enter Ping Product Name" />
-        <span asp-validation-for="PingProductName" class="text-danger small"></span>
-    </div>
-
-    <div class="form-group mb-4">
-        <div class="custom-control custom-switch">
-            <input asp-for="IsActive" class="custom-control-input" id="CreateIsActive" />
-            <label class="custom-control-label font-weight-bold" for="CreateIsActive" id="createStatusLabel">
-                Active
-            </label>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label asp-for="ProductId" class="font-weight-bold">Product</label>
+                <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-control">
+                    <option value="">Select Product</option>
+                </select>
+                <span asp-validation-for="ProductId" class="text-danger small"></span>
+            </div>
         </div>
-        <span asp-validation-for="IsActive" class="text-danger small"></span>
+
+        <div class="col-md-12">
+            <div class="form-group">
+                <label asp-for="IPAddress" class="font-weight-bold">IP Address</label>
+                <input asp-for="IPAddress" class="form-control" placeholder="Enter IP Address" />
+                <span asp-validation-for="IPAddress" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="form-group">
+                <label asp-for="ServerHostName" class="font-weight-bold">Server Host Name</label>
+                <input asp-for="ServerHostName" class="form-control" placeholder="Enter Server Host Name" />
+                <span asp-validation-for="ServerHostName" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="form-group mb-0">
+                <div class="custom-control custom-switch">
+                    <input asp-for="IsActive" type="checkbox" class="custom-control-input" id="createIsActiveSwitch" />
+                    <label class="custom-control-label font-weight-bold" for="createIsActiveSwitch">Active</label>
+                </div>
+                <span asp-validation-for="IsActive" class="text-danger small"></span>
+            </div>
+        </div>
     </div>
 
-    <div class="modal-footer px-0 pb-0">
+    <div class="modal-footer px-0 pb-0 pt-3">
         <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save mr-1"></i>Save
+        </button>
     </div>
 </form>
 
 <partial name="_ValidationScriptsPartial" />
-
-<script>
-    $(document).ready(function () {
-
-        function updateCreateStatus() {
-            if ($('#CreateIsActive').is(':checked')) {
-                $('#createStatusLabel').text('Active');
-            } else {
-                $('#createStatusLabel').text('Inactive');
-            }
-        }
-
-        updateCreateStatus();
-
-        $('#CreateIsActive').change(function () {
-            updateCreateStatus();
-        });
-
-    });
-</script>
