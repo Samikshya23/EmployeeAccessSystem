@@ -54,14 +54,28 @@ namespace EmployeeAccessSystem.Services
                 return model;
             }
 
+            string productName = GetProductName(model.ProductList, selectedProductId.Value);
+            string flag = "SMSC_REPORT";
+
+            if (IsPingProduct(productName))
+            {
+                flag = "PING_REPORT";
+                model.IsPingReport = true;
+            }
+            else
+            {
+                model.IsPingReport = false;
+            }
+
             model.ReportData = await _reportRepository.GetReportDataAsync(
+                flag,
                 selectedProductId.Value,
                 fromDate.Value,
                 toDate.Value
             );
 
-            model.ReportTitle = GetProductName(model.ProductList, selectedProductId.Value) + " Report Summary";
-            model.Dates = GetUniqueDates(model.ReportData);
+            model.ReportTitle = productName + " Report Summary";
+            model.Dates = GetDateRange(fromDate.Value, toDate.Value);
             model.HasData = model.ReportData.Count > 0;
 
             return model;
@@ -69,42 +83,50 @@ namespace EmployeeAccessSystem.Services
 
         private string GetProductName(List<ProductSetup> products, int productId)
         {
-            for (int i = 0; i < products.Count; i++)
+            int i = 0;
+
+            while (i < products.Count)
             {
                 if (products[i].ProductId == productId)
                 {
                     return products[i].ProductName;
                 }
+
+                i++;
             }
 
             return "Monitoring";
         }
 
-        private List<DateTime> GetUniqueDates(List<ReportModel> data)
+        private bool IsPingProduct(string productName)
+        {
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                return false;
+            }
+
+            productName = productName.Trim().ToLower();
+
+            if (productName == "server ping")
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private List<DateTime> GetDateRange(DateTime fromDate, DateTime toDate)
         {
             List<DateTime> dates = new List<DateTime>();
 
-            for (int i = 0; i < data.Count; i++)
+            DateTime currentDate = fromDate.Date;
+
+            while (currentDate <= toDate.Date)
             {
-                DateTime currentDate = data[i].EntryDate.Date;
-                bool exists = false;
-
-                for (int j = 0; j < dates.Count; j++)
-                {
-                    if (dates[j] == currentDate)
-                    {
-                        exists = true;
-                        break;
-                    }
-                }
-
-                if (!exists)
-                {
-                    dates.Add(currentDate);
-                }
+                dates.Add(currentDate);
+                currentDate = currentDate.AddDays(1);
             }
 
-            dates.Sort();
             return dates;
         }
     }

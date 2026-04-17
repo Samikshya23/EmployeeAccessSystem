@@ -63,6 +63,8 @@ namespace EmployeeAccessSystem.Controllers
         {
             string currentUser = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "System";
             model.EntryDate = DateTime.Now;
+            model.EntryMode = "Checkbox";
+            model.ConfigValue = null;
 
             if (model.ProductId <= 0)
             {
@@ -77,16 +79,6 @@ namespace EmployeeAccessSystem.Controllers
             if (model.PingProductId <= 0)
             {
                 ModelState.AddModelError("PingProductId", "Please select server host name.");
-            }
-
-            if (string.IsNullOrWhiteSpace(model.EntryMode))
-            {
-                ModelState.AddModelError("EntryMode", "Please select save option.");
-            }
-
-            if (model.EntryMode == "Value" && string.IsNullOrWhiteSpace(model.ConfigValue))
-            {
-                ModelState.AddModelError("ConfigValue", "Please enter value.");
             }
 
             if (!ModelState.IsValid)
@@ -125,6 +117,9 @@ namespace EmployeeAccessSystem.Controllers
             await LoadDistinctIPs(data.ProductId);
             await LoadHosts(data.ProductId, data.IPAddress);
 
+            data.EntryMode = "Checkbox";
+            data.ConfigValue = null;
+
             return PartialView(data);
         }
 
@@ -133,6 +128,8 @@ namespace EmployeeAccessSystem.Controllers
         public async Task<IActionResult> Edit(PingConfig model)
         {
             string currentUser = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "System";
+            model.EntryMode = "Checkbox";
+            model.ConfigValue = null;
 
             if (model.ProductId <= 0)
             {
@@ -149,17 +146,8 @@ namespace EmployeeAccessSystem.Controllers
                 ModelState.AddModelError("PingProductId", "Please select server host name.");
             }
 
-            if (string.IsNullOrWhiteSpace(model.EntryMode))
-            {
-                ModelState.AddModelError("EntryMode", "Please select save option.");
-            }
-
-            if (model.EntryMode == "Value" && string.IsNullOrWhiteSpace(model.ConfigValue))
-            {
-                ModelState.AddModelError("ConfigValue", "Please enter value.");
-            }
-
             PingConfig existingData = await _service.GetByIdAsync(model.PingConfigId);
+
             if (existingData != null)
             {
                 model.EntryDate = existingData.EntryDate;
@@ -215,6 +203,7 @@ namespace EmployeeAccessSystem.Controllers
             }
 
             PingConfig data = await _service.GetByIdAsync(pingConfigId);
+
             if (data == null)
             {
                 data = new PingConfig();

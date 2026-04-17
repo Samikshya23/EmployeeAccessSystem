@@ -1,15 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-
 namespace EmployeeAccessSystem.Models
 {
     public class PingConfig
     {
         public int PingConfigId { get; set; }
-
         [Range(1, int.MaxValue, ErrorMessage = "Please select a product.")]
         public int ProductId { get; set; }
-
         public string ProductName { get; set; } = string.Empty;
 
         [Range(1, int.MaxValue, ErrorMessage = "Please select server host name.")]

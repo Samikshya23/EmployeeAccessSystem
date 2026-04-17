@@ -19,22 +19,24 @@ namespace EmployeeAccessSystem.Repositories
             return new SqlConnection(_connectionString);
         }
 
-        public async Task<List<ReportModel>> GetReportDataAsync(int productId, DateTime fromDate, DateTime toDate)
+        public async Task<List<ReportModel>> GetReportDataAsync(string flag, int productId, DateTime fromDate, DateTime toDate)
         {
-            using var conn = GetConnection();
+            using (SqlConnection conn = GetConnection())
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("Flag", flag);
+                parameters.Add("ProductId", productId);
+                parameters.Add("FromDate", fromDate.Date);
+                parameters.Add("ToDate", toDate.Date);
 
-            var result = await conn.QueryAsync<ReportModel>(
-                "dbo.sp_Report_GetData",
-                new
-                {
-                    ProductId = productId,
-                    FromDate = fromDate.Date,
-                    ToDate = toDate.Date
-                },
-                commandType: CommandType.StoredProcedure
-            );
+                IEnumerable<ReportModel> result = await conn.QueryAsync<ReportModel>(
+                    "dbo.sp_Report_GetData",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
 
-            return result.ToList();
+                return result.ToList();
+            }
         }
     }
 }

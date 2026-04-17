@@ -16,7 +16,6 @@ namespace EmployeeAccessSystem.Controllers
             _service = service;
             _productRepo = productRepo;
         }
-
         public async Task<IActionResult> Index(string successMessage, string errorMessage)
         {
             if (!string.IsNullOrWhiteSpace(successMessage))
@@ -42,7 +41,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return PartialView(model);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PingProduct model)
@@ -58,7 +56,6 @@ namespace EmployeeAccessSystem.Controllers
             await LoadProducts();
             return PartialView(model);
         }
-
         public async Task<IActionResult> Edit(int id)
         {
             var data = await _service.GetByIdAsync(id);
@@ -71,7 +68,6 @@ namespace EmployeeAccessSystem.Controllers
             await LoadProducts();
             return PartialView(data);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PingProduct model)
@@ -87,7 +83,6 @@ namespace EmployeeAccessSystem.Controllers
             await LoadProducts();
             return PartialView(model);
         }
-
         public async Task<IActionResult> Delete(int id)
         {
             var data = await _service.GetByIdAsync(id);
@@ -114,7 +109,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return Content("error|" + message);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Toggle(int id)
@@ -132,7 +126,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return RedirectToAction("Index");
         }
-
         private async Task LoadProducts()
         {
             var products = await _productRepo.GetActiveAsync();

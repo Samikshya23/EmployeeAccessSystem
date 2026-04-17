@@ -11,5 +11,8 @@ namespace EmployeeAccessSystem.Models
         public string ConfigValue { get; set; }
         public string EntryMode { get; set; }
         public bool IsChecked { get; set; }
+        public int SN { get; set; }
+        public string IPAddress { get; set; }
+        public string ServerHostName { get; set; }
     }
 }

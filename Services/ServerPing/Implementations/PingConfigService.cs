@@ -55,30 +55,8 @@ namespace EmployeeAccessSystem.Services
                 pingConfig.EntryDate = DateTime.Now;
             }
 
-            if (string.IsNullOrWhiteSpace(pingConfig.EntryMode))
-            {
-                return "Please select save option.";
-            }
-
-            pingConfig.EntryMode = pingConfig.EntryMode.Trim();
-
-            if (pingConfig.EntryMode == "Value")
-            {
-                if (string.IsNullOrWhiteSpace(pingConfig.ConfigValue))
-                {
-                    return "Please enter value.";
-                }
-
-                pingConfig.IsChecked = false;
-            }
-            else if (pingConfig.EntryMode == "Checkbox")
-            {
-                pingConfig.ConfigValue = null;
-            }
-            else
-            {
-                return "Invalid save option.";
-            }
+            pingConfig.EntryMode = "Checkbox";
+            pingConfig.ConfigValue = null;
 
             PingConfig? duplicate = await _repository.CheckDuplicateAsync(
                 pingConfig.PingProductId,
@@ -155,30 +133,8 @@ namespace EmployeeAccessSystem.Services
                 return "Invalid entry date.";
             }
 
-            if (string.IsNullOrWhiteSpace(pingConfig.EntryMode))
-            {
-                return "Please select save option.";
-            }
-
-            pingConfig.EntryMode = pingConfig.EntryMode.Trim();
-
-            if (pingConfig.EntryMode == "Value")
-            {
-                if (string.IsNullOrWhiteSpace(pingConfig.ConfigValue))
-                {
-                    return "Please enter value.";
-                }
-
-                pingConfig.IsChecked = false;
-            }
-            else if (pingConfig.EntryMode == "Checkbox")
-            {
-                pingConfig.ConfigValue = null;
-            }
-            else
-            {
-                return "Invalid save option.";
-            }
+            pingConfig.EntryMode = "Checkbox";
+            pingConfig.ConfigValue = null;
 
             PingConfig? existing = await _repository.GetByIdAsync(pingConfig.PingConfigId);
 

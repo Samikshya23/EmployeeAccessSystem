@@ -36,7 +36,6 @@ namespace EmployeeAccessSystem.Pdf.Documents
             page.Content().Column(delegate (ColumnDescriptor col)
             {
                 col.Item().AlignCenter().Text(GetReportTitle()).Bold().FontSize(14);
-
                 col.Item().AlignCenter().Text("Product: " + GetSelectedProductName());
 
                 if (_model.FromDate.HasValue && _model.ToDate.HasValue)
@@ -54,6 +53,18 @@ namespace EmployeeAccessSystem.Pdf.Documents
         }
 
         private void BuildTable(IContainer container)
+        {
+            if (_model.IsPingReport)
+            {
+                BuildPingTable(container);
+            }
+            else
+            {
+                BuildSmscTable(container);
+            }
+        }
+
+        private void BuildSmscTable(IContainer container)
         {
             container.Table(delegate (TableDescriptor table)
             {
@@ -95,7 +106,7 @@ namespace EmployeeAccessSystem.Pdf.Documents
                     }
                 }
 
-                List<ReportModel> uniqueRows = GetUniqueRows();
+                List<ReportModel> uniqueRows = GetUniqueSmscRows();
 
                 int rowIndex = 0;
 
@@ -125,7 +136,7 @@ namespace EmployeeAccessSystem.Pdf.Documents
 
                         while (d < _model.Dates.Count)
                         {
-                            string value = GetValue(
+                            string value = GetSmscValue(
                                 row.MonitoringTypeName,
                                 row.ItemName,
                                 _model.Dates[d]);
@@ -135,10 +146,6 @@ namespace EmployeeAccessSystem.Pdf.Documents
                                 if (value == "TICK")
                                 {
                                     text.Span("✓").FontColor("#008000").Bold().FontSize(11);
-                                }
-                                else if (value == "CROSS")
-                                {
-                                    text.Span("✗").FontColor("#DC3545").Bold().FontSize(11);
                                 }
                                 else
                                 {
@@ -150,39 +157,100 @@ namespace EmployeeAccessSystem.Pdf.Documents
                         }
                     }
 
-                    bool isLastOfGroup = true;
-
-                    if (rowIndex < uniqueRows.Count - 1)
-                    {
-                        if (uniqueRows[rowIndex].MonitoringTypeName == uniqueRows[rowIndex + 1].MonitoringTypeName)
-                        {
-                            isLastOfGroup = false;
-                        }
-                    }
-
                     rowIndex++;
-
-                    if (isLastOfGroup)
-                    {
-                        table.Cell().Element(GapCellStyle).Text("");
-                        table.Cell().Element(GapCellStyle).Text("");
-
-                        if (_model.Dates != null)
-                        {
-                            int g = 0;
-
-                            while (g < _model.Dates.Count)
-                            {
-                                table.Cell().Element(GapCellStyle).Text("");
-                                g++;
-                            }
-                        }
-                    }
                 }
             });
         }
 
-        private List<ReportModel> GetUniqueRows()
+        private void BuildPingTable(IContainer container)
+        {
+            container.Table(delegate (TableDescriptor table)
+            {
+                table.ColumnsDefinition(delegate (TableColumnsDefinitionDescriptor columns)
+                {
+                    columns.ConstantColumn(35);
+                    columns.ConstantColumn(80);
+                    columns.ConstantColumn(120);
+
+                    if (_model.Dates != null)
+                    {
+                        int i = 0;
+
+                        while (i < _model.Dates.Count)
+                        {
+                            columns.RelativeColumn();
+                            i++;
+                        }
+                    }
+                });
+
+                table.Cell().Element(HeaderStyle).Text("SN").Bold();
+                table.Cell().Element(HeaderStyle).Text("IP").Bold();
+                table.Cell().Element(HeaderStyle).Text("Server Host Name").Bold();
+
+                if (_model.Dates != null)
+                {
+                    int i = 0;
+
+                    while (i < _model.Dates.Count)
+                    {
+                        DateTime d = _model.Dates[i];
+
+                        table.Cell().Element(HeaderStyle).Column(delegate (ColumnDescriptor col)
+                        {
+                            col.Item().AlignCenter().Text(d.ToString("dd")).Bold();
+                            col.Item().AlignCenter().Text(d.ToString("ddd"));
+                        });
+
+                        i++;
+                    }
+                }
+
+                List<ReportModel> uniqueRows = GetUniquePingRows();
+
+                int rowIndex = 0;
+
+                while (rowIndex < uniqueRows.Count)
+                {
+                    ReportModel row = uniqueRows[rowIndex];
+
+                    table.Cell().Element(ValueStyle).Text((rowIndex + 1).ToString());
+                    table.Cell().Element(ItemStyle).Text(row.IPAddress);
+                    table.Cell().Element(ItemStyle).Text(row.ServerHostName);
+
+                    if (_model.Dates != null)
+                    {
+                        int d = 0;
+
+                        while (d < _model.Dates.Count)
+                        {
+                            string value = GetPingValue(
+                                row.IPAddress,
+                                row.ServerHostName,
+                                _model.Dates[d]);
+
+                            table.Cell().Element(ValueStyle).Text(delegate (TextDescriptor text)
+                            {
+                                if (value == "TICK")
+                                {
+                                    text.Span("✓").FontColor("#008000").Bold().FontSize(11);
+                                }
+                                else
+                                {
+                                    text.Span(value);
+                                }
+                            });
+
+                            d++;
+                        }
+                    }
+
+                    rowIndex++;
+                }
+            });
+        }
+
+        private List<ReportModel> GetUniqueSmscRows()
         {
             List<ReportModel> list = new List<ReportModel>();
 
@@ -196,13 +264,51 @@ namespace EmployeeAccessSystem.Pdf.Documents
             while (i < _model.ReportData.Count)
             {
                 bool exists = false;
-
                 int j = 0;
 
                 while (j < list.Count)
                 {
                     if (list[j].MonitoringTypeName == _model.ReportData[i].MonitoringTypeName &&
                         list[j].ItemName == _model.ReportData[i].ItemName)
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    j++;
+                }
+
+                if (!exists)
+                {
+                    list.Add(_model.ReportData[i]);
+                }
+
+                i++;
+            }
+
+            return list;
+        }
+
+        private List<ReportModel> GetUniquePingRows()
+        {
+            List<ReportModel> list = new List<ReportModel>();
+
+            if (_model.ReportData == null)
+            {
+                return list;
+            }
+
+            int i = 0;
+
+            while (i < _model.ReportData.Count)
+            {
+                bool exists = false;
+                int j = 0;
+
+                while (j < list.Count)
+                {
+                    if (list[j].IPAddress == _model.ReportData[i].IPAddress &&
+                        list[j].ServerHostName == _model.ReportData[i].ServerHostName)
                     {
                         exists = true;
                         break;
@@ -257,7 +363,7 @@ namespace EmployeeAccessSystem.Pdf.Documents
             return count;
         }
 
-        private string GetValue(string type, string item, DateTime date)
+        private string GetSmscValue(string type, string item, DateTime date)
         {
             if (_model.ReportData == null)
             {
@@ -276,28 +382,78 @@ namespace EmployeeAccessSystem.Pdf.Documents
                 {
                     if (!string.IsNullOrWhiteSpace(data.EntryMode))
                     {
-                        if (data.EntryMode == "Checkbox")
+                        if (data.EntryMode.Trim() == "Checkbox")
                         {
                             if (data.IsChecked)
                             {
                                 return "TICK";
                             }
-                            else
-                            {
-                                return "CROSS";
-                            }
+
+                            return "-";
                         }
 
-                        if (data.EntryMode == "Value")
+                        if (data.EntryMode.Trim() == "Value")
                         {
                             if (!string.IsNullOrWhiteSpace(data.ConfigValue))
                             {
                                 return data.ConfigValue.Trim();
                             }
-                            else
+
+                            return "-";
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(data.ConfigValue))
+                    {
+                        return data.ConfigValue.Trim();
+                    }
+
+                    return "-";
+                }
+
+                i++;
+            }
+
+            return "-";
+        }
+
+        private string GetPingValue(string ipAddress, string serverHostName, DateTime date)
+        {
+            if (_model.ReportData == null)
+            {
+                return "-";
+            }
+
+            int i = 0;
+
+            while (i < _model.ReportData.Count)
+            {
+                ReportModel data = _model.ReportData[i];
+
+                if (data.IPAddress == ipAddress &&
+                    data.ServerHostName == serverHostName &&
+                    data.EntryDate.Date == date.Date)
+                {
+                    if (!string.IsNullOrWhiteSpace(data.EntryMode))
+                    {
+                        if (data.EntryMode.Trim() == "Checkbox")
+                        {
+                            if (data.IsChecked)
                             {
-                                return "-";
+                                return "TICK";
                             }
+
+                            return "-";
+                        }
+
+                        if (data.EntryMode.Trim() == "Value")
+                        {
+                            if (!string.IsNullOrWhiteSpace(data.ConfigValue))
+                            {
+                                return data.ConfigValue.Trim();
+                            }
+
+                            return "-";
                         }
                     }
 
@@ -349,12 +505,12 @@ namespace EmployeeAccessSystem.Pdf.Documents
 
         private IContainer HeaderStyle(IContainer c)
         {
-            return c.Border(1).Padding(2).AlignCenter().Background(Colors.Grey.Lighten3);
+            return c.Border(1).Padding(2).AlignCenter();
         }
 
         private IContainer TypeStyle(IContainer c)
         {
-            return c.Border(1).Padding(2).AlignCenter().Background(Colors.Grey.Lighten3);
+            return c.Border(1).Padding(2).AlignCenter();
         }
 
         private IContainer ItemStyle(IContainer c)
@@ -365,11 +521,6 @@ namespace EmployeeAccessSystem.Pdf.Documents
         private IContainer ValueStyle(IContainer c)
         {
             return c.Border(1).Padding(2).AlignCenter();
-        }
-
-        private IContainer GapCellStyle(IContainer c)
-        {
-            return c.Padding(3);
         }
     }
 }

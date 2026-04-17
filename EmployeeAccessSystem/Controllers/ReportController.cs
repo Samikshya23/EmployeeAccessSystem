@@ -28,6 +28,7 @@ namespace EmployeeAccessSystem.Controllers
                 TempData["Error"] = "Please select a product first.";
                 return RedirectToAction("Index");
             }
+
             if (!model.HasData || model.ReportData == null || model.ReportData.Count == 0)
             {
                 TempData["Error"] = "No report data found for PDF export.";
@@ -38,6 +39,7 @@ namespace EmployeeAccessSystem.Controllers
                     toDate = toDate
                 });
             }
+
             ReportPdfDocument document = new ReportPdfDocument(model);
             byte[] pdfBytes = document.GeneratePdf();
 
@@ -52,6 +54,7 @@ namespace EmployeeAccessSystem.Controllers
                 TempData["Error"] = "Please select a product first.";
                 return RedirectToAction("Index");
             }
+
             if (!model.HasData || model.ReportData == null || model.ReportData.Count == 0)
             {
                 TempData["Error"] = "No report data found for Excel export.";
@@ -66,10 +69,10 @@ namespace EmployeeAccessSystem.Controllers
                 model.ReportData,
                 model.ReportTitle,
                 model.FromDate,
-                model.ToDate
+                model.ToDate,
+                model.IsPingReport
             );
             byte[] excelBytes = document.Generate();
-
             return File(
                 excelBytes,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

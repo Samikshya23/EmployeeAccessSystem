@@ -8,6 +8,8 @@
 
     <input asp-for="PingConfigId" type="hidden" />
     <input asp-for="IsChecked" type="hidden" id="IsCheckedHidden" />
+    <input asp-for="EntryMode" type="hidden" value="Checkbox" />
+    <input asp-for="ConfigValue" type="hidden" value="" />
 
     @if (ViewBag.Error != null)
     {
@@ -84,31 +86,8 @@
 
         <div class="col-md-6">
             <div class="form-group">
-                <label asp-for="EntryMode" class="font-weight-bold">Save Option</label>
-                <select asp-for="EntryMode" class="form-control" id="EntryMode">
-                    <option value="Checkbox">Checkbox</option>
-                    <option value="Value">Value</option>
-                </select>
-                <span asp-validation-for="EntryMode" class="text-danger small"></span>
-            </div>
-        </div>
-
-        <div class="col-md-6" id="valueSection" style="display:none;">
-            <div class="form-group">
-                <label class="font-weight-bold">Value</label>
-                <input asp-for="ConfigValue"
-                       class="form-control"
-                       id="ConfigValue"
-                       placeholder="Enter value"
-                       autocomplete="off" />
-                <span asp-validation-for="ConfigValue" class="text-danger small"></span>
-            </div>
-        </div>
-
-        <div class="col-md-6" id="checkboxSection" style="display:none;">
-            <div class="form-group">
                 <label class="font-weight-bold">Status</label>
-                <div class="border rounded p-3">
+                <div class="border rounded p-1">
                     <div class="d-flex align-items-center">
                         <div class="custom-control custom-radio mr-4">
                             <input type="radio"
@@ -197,10 +176,6 @@
             }
         });
 
-        $("#EntryMode").change(function () {
-            toggleEntryMode();
-        });
-
         $("#statusTick").change(function () {
             $("#IsCheckedHidden").val("true");
         });
@@ -209,32 +184,14 @@
             $("#IsCheckedHidden").val("false");
         });
 
-        function toggleEntryMode() {
-            var mode = $("#EntryMode").val();
-
-            if (mode === "Value") {
-                $("#valueSection").show();
-                $("#checkboxSection").hide();
-                $("#statusTick").prop("checked", false);
-                $("#statusCross").prop("checked", false);
-            }
-            else {
-                $("#valueSection").hide();
-                $("#checkboxSection").show();
-                $("#ConfigValue").val("");
-
-                if ($("#IsCheckedHidden").val() === "true") {
-                    $("#statusTick").prop("checked", true);
-                    $("#statusCross").prop("checked", false);
-                }
-                else {
-                    $("#statusTick").prop("checked", false);
-                    $("#statusCross").prop("checked", true);
-                }
-            }
-        }
-
         $("#IsCheckedHidden").val('@Model.IsChecked'.ToString().ToLower());
-        toggleEntryMode();
+
+        if ($("#IsCheckedHidden").val() === "true") {
+            $("#statusTick").prop("checked", true);
+            $("#statusCross").prop("checked", false);
+        } else {
+            $("#statusTick").prop("checked", false);
+            $("#statusCross").prop("checked", true);
+        }
     });
 </script>
