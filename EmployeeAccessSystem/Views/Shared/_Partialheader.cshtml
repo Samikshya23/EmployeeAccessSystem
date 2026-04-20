@@ -29,6 +29,7 @@
 
                 @if (isLoggedIn)
                 {
+                  
                     <li class="nav-item">
                         <a asp-controller="Employee"
                            asp-action="Index"
@@ -46,7 +47,6 @@
                             <p>Category</p>
                         </a>
                     </li>
-
                     <li class="nav-item">
                         <a asp-controller="SubCategory"
                            asp-action="Index"
@@ -55,24 +55,33 @@
                             <p>Sub Category</p>
                         </a>
                     </li>
-                    <li class="nav-item has-treeview @((currentController == "ProductSetup" ||
-                                                        currentController == "SMCProduct" ||
-                                                        currentController == "SMCProductItem" ||
-                                                        currentController == "SMCConfig" ||
-                                                        currentController == "PingProduct" ||
-                                                      
-                                                        currentController == "PingConfig" ||
-                                                        currentController == "Report") ? "menu-open" : "")">
+                    <li class="nav-item has-treeview @(
+                        currentController == "ProductSetup" ||
+                        currentController == "SMCProduct" ||
+                        currentController == "SMCProductItem" ||
+                        currentController == "SMCConfig" ||
+                        currentController == "PingProduct" ||
+                        currentController == "PingConfig" ||
+                        currentController == "FortigateCategory" ||
+                        currentController == "FortigateItem" ||
+                        currentController == "FortigateConfig" ||
+                        currentController == "Report"
+                        ? "menu-open" : "")">
 
                         <a href="#"
-                           class="nav-link @((currentController == "ProductSetup" ||
-                                               currentController == "SMCProduct" ||
-                                               currentController == "SMCProductItem" ||
-                                               currentController == "SMCConfig" ||
-                                               currentController == "PingProduct" ||
-                                         
-                                               currentController == "PingConfig" ||
-                                               currentController == "Report") ? "active" : "")">
+                           class="nav-link @(
+                               currentController == "ProductSetup" ||
+                               currentController == "SMCProduct" ||
+                               currentController == "SMCProductItem" ||
+                               currentController == "SMCConfig" ||
+                               currentController == "PingProduct" ||
+                               currentController == "PingConfig" ||
+                               currentController == "FortigateCategory" ||
+                               currentController == "FortigateItem" ||
+                               currentController == "FortigateConfig" ||
+                               currentController == "Report"
+                               ? "active" : "")">
+
                             <i class="nav-icon fas fa-network-wired"></i>
                             <p>
                                 Network Setup
@@ -89,14 +98,19 @@
                                     <p>Product Setup</p>
                                 </a>
                             </li>
-                            <li class="nav-item has-treeview @((currentController == "SMCProduct" ||
-                                                                currentController == "SMCProductItem" ||
-                                                                currentController == "SMCConfig") ? "menu-open" : "")">
+                            <li class="nav-item has-treeview @(
+                                currentController == "SMCProduct" ||
+                                currentController == "SMCProductItem" ||
+                                currentController == "SMCConfig"
+                                ? "menu-open" : "")">
 
                                 <a href="#"
-                                   class="nav-link @((currentController == "SMCProduct" ||
-                                                       currentController == "SMCProductItem" ||
-                                                       currentController == "SMCConfig") ? "active" : "")">
+                                   class="nav-link @(
+                                       currentController == "SMCProduct" ||
+                                       currentController == "SMCProductItem" ||
+                                       currentController == "SMCConfig"
+                                       ? "active" : "")">
+
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>
                                         SMC Setup
@@ -133,14 +147,19 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="nav-item has-treeview @((currentController == "PingProduct" ||
-                                                          
-                                                                currentController == "PingConfig") ? "menu-open" : "")">
+
+                            <!-- Ping Setup -->
+                            <li class="nav-item has-treeview @(
+                                currentController == "PingProduct" ||
+                                currentController == "PingConfig"
+                                ? "menu-open" : "")">
 
                                 <a href="#"
-                                   class="nav-link @((currentController == "PingProduct" ||
-                                                   
-                                                       currentController == "PingConfig") ? "active" : "")">
+                                   class="nav-link @(
+                                       currentController == "PingProduct" ||
+                                       currentController == "PingConfig"
+                                       ? "active" : "")">
+
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>
                                         Ping Setup
@@ -158,14 +177,61 @@
                                         </a>
                                     </li>
 
-                                
-
                                     <li class="nav-item">
                                         <a asp-controller="PingConfig"
                                            asp-action="Index"
                                            class="nav-link @(currentController == "PingConfig" ? "active" : "")">
                                             <i class="far fa-dot-circle nav-icon"></i>
                                             <p>Ping Config</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-treeview @(
+                                currentController == "FortigateCategory" ||
+                                currentController == "FortigateItem" ||
+                                currentController == "FortigateConfig"
+                                ? "menu-open" : "")">
+
+                                <a href="#"
+                                   class="nav-link @(
+                                       currentController == "FortigateCategory" ||
+                                       currentController == "FortigateItem" ||
+                                       currentController == "FortigateConfig"
+                                       ? "active" : "")">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Fortigate Setup
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a asp-controller="FortigateCategory"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "FortigateCategory" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Fortigate Category</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="FortigateItem"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "FortigateItem" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Fortigate Item</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="FortigateConfig"
+                                           asp-action="Index"
+                                           class="nav-link @(currentController == "FortigateConfig" ? "active" : "")">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Fortigate Config</p>
                                         </a>
                                     </li>
                                 </ul>

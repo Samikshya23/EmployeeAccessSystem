@@ -26,7 +26,6 @@ namespace EmployeeAccessSystem.Pdf.Documents
         {
             container.Page(BuildPage);
         }
-
         private void BuildPage(PageDescriptor page)
         {
             page.Size(PageSizes.A3.Landscape());

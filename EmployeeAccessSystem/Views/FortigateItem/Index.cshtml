@@ -1,0 +1,191 @@
+﻿@model IEnumerable<EmployeeAccessSystem.Models.FortigateItem>
+
+@{
+    ViewData["Title"] = "Fortigate Item";
+    var sn = 1;
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3 class="m-0">Fortigate Item</h3>
+            </div>
+            <div class="col-sm-6 text-right">
+                <button type="button" class="btn btn-primary rounded-pill" id="btnAddFortigateItem">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        }
+
+        <div class="card card-outline card-primary">
+            <div class="card-body">
+                <table id="fortigateItemTable" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width:80px;">SN</th>
+                            <th>Fortigate Category</th>
+                            <th>Item Name</th>
+                            <th style="width:120px;">Status</th>
+                            <th style="width:140px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@sn</td>
+                                <td>@item.CategoryName</td>
+                                <td>@item.ItemName</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge badge-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-xs btn-info btn-edit" data-id="@item.FortigateItemId" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-danger btn-delete" data-id="@item.FortigateItemId" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-warning btn-toggle" data-id="@item.FortigateItemId" title="Toggle">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            sn++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="fortigateItemModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="fortigateItemModalContent"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#fortigateItemTable').DataTable({
+                "responsive": true,
+                "autoWidth": false,
+                "lengthChange": true
+            });
+
+            $('#btnAddFortigateItem').click(function () {
+                $.get('/FortigateItem/Create', function (response) {
+                    $('#fortigateItemModalContent').html(response);
+                    $('#fortigateItemModal').modal('show');
+                });
+            });
+
+            $(document).on('click', '.btn-edit', function () {
+                var id = $(this).data('id');
+
+                $.get('/FortigateItem/Edit/' + id, function (response) {
+                    $('#fortigateItemModalContent').html(response);
+                    $('#fortigateItemModal').modal('show');
+                });
+            });
+
+            $(document).on('click', '.btn-delete', function () {
+                var id = $(this).data('id');
+
+                $.get('/FortigateItem/Delete/' + id, function (response) {
+                    $('#fortigateItemModalContent').html(response);
+                    $('#fortigateItemModal').modal('show');
+                });
+            });
+
+            $(document).on('click', '.btn-toggle', function () {
+                var id = $(this).data('id');
+
+                $.post('/FortigateItem/Toggle/' + id, function (response) {
+                    if (response.startsWith('success|')) {
+                        location.reload();
+                    } else {
+                        alert(response.replace('error|', ''));
+                    }
+                });
+            });
+
+            $(document).on('submit', '#fortigateItemCreateForm', function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                $.post(form.attr('action'), form.serialize(), function (response) {
+                    if (response.startsWith('success|')) {
+                        $('#fortigateItemModal').modal('hide');
+                        location.reload();
+                    } else {
+                        $('#fortigateItemModalContent').html(response);
+                    }
+                });
+            });
+
+            $(document).on('submit', '#fortigateItemEditForm', function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                $.post(form.attr('action'), form.serialize(), function (response) {
+                    if (response.startsWith('success|')) {
+                        $('#fortigateItemModal').modal('hide');
+                        location.reload();
+                    } else {
+                        $('#fortigateItemModalContent').html(response);
+                    }
+                });
+            });
+
+            $(document).on('submit', '#fortigateItemDeleteForm', function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                $.post(form.attr('action'), form.serialize(), function (response) {
+                    if (response.startsWith('success|')) {
+                        $('#fortigateItemModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert(response.replace('error|', ''));
+                    }
+                });
+            });
+        });
+    </script>
+}

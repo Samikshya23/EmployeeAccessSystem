@@ -1,6 +1,7 @@
-﻿@model IEnumerable<EmployeeAccessSystem.Models.ProductSetup>
+﻿@model IEnumerable<EmployeeAccessSystem.Models.FortigateCategory>
+
 @{
-    ViewData["Title"] = "Product Setup";
+    ViewData["Title"] = "Fortigate Category";
     int sn = 1;
 }
 
@@ -9,13 +10,13 @@
 
         <div class="row mb-2 mx-0 align-items-center">
             <div class="col-sm-6 px-0">
-                <h3 class="mb-0">Product Setup</h3>
+                <h3 class="mb-0">Fortigate Category</h3>
             </div>
             <div class="col-sm-6 text-right px-0">
                 <a asp-action="Create"
-                   asp-controller="ProductSetup"
+                   asp-controller="FortigateCategory"
                    class="btn btn-primary rounded-pill open-modal-btn"
-                   data-title="Add Product Setup">
+                   data-title="Add Fortigate Category">
                     <i class="fas fa-plus mr-1"></i> Add
                 </a>
             </div>
@@ -34,17 +35,16 @@
             </div>
 
             <div class="card-body p-0">
-                <table id="productSetupTable"
+                <table id="fortigateCategoryTable"
                        class="table table-bordered table-hover table-sm mb-0 rounded-0"
                        style="border-color:#dee2e6;">
                     <thead class="bg-light border-bottom">
                         <tr>
                             <th class="text-center align-middle" style="width: 70px;">SN</th>
-                            <th class="text-center align-middle">Product Name</th>
+                            <th class="text-center align-middle">Fortigate Category Name</th>
                             <th class="text-center align-middle" style="width: 110px;">Actions</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
@@ -52,30 +52,29 @@
                             {
                                 <tr>
                                     <td class="text-center align-middle">@sn</td>
-
                                     <td class="align-middle">
-                                        @item.ProductName
+                                        @item.CategoryName
+
                                         @if (!item.IsActive)
                                         {
                                             <span class="text-muted ml-2">(Inactive)</span>
                                         }
                                     </td>
-
                                     <td class="text-center align-middle">
                                         <a asp-action="Edit"
-                                           asp-controller="ProductSetup"
-                                           asp-route-id="@item.ProductId"
+                                           asp-controller="FortigateCategory"
+                                           asp-route-id="@item.FortigateCategoryId"
                                            class="btn btn-xs btn-light border open-modal-btn"
-                                           data-title="Edit Product Setup"
+                                           data-title="Edit Fortigate Category"
                                            title="Edit">
                                             <i class="fas fa-pen"></i>
                                         </a>
 
                                         <a asp-action="Delete"
-                                           asp-controller="ProductSetup"
-                                           asp-route-id="@item.ProductId"
+                                           asp-controller="FortigateCategory"
+                                           asp-route-id="@item.FortigateCategoryId"
                                            class="btn btn-xs btn-outline-danger open-modal-btn ml-1"
-                                           data-title="Delete Product Setup"
+                                           data-title="Delete Fortigate Category"
                                            title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
@@ -93,11 +92,11 @@
     </div>
 </section>
 
-<div class="modal fade" id="mainActionModal" tabindex="-1" role="dialog" aria-labelledby="mainActionModalTitle" aria-hidden="true">
+<div class="modal fade" id="mainActionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-md" role="document">
         <div class="modal-content rounded-0">
             <div class="modal-header">
-                <h5 class="modal-title" id="mainActionModalTitle">Product Setup</h5>
+                <h5 class="modal-title" id="mainActionModalTitle">Fortigate Category</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
@@ -150,11 +149,12 @@
 
     </div>
 }
+
 @section Scripts {
     <script>
         $(document).ready(function () {
 
-            var table = $('#productSetupTable').DataTable({
+            var table = $('#fortigateCategoryTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
@@ -171,11 +171,12 @@
             $('#customSearch').on('keyup', function () {
                 table.search(this.value).draw();
             });
+
             $(document).on('click', '.open-modal-btn', function (e) {
                 e.preventDefault();
 
                 var url = $(this).attr('href');
-                var title = $(this).data('title') || 'Product Setup';
+                var title = $(this).data('title') || 'Fortigate Category';
 
                 $('#mainActionModalTitle').text(title);
                 $('#mainActionModalBody').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>');
@@ -184,7 +185,8 @@
                     $('#mainActionModal').modal('show');
                 });
             });
-            $(document).on('submit', '#createProductForm, #editProductForm, #deleteProductForm', function (e) {
+
+            $(document).on('submit', '#createFortigateCategoryForm, #editFortigateCategoryForm, #deleteFortigateCategoryForm', function (e) {
                 e.preventDefault();
 
                 var form = $(this);
@@ -197,31 +199,31 @@
                     data: formData,
                     success: function (response) {
 
-                        if (typeof response === 'string' && response.indexOf('success|') === 0) {
-                            var successMessage = response.substring(8);
+                        if (typeof response === 'string' && response.startsWith('success|')) {
+                            var message = response.split('|')[1];
                             $('#mainActionModal').modal('hide');
-                            window.location.href = '@Url.Action("Index", "ProductSetup")?successMessage=' + encodeURIComponent(successMessage);
+                            window.location.href = '/FortigateCategory/Index?successMessage=' + encodeURIComponent(message);
                             return;
                         }
 
-                        if (typeof response === 'string' && response.indexOf('error|') === 0) {
-                            var errorMessage = response.substring(6);
+                        if (typeof response === 'string' && response.startsWith('error|')) {
+                            var errorMessage = response.split('|')[1];
                             $('#mainActionModal').modal('hide');
-                            window.location.href = '@Url.Action("Index", "ProductSetup")?errorMessage=' + encodeURIComponent(errorMessage);
+                            window.location.href = '/FortigateCategory/Index?errorMessage=' + encodeURIComponent(errorMessage);
                             return;
                         }
 
                         var html = $('<div>').html(response);
                         var hasForm =
-                            html.find('#createProductForm').length > 0 ||
-                            html.find('#editProductForm').length > 0 ||
-                            html.find('#deleteProductForm').length > 0;
+                            html.find('#createFortigateCategoryForm').length > 0 ||
+                            html.find('#editFortigateCategoryForm').length > 0 ||
+                            html.find('#deleteFortigateCategoryForm').length > 0;
 
                         if (hasForm) {
                             $('#mainActionModalBody').html(response);
                         } else {
                             $('#mainActionModal').modal('hide');
-                            window.location.href = '@Url.Action("Index", "ProductSetup")';
+                            window.location.href = '/FortigateCategory/Index';
                         }
                     },
                     error: function () {

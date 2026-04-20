@@ -12,12 +12,10 @@ namespace EmployeeAccessSystem.Services
         {
             _repository = repository;
         }
-
         public async Task<IEnumerable<PingProduct>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
-
         public async Task<IEnumerable<PingProduct>> GetActiveAsync()
         {
             return await _repository.GetActiveAsync();

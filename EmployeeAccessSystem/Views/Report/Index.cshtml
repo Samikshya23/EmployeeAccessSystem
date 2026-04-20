@@ -20,11 +20,13 @@
                     break;
                 }
             }
+
             if (!exists)
             {
                 uniqueRows.Add(Model.ReportData[i]);
             }
         }
+
         for (int i = 0; i < Model.ReportData.Count; i++)
         {
             bool exists = false;
@@ -45,12 +47,14 @@
             }
         }
     }
+
     string selectedRangeText = "";
     if (Model.FromDate.HasValue && Model.ToDate.HasValue)
     {
         selectedRangeText = Model.FromDate.Value.ToString("dd MMM yyyy") + " - " + Model.ToDate.Value.ToString("dd MMM yyyy");
     }
 }
+
 <div class="card shadow-sm mb-0 h-100">
     <div class="card-header bg-white py-2">
         <div class="row align-items-center">
@@ -59,6 +63,7 @@
             </div>
         </div>
     </div>
+
     <div class="card-body p-2">
         <div class="card mb-3">
             <div class="card-body">
@@ -93,6 +98,7 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="form-group mb-2">
                                 <label for="dateRange">Date Range</label>
@@ -108,6 +114,7 @@
                                         </span>
                                     </div>
                                 </div>
+
                                 <input type="hidden"
                                        id="fromDate"
                                        name="fromDate"
@@ -119,6 +126,7 @@
                                        value="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")" />
                             </div>
                         </div>
+
                         <div class="col-md-2">
                             <div class="form-group mb-2">
                                 <label>&nbsp;</label>
@@ -131,18 +139,21 @@
                 </form>
             </div>
         </div>
+
         @if (!string.IsNullOrEmpty(Model.Message))
         {
             <div class="alert alert-danger mb-3">
                 @Model.Message
             </div>
         }
+
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-danger mb-3">
                 @TempData["Error"]
             </div>
         }
+
         @if (Model.SelectedProductId.HasValue && (!Model.HasData || Model.ReportData == null || Model.ReportData.Count == 0))
         {
             <div class="alert alert-warning mb-0">
@@ -151,318 +162,362 @@
         }
         else if (Model.SelectedProductId.HasValue && Model.HasData && Model.ReportData != null && Model.ReportData.Count > 0)
         {
-            <div class="mb-0">
-                <div class="d-flex justify-content-between align-items-center mb-2 px-1">
-                    <div>
-                        @if (!string.IsNullOrEmpty(selectedRangeText))
-                        {
-                            <span class="text-dark font-weight-medium">
-                                @selectedRangeText
-                            </span>
-                        }
-                    </div>
-                    <div class="btn-group">
-                        <button type="button"
-                                class="btn btn-danger dropdown-toggle"
-                                data-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="fas fa-download mr-1"></i> Download
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item"
-                               asp-controller="Report"
-                               asp-action="DownloadPdf"
-                               asp-route-selectedProductId="@Model.SelectedProductId"
-                               asp-route-fromDate="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")"
-                               asp-route-toDate="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")">
-                                <i class="fas fa-file-pdf text-danger mr-2"></i> PDF
-                            </a>
-                            <a class="dropdown-item"
-                               asp-controller="Report"
-                               asp-action="DownloadExcel"
-                               asp-route-selectedProductId="@Model.SelectedProductId"
-                               asp-route-fromDate="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")"
-                               asp-route-toDate="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")">
-                                <i class="fas fa-file-excel text-success mr-2"></i> Excel
-                            </a>
+            <div class="card mb-0">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                        <div>
+                            @if (!string.IsNullOrEmpty(selectedRangeText))
+                            {
+                                <span class="text-dark font-weight-medium">
+                                    @selectedRangeText
+                                </span>
+                            }
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-danger dropdown-toggle"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item"
+                                   asp-controller="Report"
+                                   asp-action="DownloadPdf"
+                                   asp-route-selectedProductId="@Model.SelectedProductId"
+                                   asp-route-fromDate="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")"
+                                   asp-route-toDate="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")">
+                                    <i class="fas fa-file-pdf text-danger mr-2"></i> PDF
+                                </a>
+                                <a class="dropdown-item"
+                                   asp-controller="Report"
+                                   asp-action="DownloadExcel"
+                                   asp-route-selectedProductId="@Model.SelectedProductId"
+                                   asp-route-fromDate="@(Model.FromDate.HasValue? Model.FromDate.Value.ToString("yyyy-MM-dd") : "")"
+                                   asp-route-toDate="@(Model.ToDate.HasValue? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")">
+                                    <i class="fas fa-file-excel text-success mr-2"></i> Excel
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="table-responsive">
-                    @if (Model.IsPingReport)
-                    {
-                        <table class="table table-bordered table-sm table-hover mb-0 text-center">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2" class="align-middle bg-light">SN</th>
-                                    <th rowspan="2" class="align-middle bg-light">IP</th>
-                                    <th rowspan="2" class="align-middle bg-light">Server Host Name</th>
 
-                                    @if (Model.Dates != null)
-                                    {
-                                        for (int d = 0; d < Model.Dates.Count; d++)
-                                        {
-                                            <th class="text-center bg-light">
-                                                <div class="font-weight-bold">
-                                                    @Model.Dates[d].ToString("dd")
-                                                </div>
-                                            </th>
-                                        }
-                                    }
-                                </tr>
-                                <tr>
-                                    @if (Model.Dates != null)
-                                    {
-                                        for (int d = 0; d < Model.Dates.Count; d++)
-                                        {
-                                            <th class="text-center bg-light">
-                                                <small>@Model.Dates[d].ToString("ddd")</small>
-                                            </th>
-                                        }
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < uniquePingRows.Count; i++)
-                                {
-                                    var currentRow = uniquePingRows[i];
-
+                    <div class="table-responsive p-0" style="max-height:70vh; overflow:auto;">
+                        @if (Model.IsPingReport)
+                        {
+                            <table class="table table-bordered table-sm table-hover mb-0 text-center bg-white">
+                                <thead>
                                     <tr>
-                                        <td class="align-middle">@(i + 1)</td>
-                                        <td class="align-middle text-left">@currentRow.IPAddress</td>
-                                        <td class="align-middle text-left">@currentRow.ServerHostName</td>
+                                        <th rowspan="2"
+                                            class="align-middle bg-light"
+                                            style="position:sticky; top:0; left:0; z-index:6; min-width:60px;">
+                                            SN
+                                        </th>
+                                        <th rowspan="2"
+                                            class="align-middle bg-light"
+                                            style="position:sticky; top:0; left:60px; z-index:6; min-width:140px;">
+                                            IP
+                                        </th>
+                                        <th rowspan="2"
+                                            class="align-middle bg-light"
+                                            style="position:sticky; top:0; left:200px; z-index:6; min-width:180px;">
+                                            Server Host Name
+                                        </th>
 
                                         @if (Model.Dates != null)
                                         {
                                             for (int d = 0; d < Model.Dates.Count; d++)
                                             {
-                                                string displayText = "";
-                                                string entryMode = "";
-                                                bool isChecked = false;
-                                                bool foundRow = false;
-
-                                                for (int r = 0; r < Model.ReportData.Count; r++)
-                                                {
-                                                    if (Model.ReportData[r].IPAddress == currentRow.IPAddress &&
-                                                    Model.ReportData[r].ServerHostName == currentRow.ServerHostName &&
-                                                    Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
-                                                    {
-                                                        foundRow = true;
-
-                                                        if (Model.ReportData[r].EntryMode != null)
-                                                        {
-                                                            entryMode = Model.ReportData[r].EntryMode.Trim();
-                                                        }
-
-                                                        isChecked = Model.ReportData[r].IsChecked;
-
-                                                        if (Model.ReportData[r].ConfigValue != null)
-                                                        {
-                                                            displayText = Model.ReportData[r].ConfigValue.Trim();
-                                                        }
-
-                                                        break;
-                                                    }
-                                                }
-                                                <td class="text-center align-middle">
-                                                    @if (!foundRow)
-                                                    {
-                                                        <span class="text-muted">-</span>
-                                                    }
-                                                    else if (entryMode == "Checkbox")
-                                                    {
-                                                        if (isChecked)
-                                                        {
-                                                            <i class="fas fa-check text-success"></i>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="text-muted">-</span>
-                                                        }
-                                                    }
-                                                    else if (entryMode == "Value")
-                                                    {
-                                                        if (!string.IsNullOrWhiteSpace(displayText))
-                                                        {
-                                                            <span>@displayText</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="text-muted">-</span>
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (!string.IsNullOrWhiteSpace(displayText))
-                                                        {
-                                                            <span>@displayText</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="text-muted">-</span>
-                                                        }
-                                                    }
-                                                </td>
+                                                <th class="text-center bg-light"
+                                                    style="position:sticky; top:0; z-index:5; min-width:55px;">
+                                                    <div class="font-weight-bold">
+                                                        @Model.Dates[d].ToString("dd")
+                                                    </div>
+                                                </th>
                                             }
                                         }
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <table class="table table-bordered table-sm table-hover mb-0 text-center">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2" class="align-middle bg-light">Monitoring Type</th>
-                                    <th rowspan="2" class="align-middle bg-light">Item</th>
-
-                                    @if (Model.Dates != null)
-                                    {
-                                        for (int d = 0; d < Model.Dates.Count; d++)
-                                        {
-                                            <th class="text-center bg-light">
-                                                <div class="font-weight-bold">
-                                                    @Model.Dates[d].ToString("dd")
-                                                </div>
-                                            </th>
-                                        }
-                                    }
-                                </tr>
-                                <tr>
-                                    @if (Model.Dates != null)
-                                    {
-                                        for (int d = 0; d < Model.Dates.Count; d++)
-                                        {
-                                            <th class="text-center bg-light">
-                                                <small>@Model.Dates[d].ToString("ddd")</small>
-                                            </th>
-                                        }
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < uniqueRows.Count; i++)
-                                {
-                                    var currentRow = uniqueRows[i];
-
-                                    bool showMonitoringType = true;
-
-                                    for (int x = 0; x < i; x++)
-                                    {
-                                        if (uniqueRows[x].MonitoringTypeName == currentRow.MonitoringTypeName)
-                                        {
-                                            showMonitoringType = false;
-                                            break;
-                                        }
-                                    }
-
-                                    int sameTypeCount = 0;
-
-                                    for (int y = 0; y < uniqueRows.Count; y++)
-                                    {
-                                        if (uniqueRows[y].MonitoringTypeName == currentRow.MonitoringTypeName)
-                                        {
-                                            sameTypeCount++;
-                                        }
-                                    }
                                     <tr>
-                                        @if (showMonitoringType)
+                                        @if (Model.Dates != null)
                                         {
-                                            <td rowspan="@sameTypeCount" class="align-middle bg-light font-weight-bold text-left">
-                                                @currentRow.MonitoringTypeName
+                                            for (int d = 0; d < Model.Dates.Count; d++)
+                                            {
+                                                <th class="text-center bg-light"
+                                                    style="position:sticky; top:39px; z-index:5; min-width:55px;">
+                                                    <small>@Model.Dates[d].ToString("ddd")</small>
+                                                </th>
+                                            }
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < uniquePingRows.Count; i++)
+                                    {
+                                        var currentRow = uniquePingRows[i];
+
+                                        <tr>
+                                            <td class="align-middle bg-white"
+                                                style="position:sticky; left:0; z-index:4; min-width:60px;">
+                                                @(i + 1)
                                             </td>
-                                        }
+                                            <td class="align-middle text-left bg-white"
+                                                style="position:sticky; left:60px; z-index:4; min-width:140px; white-space:nowrap;">
+                                                @currentRow.IPAddress
+                                            </td>
+                                            <td class="align-middle text-left bg-white"
+                                                style="position:sticky; left:200px; z-index:4; min-width:180px;">
+                                                @currentRow.ServerHostName
+                                            </td>
 
-                                        <td class="align-middle text-left">
-                                            @currentRow.ItemName
-                                        </td>
+                                            @if (Model.Dates != null)
+                                            {
+                                                for (int d = 0; d < Model.Dates.Count; d++)
+                                                {
+                                                    string displayText = "";
+                                                    string entryMode = "";
+                                                    bool isChecked = false;
+                                                    bool foundRow = false;
+
+                                                    for (int r = 0; r < Model.ReportData.Count; r++)
+                                                    {
+                                                        if (Model.ReportData[r].IPAddress == currentRow.IPAddress &&
+                                                        Model.ReportData[r].ServerHostName == currentRow.ServerHostName &&
+                                                        Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
+                                                        {
+                                                            foundRow = true;
+
+                                                            if (Model.ReportData[r].EntryMode != null)
+                                                            {
+                                                                entryMode = Model.ReportData[r].EntryMode.Trim();
+                                                            }
+
+                                                            isChecked = Model.ReportData[r].IsChecked;
+
+                                                            if (Model.ReportData[r].ConfigValue != null)
+                                                            {
+                                                                displayText = Model.ReportData[r].ConfigValue.Trim();
+                                                            }
+
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    <td class="text-center align-middle" style="min-width:55px;">
+                                                        @if (!foundRow)
+                                                        {
+                                                            <span class="text-muted">-</span>
+                                                        }
+                                                        else if (entryMode == "Checkbox")
+                                                        {
+                                                            if (isChecked)
+                                                            {
+                                                                <i class="fas fa-check text-success"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-muted">-</span>
+                                                            }
+                                                        }
+                                                        else if (entryMode == "Value")
+                                                        {
+                                                            if (!string.IsNullOrWhiteSpace(displayText))
+                                                            {
+                                                                <span>@displayText</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-muted">-</span>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!string.IsNullOrWhiteSpace(displayText))
+                                                            {
+                                                                <span>@displayText</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-muted">-</span>
+                                                            }
+                                                        }
+                                                    </td>
+                                                }
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <table class="table table-bordered table-sm table-hover mb-0 text-center bg-white">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2"
+                                            class="align-middle bg-light"
+                                            style="position:sticky; top:0; left:0; z-index:6; min-width:180px;">
+                                            Monitoring Type
+                                        </th>
+                                        <th rowspan="2"
+                                            class="align-middle bg-light"
+                                            style="position:sticky; top:0; left:180px; z-index:6; min-width:160px;">
+                                            Item
+                                        </th>
 
                                         @if (Model.Dates != null)
                                         {
                                             for (int d = 0; d < Model.Dates.Count; d++)
                                             {
-                                                string displayText = "";
-                                                string entryMode = "";
-                                                bool isChecked = false;
-                                                bool foundRow = false;
-
-                                                for (int r = 0; r < Model.ReportData.Count; r++)
-                                                {
-                                                    if (Model.ReportData[r].MonitoringTypeName == currentRow.MonitoringTypeName &&
-                                                    Model.ReportData[r].ItemName == currentRow.ItemName &&
-                                                    Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
-                                                    {
-                                                        foundRow = true;
-
-                                                        if (Model.ReportData[r].EntryMode != null)
-                                                        {
-                                                            entryMode = Model.ReportData[r].EntryMode.Trim();
-                                                        }
-
-                                                        isChecked = Model.ReportData[r].IsChecked;
-
-                                                        if (Model.ReportData[r].ConfigValue != null)
-                                                        {
-                                                            displayText = Model.ReportData[r].ConfigValue.Trim();
-                                                        }
-
-                                                        break;
-                                                    }
-                                                }
-                                                <td class="text-center align-middle">
-                                                    @if (!foundRow)
-                                                    {
-                                                        <span class="text-muted">-</span>
-                                                    }
-                                                    else if (entryMode == "Checkbox")
-                                                    {
-                                                        if (isChecked)
-                                                        {
-                                                            <i class="fas fa-check text-success"></i>
-                                                        }
-                                                        else
-                                                        {
-                                                            <i class="fas fa-times text-danger"></i>
-                                                        }
-                                                    }
-                                                    else if (entryMode == "Value")
-                                                    {
-                                                        if (!string.IsNullOrWhiteSpace(displayText))
-                                                        {
-                                                            <span>@displayText</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="text-muted">-</span>
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (!string.IsNullOrWhiteSpace(displayText))
-                                                        {
-                                                            <span>@displayText</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="text-muted">-</span>
-                                                        }
-                                                    }
-                                                </td>
+                                                <th class="text-center bg-light"
+                                                    style="position:sticky; top:0; z-index:5; min-width:55px;">
+                                                    <div class="font-weight-bold">
+                                                        @Model.Dates[d].ToString("dd")
+                                                    </div>
+                                                </th>
                                             }
                                         }
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
+                                    <tr>
+                                        @if (Model.Dates != null)
+                                        {
+                                            for (int d = 0; d < Model.Dates.Count; d++)
+                                            {
+                                                <th class="text-center bg-light"
+                                                    style="position:sticky; top:39px; z-index:5; min-width:55px;">
+                                                    <small>@Model.Dates[d].ToString("ddd")</small>
+                                                </th>
+                                            }
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < uniqueRows.Count; i++)
+                                    {
+                                        var currentRow = uniqueRows[i];
+
+                                        bool showMonitoringType = true;
+
+                                        for (int x = 0; x < i; x++)
+                                        {
+                                            if (uniqueRows[x].MonitoringTypeName == currentRow.MonitoringTypeName)
+                                            {
+                                                showMonitoringType = false;
+                                                break;
+                                            }
+                                        }
+
+                                        int sameTypeCount = 0;
+
+                                        for (int y = 0; y < uniqueRows.Count; y++)
+                                        {
+                                            if (uniqueRows[y].MonitoringTypeName == currentRow.MonitoringTypeName)
+                                            {
+                                                sameTypeCount++;
+                                            }
+                                        }
+
+                                        <tr>
+                                            @if (showMonitoringType)
+                                            {
+                                                <td rowspan="@sameTypeCount"
+                                                    class="align-middle bg-light font-weight-bold text-left"
+                                                    style="position:sticky; left:0; z-index:4; min-width:180px;">
+                                                    @currentRow.MonitoringTypeName
+                                                </td>
+                                            }
+
+                                            <td class="align-middle text-left bg-white"
+                                                style="position:sticky; left:180px; z-index:4; min-width:160px;">
+                                                @currentRow.ItemName
+                                            </td>
+
+                                            @if (Model.Dates != null)
+                                            {
+                                                for (int d = 0; d < Model.Dates.Count; d++)
+                                                {
+                                                    string displayText = "";
+                                                    string entryMode = "";
+                                                    bool isChecked = false;
+                                                    bool foundRow = false;
+
+                                                    for (int r = 0; r < Model.ReportData.Count; r++)
+                                                    {
+                                                        if (Model.ReportData[r].MonitoringTypeName == currentRow.MonitoringTypeName &&
+                                                        Model.ReportData[r].ItemName == currentRow.ItemName &&
+                                                        Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
+                                                        {
+                                                            foundRow = true;
+
+                                                            if (Model.ReportData[r].EntryMode != null)
+                                                            {
+                                                                entryMode = Model.ReportData[r].EntryMode.Trim();
+                                                            }
+
+                                                            isChecked = Model.ReportData[r].IsChecked;
+
+                                                            if (Model.ReportData[r].ConfigValue != null)
+                                                            {
+                                                                displayText = Model.ReportData[r].ConfigValue.Trim();
+                                                            }
+
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    <td class="text-center align-middle" style="min-width:55px;">
+                                                        @if (!foundRow)
+                                                        {
+                                                            <span class="text-muted">-</span>
+                                                        }
+                                                        else if (entryMode == "Checkbox")
+                                                        {
+                                                            if (isChecked)
+                                                            {
+                                                                <i class="fas fa-check text-success"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="fas fa-times text-danger"></i>
+                                                            }
+                                                        }
+                                                        else if (entryMode == "Value")
+                                                        {
+                                                            if (!string.IsNullOrWhiteSpace(displayText))
+                                                            {
+                                                                <span>@displayText</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-muted">-</span>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!string.IsNullOrWhiteSpace(displayText))
+                                                            {
+                                                                <span>@displayText</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-muted">-</span>
+                                                            }
+                                                        }
+                                                    </td>
+                                                }
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
                 </div>
             </div>
         }
     </div>
 </div>
+
 @section Scripts {
     <script>
         $(function () {
@@ -483,9 +538,11 @@
                 $('#toDate').val(end.format('YYYY-MM-DD'));
                 $('#dateRange').val(start.format('DD MMM YYYY') + ' - ' + end.format('DD MMM YYYY'));
             }
+
             var today = moment();
             var startDate;
             var endDate;
+
             if ($('#fromDate').val() !== '' && $('#toDate').val() !== '') {
                 startDate = moment($('#fromDate').val(), 'YYYY-MM-DD');
                 endDate = moment($('#toDate').val(), 'YYYY-MM-DD');
@@ -494,6 +551,7 @@
                 startDate = today.clone();
                 endDate = today.clone();
             }
+
             $('#dateRange').daterangepicker({
                 autoUpdateInput: false,
                 opens: 'center',
@@ -514,6 +572,7 @@
                     applyLabel: 'Apply'
                 }
             });
+
             if ($('#fromDate').val() !== '' && $('#toDate').val() !== '') {
                 setRangeValues(startDate, endDate);
             }
@@ -521,14 +580,17 @@
             $('#dateRange').on('apply.daterangepicker', function (ev, picker) {
                 setRangeValues(picker.startDate, picker.endDate);
             });
+
             $('#dateRange').on('cancel.daterangepicker', function () {
                 $('#dateRange').val('');
                 $('#fromDate').val('');
                 $('#toDate').val('');
             });
+
             $('#dateRangeIcon').on('click', function () {
                 $('#dateRange').trigger('click');
             });
+
             $('#reportForm').on('submit', function (e) {
                 var productId = $('#selectedProductId').val();
                 var fromDate = $('#fromDate').val();
@@ -539,18 +601,22 @@
                     e.preventDefault();
                     return false;
                 }
+
                 if (fromDate === '' || toDate === '') {
                     alert('Please select date range.');
                     e.preventDefault();
                     return false;
                 }
+
                 var from = moment(fromDate, 'YYYY-MM-DD');
                 var to = moment(toDate, 'YYYY-MM-DD');
+
                 if (to.isBefore(from)) {
                     alert('Start date cannot be greater than end date.');
                     e.preventDefault();
                     return false;
                 }
+
                 var dayDifference = to.diff(from, 'days');
 
                 if (dayDifference > 31) {

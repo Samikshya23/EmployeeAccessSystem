@@ -13,3 +13,8 @@
 .table td, .table th {
     padding: 4px 8px !important;
 }
+.main-sidebar .sidebar {
+    overflow-y: auto;
+    height: 100vh;
+}
+

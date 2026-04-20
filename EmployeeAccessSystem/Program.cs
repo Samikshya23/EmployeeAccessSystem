@@ -9,12 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
-
 builder.Host.UseSerilog();
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddSingleton<ICoreDbConnection, CoreDbConnection>();
-
 builder.Services.AddScoped<ICategoryRepositories, CategoryRepositories>();
 builder.Services.AddScoped<ISubCategoryRepositories, SubCategoryRepositories>();
 builder.Services.AddScoped<IAccountRepositories, AccountRepositories>();
@@ -28,11 +25,12 @@ builder.Services.AddScoped<ISMCProductItemRepositories, SMCProductItemRepositori
 builder.Services.AddScoped<ISMCConfigRepository, SMCConfigRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>(); 
 builder.Services.AddScoped<IPingProductRepository, PingProductRepository>();
-
+builder.Services.AddScoped<IFortigateCategoryRepository, FortigateCategoryRepository>();
+builder.Services.AddScoped<IFortigateCategoryService, FortigateCategoryService>();
 builder.Services.AddScoped<IPingConfigRepository, PingConfigRepository>();
+builder.Services.AddScoped<IFortigateItemRepositories, FortigateItemRepositories>();
+builder.Services.AddScoped<IFortigateItemService, FortigateItemService>();
 builder.Services.AddScoped<IPingConfigService, PingConfigService>();
-
-
 builder.Services.AddScoped<IPingProductService, PingProductService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ISMCConfigService, SMCConfigService>();

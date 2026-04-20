@@ -31,7 +31,6 @@ namespace EmployeeAccessSystem.Controllers
             var data = await _service.GetAllAsync();
             return View(data);
         }
-
         public async Task<IActionResult> Create()
         {
             await LoadProducts();
@@ -41,7 +40,6 @@ namespace EmployeeAccessSystem.Controllers
 
             return PartialView(model);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SMCProduct model)
@@ -85,7 +83,6 @@ namespace EmployeeAccessSystem.Controllers
             await LoadProducts();
             return PartialView(model);
         }
-
         public async Task<IActionResult> Delete(int id)
         {
             var data = await _service.GetByIdAsync(id);
