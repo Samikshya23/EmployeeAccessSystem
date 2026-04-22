@@ -1,42 +1,62 @@
 ﻿@model EmployeeAccessSystem.Models.FortigateItem
+@{
+    Layout = null;
+}
+<form asp-action="Edit" method="post" id="editFortigateItemForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="FortigateItemId" />
 
-<div class="modal-header">
-    <h5 class="modal-title">Edit Fortigate Item</h5>
-    <button type="button" class="close" data-dismiss="modal">
-        <span>&times;</span>
-    </button>
-</div>
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
 
-<form id="fortigateItemEditForm" method="post" action="/FortigateItem/Edit">
-    <div class="modal-body">
-        <input type="hidden" asp-for="FortigateItemId" />
-
-        <div class="form-group">
-            <label>Fortigate Category</label>
-            <select asp-for="FortigateCategoryId" asp-items="ViewBag.FortigateCategoryList" class="form-control">
-                <option value="">Select Fortigate Category</option>
-            </select>
-            <span asp-validation-for="FortigateCategoryId" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label>Item Name</label>
-            <input asp-for="ItemName" class="form-control" placeholder="Enter item name" />
-            <span asp-validation-for="ItemName" class="text-danger"></span>
-        </div>
-
-        <div class="form-group mb-0">
-            <div class="custom-control custom-switch">
-                <input asp-for="IsActive" type="checkbox" class="custom-control-input" id="editIsActive">
-                <label class="custom-control-label" for="editIsActive">Active</label>
-            </div>
-        </div>
+    <div class="form-group">
+        <label asp-for="FortigateCategoryId" class="font-weight-bold">Fortigate Category</label>
+        <select asp-for="FortigateCategoryId" asp-items="ViewBag.FortigateCategoryList" class="form-control">
+            <option value="">Select Fortigate Category</option>
+        </select>
+        <span asp-validation-for="FortigateCategoryId" class="text-danger small"></span>
     </div>
 
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
-        <button type="submit" class="btn btn-primary">Update</button>
+    <div class="form-group">
+        <label asp-for="ItemName" class="font-weight-bold">Item Name</label>
+        <input asp-for="ItemName" class="form-control" placeholder="Enter item name" />
+        <span asp-validation-for="ItemName" class="text-danger small"></span>
+    </div>
+
+    <div class="form-group mb-4">
+        <div class="custom-control custom-switch">
+            <input asp-for="IsActive" class="custom-control-input" id="EditIsActive" />
+            <label class="custom-control-label font-weight-bold" for="EditIsActive" id="editStatusLabel">Active</label>
+        </div>
+        <span asp-validation-for="IsActive" class="text-danger small"></span>
+    </div>
+
+    <div class="modal-footer px-0 pb-0">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button type="submit" class="btn btn-warning">Update</button>
     </div>
 </form>
 
 <partial name="_ValidationScriptsPartial" />
+
+<script>
+    $(document).ready(function () {
+
+        function updateEditStatus() {
+            if ($('#EditIsActive').is(':checked')) {
+                $('#editStatusLabel').text('Active');
+            } else {
+                $('#editStatusLabel').text('Inactive');
+            }
+        }
+
+        updateEditStatus();
+
+        $('#EditIsActive').change(function () {
+            updateEditStatus();
+        });
+
+    });
+</script>

@@ -4,7 +4,6 @@
     int sn = 1;
     var shownProductIds = new List<int>();
 }
-
 <section class="content pt-2 pb-0">
     <div class="container-fluid px-0">
 
@@ -64,7 +63,6 @@
                                             groupItems.Add(item);
                                         }
                                     }
-
                                     string combinedItemNames = "";
                                     bool firstText = true;
 
@@ -80,7 +78,6 @@
                                             combinedItemNames = combinedItemNames + " " + groupItem.ItemName;
                                         }
                                     }
-
                                     <tr>
                                         <td class="text-center align-middle" style="vertical-align: middle !important;">
                                             @sn
@@ -106,7 +103,6 @@
                                                 </tbody>
                                             </table>
                                         </td>
-
                                         <td class="p-0 align-top">
                                             <table class="table table-sm mb-0" style="table-layout:fixed;">
                                                 <tbody>
@@ -158,7 +154,6 @@
 
     </div>
 </section>
-
 <div class="modal fade" id="mainActionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-md" role="document">
         <div class="modal-content rounded-0">
@@ -177,7 +172,6 @@
         </div>
     </div>
 </div>
-
 @if (TempData["Success"] != null || TempData["Error"] != null)
 {
     <div class="position-fixed" style="top: 15px; right: 15px; z-index: 1055;">
@@ -197,7 +191,6 @@
                 </div>
             </div>
         }
-
         @if (TempData["Error"] != null)
         {
             <div class="toast bg-danger text-white fade" id="errorToast" data-delay="4000">
@@ -301,7 +294,6 @@
                     }
                 });
             });
-
             $('#mainActionModal').on('hidden.bs.modal', function () {
                 $('#mainActionModalBody').html('');
             });

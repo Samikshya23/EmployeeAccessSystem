@@ -14,6 +14,7 @@ namespace EmployeeAccessSystem.Models
         public List<ReportModel> ReportData { get; set; }
         public bool HasData { get; set; }
         public bool IsPingReport { get; set; }
+        public bool IsFortigateReport { get; set; }
         public string Message { get; set; }
 
         public ReportPageViewModel()
@@ -24,6 +25,7 @@ namespace EmployeeAccessSystem.Models
             ReportTitle = "Monitoring Report";
             Message = "";
             IsPingReport = false;
+            IsFortigateReport = false;
         }
     }
 }

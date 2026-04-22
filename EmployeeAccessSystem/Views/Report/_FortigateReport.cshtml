@@ -1,0 +1,111 @@
+﻿@model EmployeeAccessSystem.Models.ReportPageViewModel
+
+@{
+    var uniqueRows = new List<EmployeeAccessSystem.Models.ReportModel>();
+
+    if (Model.ReportData != null)
+    {
+        for (int i = 0; i < Model.ReportData.Count; i++)
+        {
+            bool exists = false;
+
+            for (int j = 0; j < uniqueRows.Count; j++)
+            {
+                if (uniqueRows[j].MonitoringTypeName == Model.ReportData[i].MonitoringTypeName &&
+                    uniqueRows[j].ItemName == Model.ReportData[i].ItemName)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists)
+            {
+                uniqueRows.Add(Model.ReportData[i]);
+            }
+        }
+    }
+}
+
+<table class="table table-bordered table-sm table-hover mb-0 text-center bg-white">
+    <thead>
+        <tr>
+            <th rowspan="2" class="align-middle bg-light" style="min-width:180px;">
+                Monitoring Type
+            </th>
+            <th rowspan="2" class="align-middle bg-light" style="min-width:160px;">
+                Item
+            </th>
+
+            @for (int d = 0; d < Model.Dates.Count; d++)
+            {
+                <th class="text-center bg-light" style="min-width:55px;">
+                    @Model.Dates[d].ToString("dd")
+                </th>
+            }
+        </tr>
+        <tr>
+            @for (int d = 0; d < Model.Dates.Count; d++)
+            {
+                <th class="text-center bg-light">
+                    <small>@Model.Dates[d].ToString("ddd")</small>
+                </th>
+            }
+        </tr>
+    </thead>
+
+    <tbody>
+        @for (int i = 0; i < uniqueRows.Count; i++)
+        {
+            var currentRow = uniqueRows[i];
+
+            <tr>
+                <td class="text-left font-weight-bold">
+                    @currentRow.MonitoringTypeName
+                </td>
+
+                <td class="text-left">
+                    @currentRow.ItemName
+                </td>
+
+                @for (int d = 0; d < Model.Dates.Count; d++)
+                {
+                    string displayText = "";
+                    bool foundRow = false;
+
+                    for (int r = 0; r < Model.ReportData.Count; r++)
+                    {
+                        if (Model.ReportData[r].MonitoringTypeName == currentRow.MonitoringTypeName &&
+                        Model.ReportData[r].ItemName == currentRow.ItemName &&
+                        Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
+                        {
+                            foundRow = true;
+
+                            if (Model.ReportData[r].ConfigValue != null)
+                            {
+                                displayText = Model.ReportData[r].ConfigValue.Trim();
+                            }
+
+                            break;
+                        }
+                    }
+
+                    <td>
+                        @if (!foundRow)
+                        {
+                            <span>-</span>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(displayText))
+                        {
+                            <span>@displayText</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

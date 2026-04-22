@@ -349,6 +349,10 @@
                                 </tbody>
                             </table>
                         }
+                        else if (Model.IsFortigateReport)
+                        {
+                            @Html.Partial("_FortigateReport", Model)
+                        }
                         else
                         {
                             <table class="table table-bordered table-sm table-hover mb-0 text-center bg-white">

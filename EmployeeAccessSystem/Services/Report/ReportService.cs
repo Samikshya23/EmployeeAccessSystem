@@ -18,7 +18,13 @@ namespace EmployeeAccessSystem.Services
         {
             ReportPageViewModel model = new ReportPageViewModel();
 
-            model.ProductList = (await _productSetupService.GetAllAsync()).ToList();
+            IEnumerable<ProductSetup> productData = await _productSetupService.GetAllAsync();
+            model.ProductList = new List<ProductSetup>();
+
+            foreach (ProductSetup item in productData)
+            {
+                model.ProductList.Add(item);
+            }
 
             if (!fromDate.HasValue)
             {
@@ -61,10 +67,19 @@ namespace EmployeeAccessSystem.Services
             {
                 flag = "PING_REPORT";
                 model.IsPingReport = true;
+                model.IsFortigateReport = false;
+            }
+            else if (IsFortigateProduct(productName))
+            {
+                flag = "FORTIGATE_REPORT";
+                model.IsPingReport = false;
+                model.IsFortigateReport = true;
             }
             else
             {
+                flag = "SMSC_REPORT";
                 model.IsPingReport = false;
+                model.IsFortigateReport = false;
             }
 
             model.ReportData = await _reportRepository.GetReportDataAsync(
@@ -115,12 +130,27 @@ namespace EmployeeAccessSystem.Services
             return false;
         }
 
+        private bool IsFortigateProduct(string productName)
+        {
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                return false;
+            }
+
+            productName = productName.Trim().ToLower();
+
+            if (productName == "fortigate")
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private List<DateTime> GetDateRange(DateTime fromDate, DateTime toDate)
         {
             List<DateTime> dates = new List<DateTime>();
-
             DateTime currentDate = fromDate.Date;
-
             while (currentDate <= toDate.Date)
             {
                 dates.Add(currentDate);

@@ -1,18 +1,18 @@
-﻿@model EmployeeAccessSystem.Models.FortigateItem
+﻿@model EmployeeAccessSystem.Models.FortigateConfig
 @{
     Layout = null;
 }
 
-<form asp-action="DeleteConfirmed" method="post" id="deleteFortigateItemForm">
+<form asp-action="DeleteConfirmed" method="post" id="deleteFortigateConfigForm">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="id" value="@Model.FortigateItemId" />
+    <input type="hidden" name="FortigateConfigId" value="@Model.FortigateConfigId" />
 
     <h5 class="text-center mb-2">
         Are you sure?
     </h5>
 
-    <p class="text-center mb-4" style="color:#000;">
-        You want to delete this Fortigate Item
+    <p class="text-center mb-4">
+        You want to delete this configuration
         <span>"@Model.ItemName"</span>
     </p>
 

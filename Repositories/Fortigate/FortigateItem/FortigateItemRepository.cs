@@ -16,70 +16,40 @@ namespace EmployeeAccessSystem.Repositories
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-
         private SqlConnection GetConnection()
         {
             return new SqlConnection(_connectionString);
         }
-
         public async Task<IEnumerable<FortigateItem>> GetAllAsync()
         {
             using var conn = GetConnection();
-
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "GETALL");
-
-            return await conn.QueryAsync<FortigateItem>(
-                "dbo.sp_FortigateItem_Manage",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
+            return await conn.QueryAsync<FortigateItem>("dbo.sp_FortigateItem_Manage",parameters,commandType: CommandType.StoredProcedure);
         }
-
         public async Task<IEnumerable<FortigateItem>> GetActiveAsync()
         {
             using var conn = GetConnection();
-
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "GETACTIVE");
-
-            return await conn.QueryAsync<FortigateItem>(
-                "dbo.sp_FortigateItem_Manage",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
+            return await conn.QueryAsync<FortigateItem>( "dbo.sp_FortigateItem_Manage", parameters, commandType: CommandType.StoredProcedure );
         }
-
         public async Task<IEnumerable<FortigateItem>> GetByCategoryAsync(int fortigateCategoryId)
         {
             using var conn = GetConnection();
-
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "GETBYCATEGORY");
             parameters.Add("FortigateCategoryId", fortigateCategoryId);
-
-            return await conn.QueryAsync<FortigateItem>(
-                "dbo.sp_FortigateItem_Manage",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
+            return await conn.QueryAsync<FortigateItem>("dbo.sp_FortigateItem_Manage", parameters, commandType: CommandType.StoredProcedure );
         }
-
         public async Task<FortigateItem> GetByIdAsync(int id)
         {
             using var conn = GetConnection();
-
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "GETBYID");
             parameters.Add("FortigateItemId", id);
-
-            return await conn.QueryFirstOrDefaultAsync<FortigateItem>(
-                "dbo.sp_FortigateItem_Manage",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
+            return await conn.QueryFirstOrDefaultAsync<FortigateItem>( "dbo.sp_FortigateItem_Manage", parameters, commandType: CommandType.StoredProcedure );
         }
-
         public async Task<int> AddAsync(FortigateItem model)
         {
             using var conn = GetConnection();
@@ -96,7 +66,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
         public async Task<int> UpdateAsync(FortigateItem model)
         {
             using var conn = GetConnection();
@@ -114,7 +83,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
         public async Task<int> DeleteAsync(int id)
         {
             using var conn = GetConnection();
@@ -129,7 +97,6 @@ namespace EmployeeAccessSystem.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
-
         public async Task<int> ToggleAsync(int id)
         {
             using var conn = GetConnection();
