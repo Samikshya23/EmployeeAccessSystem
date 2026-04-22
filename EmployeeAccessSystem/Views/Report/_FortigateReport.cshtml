@@ -18,7 +18,6 @@
                     break;
                 }
             }
-
             if (!exists)
             {
                 uniqueRows.Add(Model.ReportData[i]);
@@ -26,84 +25,126 @@
         }
     }
 }
-
-<table class="table table-bordered table-sm table-hover mb-0 text-center bg-white">
+<table class="table table-bordered table-sm table-hover mb-0 text-center bg-white report-table-grouped" id="fortigateReportTable">
     <thead>
         <tr>
-            <th rowspan="2" class="align-middle bg-light" style="min-width:180px;">
+            <th rowspan="2"
+                style="position:sticky; top:0; left:0; z-index:6; min-width:180px;">
+                class="align-middle bg-light"
                 Monitoring Type
             </th>
-            <th rowspan="2" class="align-middle bg-light" style="min-width:160px;">
+            <th rowspan="2"
+                class="align-middle bg-light"
+                style="position:sticky; top:0; left:180px; z-index:6; min-width:160px;">
                 Item
             </th>
 
-            @for (int d = 0; d < Model.Dates.Count; d++)
+            @if (Model.Dates != null)
             {
-                <th class="text-center bg-light" style="min-width:55px;">
-                    @Model.Dates[d].ToString("dd")
-                </th>
+                for (int d = 0; d < Model.Dates.Count; d++)
+                {
+                    <th class="text-center bg-light"
+                        style="position:sticky; top:0; z-index:5; min-width:55px;">
+                        <div class="font-weight-bold">
+                            @Model.Dates[d].ToString("dd")
+                        </div>
+                    </th>
+                }
             }
         </tr>
         <tr>
-            @for (int d = 0; d < Model.Dates.Count; d++)
+            @if (Model.Dates != null)
             {
-                <th class="text-center bg-light">
-                    <small>@Model.Dates[d].ToString("ddd")</small>
-                </th>
+                for (int d = 0; d < Model.Dates.Count; d++)
+                {
+                    <th class="text-center bg-light"
+                        style="position:sticky; top:39px; z-index:5; min-width:55px;">
+                        <small>@Model.Dates[d].ToString("ddd")</small>
+                    </th>
+                }
             }
         </tr>
     </thead>
-
     <tbody>
         @for (int i = 0; i < uniqueRows.Count; i++)
         {
             var currentRow = uniqueRows[i];
 
-            <tr>
-                <td class="text-left font-weight-bold">
-                    @currentRow.MonitoringTypeName
-                </td>
+            bool showMonitoringType = true;
 
-                <td class="text-left">
+            for (int x = 0; x < i; x++)
+            {
+                if (uniqueRows[x].MonitoringTypeName == currentRow.MonitoringTypeName)
+                {
+                    showMonitoringType = false;
+                    break;
+                }
+            }
+
+            int sameTypeCount = 0;
+
+            for (int y = 0; y < uniqueRows.Count; y++)
+            {
+                if (uniqueRows[y].MonitoringTypeName == currentRow.MonitoringTypeName)
+                {
+                    sameTypeCount++;
+                }
+            }
+
+            <tr data-group="@currentRow.MonitoringTypeName">
+                @if (showMonitoringType)
+                {
+                    <td rowspan="@sameTypeCount"
+                        class="align-middle bg-light font-weight-bold text-left"
+                        style="position:sticky; left:0; z-index:4; min-width:180px;">
+                        @currentRow.MonitoringTypeName
+                    </td>
+                }
+
+                <td class="align-middle text-left bg-white"
+                    style="position:sticky; left:180px; z-index:4; min-width:160px;">
                     @currentRow.ItemName
                 </td>
 
-                @for (int d = 0; d < Model.Dates.Count; d++)
+                @if (Model.Dates != null)
                 {
-                    string displayText = "";
-                    bool foundRow = false;
-
-                    for (int r = 0; r < Model.ReportData.Count; r++)
+                    for (int d = 0; d < Model.Dates.Count; d++)
                     {
-                        if (Model.ReportData[r].MonitoringTypeName == currentRow.MonitoringTypeName &&
-                        Model.ReportData[r].ItemName == currentRow.ItemName &&
-                        Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
-                        {
-                            foundRow = true;
+                        string displayText = "";
+                        bool foundRow = false;
 
-                            if (Model.ReportData[r].ConfigValue != null)
+                        for (int r = 0; r < Model.ReportData.Count; r++)
+                        {
+                            if (Model.ReportData[r].MonitoringTypeName == currentRow.MonitoringTypeName &&
+                            Model.ReportData[r].ItemName == currentRow.ItemName &&
+                            Model.ReportData[r].EntryDate.Date == Model.Dates[d].Date)
                             {
-                                displayText = Model.ReportData[r].ConfigValue.Trim();
+                                foundRow = true;
+
+                                if (Model.ReportData[r].ConfigValue != null)
+                                {
+                                    displayText = Model.ReportData[r].ConfigValue.Trim();
+                                }
+
+                                break;
                             }
-
-                            break;
                         }
+
+                        <td class="text-center align-middle" style="min-width:55px;">
+                            @if (!foundRow)
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(displayText))
+                            {
+                                <span>@displayText</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
                     }
-
-                    <td>
-                        @if (!foundRow)
-                        {
-                            <span>-</span>
-                        }
-                        else if (!string.IsNullOrWhiteSpace(displayText))
-                        {
-                            <span>@displayText</span>
-                        }
-                        else
-                        {
-                            <span>-</span>
-                        }
-                    </td>
                 }
             </tr>
         }

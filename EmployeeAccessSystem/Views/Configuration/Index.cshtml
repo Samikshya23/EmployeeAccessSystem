@@ -1,0 +1,99 @@
+﻿@model IEnumerable<EmployeeAccessSystem.Models.Configuration>
+
+@{
+    ViewData["Title"] = "Configuration";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Configuration</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Dynamic Configuration Setup</h3>
+            </div>
+            <div class="card-body">
+                <form method="get" asp-controller="Configuration" asp-action="Index">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Product</label>
+                                <select name="productId" class="form-control" asp-items="ViewBag.ProductList">
+                                    <option value="">Select Product</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="form-group w-100">
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fas fa-search"></i> Load
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <hr />
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">SN</th>
+                                <th>Configuration Name</th>
+                                <th>Parent</th>
+                                <th>Node Type</th>
+                                <th>Input Type</th>
+                                <th>Sort Order</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                int sn = 1;
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@sn</td>
+                                        <td>@item.ConfigurationName</td>
+                                        <td>@item.ParentConfigurationName</td>
+                                        <td>@item.NodeType</td>
+                                        <td>@item.InputType</td>
+                                        <td>@item.SortOrder</td>
+                                        <td>
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="badge badge-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-danger">Inactive</span>
+                                            }
+                                        </td>
+                                    </tr>
+
+                                    sn++;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center">No configuration found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

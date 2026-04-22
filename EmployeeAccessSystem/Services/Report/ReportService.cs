@@ -13,14 +13,11 @@ namespace EmployeeAccessSystem.Services
             _reportRepository = reportRepository;
             _productSetupService = productSetupService;
         }
-
         public async Task<ReportPageViewModel> GetReportPageAsync(int? selectedProductId, DateTime? fromDate, DateTime? toDate)
         {
             ReportPageViewModel model = new ReportPageViewModel();
-
             IEnumerable<ProductSetup> productData = await _productSetupService.GetAllAsync();
             model.ProductList = new List<ProductSetup>();
-
             foreach (ProductSetup item in productData)
             {
                 model.ProductList.Add(item);

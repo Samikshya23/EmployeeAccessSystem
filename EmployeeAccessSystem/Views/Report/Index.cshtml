@@ -203,10 +203,27 @@
                         </div>
                     </div>
 
+                    <div class="d-flex justify-content-between align-items-center mb-2 report-pagination-bar">
+                        <div class="form-inline">
+                            <label class="mr-2 mb-0">Show</label>
+                            <select id="reportPageSize" class="form-control form-control-sm mr-2" style="width:90px;">
+                                <option value="10" selected>10</option>
+                                <option value="15">15</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+
+                        <div class="report-pagination-info text-muted small">
+                            Showing <span id="reportStartEntry">0</span> to <span id="reportEndEntry">0</span> of <span id="reportTotalEntry">0</span> entries
+                        </div>
+                    </div>
+
                     <div class="table-responsive p-0" style="max-height:70vh; overflow:auto;">
                         @if (Model.IsPingReport)
                         {
-                            <table class="table table-bordered table-sm table-hover mb-0 text-center bg-white">
+                            <table class="table table-bordered table-sm table-hover mb-0 text-center bg-white report-table-ping" id="pingReportTable">
                                 <thead>
                                     <tr>
                                         <th rowspan="2"
@@ -256,7 +273,7 @@
                                     {
                                         var currentRow = uniquePingRows[i];
 
-                                        <tr>
+                                        <tr class="ping-entry-row">
                                             <td class="align-middle bg-white"
                                                 style="position:sticky; left:0; z-index:4; min-width:60px;">
                                                 @(i + 1)
@@ -355,7 +372,7 @@
                         }
                         else
                         {
-                            <table class="table table-bordered table-sm table-hover mb-0 text-center bg-white">
+                            <table class="table table-bordered table-sm table-hover mb-0 text-center bg-white report-table-grouped" id="smscReportTable">
                                 <thead>
                                     <tr>
                                         <th rowspan="2"
@@ -421,7 +438,7 @@
                                             }
                                         }
 
-                                        <tr>
+                                        <tr data-group="@currentRow.MonitoringTypeName">
                                             @if (showMonitoringType)
                                             {
                                                 <td rowspan="@sameTypeCount"
@@ -515,6 +532,14 @@
                                 </tbody>
                             </table>
                         }
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-2 report-pagination-footer">
+                        <div class="text-muted small">
+                            Showing <span id="reportStartEntryBottom">0</span> to <span id="reportEndEntryBottom">0</span> of <span id="reportTotalEntryBottom">0</span> entries
+                        </div>
+
+                        <ul class="pagination pagination-sm mb-0" id="reportPagination"></ul>
                     </div>
                 </div>
             </div>
@@ -629,6 +654,186 @@
                     return false;
                 }
             });
+
+            function buildGroupedPagination(tableSelector) {
+                var pageSize = parseInt($('#reportPageSize').val());
+                var rows = $(tableSelector + ' tbody tr');
+                var groupNames = [];
+                var added = {};
+
+                rows.each(function () {
+                    var groupName = $(this).attr('data-group');
+
+                    if (groupName && !added[groupName]) {
+                        added[groupName] = true;
+                        groupNames.push(groupName);
+                    }
+                });
+
+                function renderPage(pageNumber) {
+                    rows.hide();
+
+                    var totalEntries = groupNames.length;
+                    var totalPages = Math.ceil(totalEntries / pageSize);
+
+                    if (totalPages === 0) {
+                        totalPages = 1;
+                    }
+
+                    if (pageNumber < 1) {
+                        pageNumber = 1;
+                    }
+
+                    if (pageNumber > totalPages) {
+                        pageNumber = totalPages;
+                    }
+
+                    var startIndex = (pageNumber - 1) * pageSize;
+                    var endIndex = startIndex + pageSize;
+
+                    var visibleGroups = groupNames.slice(startIndex, endIndex);
+
+                    for (var i = 0; i < visibleGroups.length; i++) {
+                        $(tableSelector + ' tbody tr[data-group="' + visibleGroups[i].replace(/"/g, '\\"') + '"]').show();
+                    }
+
+                    var startEntry = totalEntries === 0 ? 0 : startIndex + 1;
+                    var endEntry = endIndex > totalEntries ? totalEntries : endIndex;
+
+                    $('#reportStartEntry').text(startEntry);
+                    $('#reportEndEntry').text(endEntry);
+                    $('#reportTotalEntry').text(totalEntries);
+
+                    $('#reportStartEntryBottom').text(startEntry);
+                    $('#reportEndEntryBottom').text(endEntry);
+                    $('#reportTotalEntryBottom').text(totalEntries);
+
+                    buildPaginationButtons(pageNumber, totalPages);
+                }
+
+                function buildPaginationButtons(currentPage, totalPages) {
+                    var pagination = $('#reportPagination');
+                    pagination.empty();
+
+                    var prevDisabled = currentPage === 1 ? 'disabled' : '';
+                    pagination.append('<li class="page-item ' + prevDisabled + '"><a class="page-link report-page-link" href="#" data-page="' + (currentPage - 1) + '">Previous</a></li>');
+
+                    for (var i = 1; i <= totalPages; i++) {
+                        var activeClass = currentPage === i ? 'active' : '';
+                        pagination.append('<li class="page-item ' + activeClass + '"><a class="page-link report-page-link" href="#" data-page="' + i + '">' + i + '</a></li>');
+                    }
+
+                    var nextDisabled = currentPage === totalPages ? 'disabled' : '';
+                    pagination.append('<li class="page-item ' + nextDisabled + '"><a class="page-link report-page-link" href="#" data-page="' + (currentPage + 1) + '">Next</a></li>');
+                }
+
+                $('#reportPagination').off('click', '.report-page-link').on('click', '.report-page-link', function (e) {
+                    e.preventDefault();
+
+                    var page = parseInt($(this).attr('data-page'));
+
+                    if (!isNaN(page)) {
+                        renderPage(page);
+                    }
+                });
+
+                $('#reportPageSize').off('change').on('change', function () {
+                    pageSize = parseInt($(this).val());
+                    renderPage(1);
+                });
+
+                renderPage(1);
+            }
+
+            function buildPingPagination() {
+                var pageSize = parseInt($('#reportPageSize').val());
+                var rows = $('#pingReportTable tbody tr');
+
+                function renderPage(pageNumber) {
+                    rows.hide();
+
+                    var totalEntries = rows.length;
+                    var totalPages = Math.ceil(totalEntries / pageSize);
+
+                    if (totalPages === 0) {
+                        totalPages = 1;
+                    }
+
+                    if (pageNumber < 1) {
+                        pageNumber = 1;
+                    }
+
+                    if (pageNumber > totalPages) {
+                        pageNumber = totalPages;
+                    }
+
+                    var startIndex = (pageNumber - 1) * pageSize;
+                    var endIndex = startIndex + pageSize;
+
+                    rows.slice(startIndex, endIndex).show();
+
+                    var startEntry = totalEntries === 0 ? 0 : startIndex + 1;
+                    var endEntry = endIndex > totalEntries ? totalEntries : endIndex;
+
+                    $('#reportStartEntry').text(startEntry);
+                    $('#reportEndEntry').text(endEntry);
+                    $('#reportTotalEntry').text(totalEntries);
+
+                    $('#reportStartEntryBottom').text(startEntry);
+                    $('#reportEndEntryBottom').text(endEntry);
+                    $('#reportTotalEntryBottom').text(totalEntries);
+
+                    buildPaginationButtons(pageNumber, totalPages);
+                }
+
+                function buildPaginationButtons(currentPage, totalPages) {
+                    var pagination = $('#reportPagination');
+                    pagination.empty();
+
+                    var prevDisabled = currentPage === 1 ? 'disabled' : '';
+                    pagination.append('<li class="page-item ' + prevDisabled + '"><a class="page-link report-page-link" href="#" data-page="' + (currentPage - 1) + '">Previous</a></li>');
+
+                    for (var i = 1; i <= totalPages; i++) {
+                        var activeClass = currentPage === i ? 'active' : '';
+                        pagination.append('<li class="page-item ' + activeClass + '"><a class="page-link report-page-link" href="#" data-page="' + i + '">' + i + '</a></li>');
+                    }
+
+                    var nextDisabled = currentPage === totalPages ? 'disabled' : '';
+                    pagination.append('<li class="page-item ' + nextDisabled + '"><a class="page-link report-page-link" href="#" data-page="' + (currentPage + 1) + '">Next</a></li>');
+                }
+
+                $('#reportPagination').off('click', '.report-page-link').on('click', '.report-page-link', function (e) {
+                    e.preventDefault();
+
+                    var page = parseInt($(this).attr('data-page'));
+
+                    if (!isNaN(page)) {
+                        renderPage(page);
+                    }
+                });
+
+                $('#reportPageSize').off('change').on('change', function () {
+                    pageSize = parseInt($(this).val());
+                    renderPage(1);
+                });
+
+                renderPage(1);
+            }
+
+            @if (Model.SelectedProductId.HasValue && Model.HasData && Model.ReportData != null && Model.ReportData.Count > 0)
+            {
+                    <text>
+                    if (@(Model.IsPingReport.ToString().ToLower())) {
+                        buildPingPagination();
+                    }
+                    else if (@(Model.IsFortigateReport.ToString().ToLower())) {
+                        buildGroupedPagination('#fortigateReportTable');
+                    }
+                    else {
+                        buildGroupedPagination('#smscReportTable');
+                    }
+                    </text>
+            }
         });
     </script>
 }
