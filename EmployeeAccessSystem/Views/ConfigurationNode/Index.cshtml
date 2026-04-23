@@ -1,0 +1,207 @@
+﻿@model List<EmployeeAccessSystem.Models.ConfigurationNode>
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Configuration Node";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int? selectedProductId = null;
+
+    if (ViewBag.SelectedProductId != null)
+    {
+        selectedProductId = Convert.ToInt32(ViewBag.SelectedProductId);
+    }
+
+    string successMessage = "";
+    string errorMessage = "";
+
+    if (TempData["Success"] != null)
+    {
+        successMessage = TempData["Success"].ToString();
+    }
+
+    if (TempData["Error"] != null)
+    {
+        errorMessage = TempData["Error"].ToString();
+    }
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 class="mb-0">Configuration Node</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Index" asp-controller="ConfigurationNode" method="get">
+                    <div class="row align-items-end">
+                        <div class="col-lg-5 col-md-6">
+                            <div class="form-group mb-md-0">
+                                <label>Product</label>
+                                <select name="productId"
+                                        asp-items="ViewBag.ProductList"
+                                        class="form-control select2bs4"
+                                        id="productId">
+                                    <option value="">Select Product</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7 col-md-6 text-md-right mt-3 mt-md-0">
+                            <button type="submit" class="btn btn-primary btn-sm mr-2">
+                                Load
+                            </button>
+
+                            @if (selectedProductId.HasValue && selectedProductId.Value > 0)
+                            {
+                                <button type="button"
+                                        class="btn btn-success btn-sm"
+                                        onclick="openCreateModal(@selectedProductId.Value, null)">
+                                    New Root Node
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-3">
+
+                @if (!selectedProductId.HasValue || selectedProductId.Value <= 0)
+                {
+                    <div class="text-center text-muted py-5">
+                        Please select a product and click Load.
+                    </div>
+                }
+                else if (Model == null || Model.Count == 0)
+                {
+                    <div class="text-center text-muted py-5">
+                        No configuration found for this product.
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        @foreach (var node in Model)
+                        {
+                            @Html.Partial("_ConfigurationNodeTree", Tuple.Create(node, 0))
+                        }
+                    </div>
+                }
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="modal fade"
+     id="configurationModal"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content" id="configurationModalContent"></div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="deleteModal"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content" id="deleteModalContent"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openCreateModal(productId, parentNodeId) {
+            var url = '/ConfigurationNode/Create?productId=' + productId;
+
+            if (parentNodeId !== null && parentNodeId !== undefined) {
+                url += '&parentNodeId=' + parentNodeId;
+            }
+
+            $('#configurationModalContent').load(url, function () {
+                $('#configurationModal').modal('show');
+            });
+        }
+
+        function openEditModal(id) {
+            var url = '/ConfigurationNode/Edit/' + id;
+
+            $('#configurationModalContent').load(url, function () {
+                $('#configurationModal').modal('show');
+            });
+        }
+
+        function openDeleteModal(id) {
+            var url = '/ConfigurationNode/Delete/' + id;
+
+            $('#deleteModalContent').load(url, function () {
+                $('#deleteModal').modal('show');
+            });
+        }
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $('#productId').select2({
+                theme: 'bootstrap4',
+                placeholder: 'Select Product',
+                allowClear: true,
+                width: '100%'
+            });
+
+            var successMessage = @Html.Raw(JsonSerializer.Serialize(successMessage));
+            var errorMessage = @Html.Raw(JsonSerializer.Serialize(errorMessage));
+
+            if (successMessage !== '') {
+                $(document).Toasts('create', {
+                    class: 'bg-success',
+                    title: 'Success',
+                    autohide: true,
+                    delay: 3000,
+                    body: successMessage
+                });
+            }
+
+            if (errorMessage !== '') {
+                $(document).Toasts('create', {
+                    class: 'bg-danger',
+                    title: 'Error',
+                    autohide: true,
+                    delay: 3500,
+                    body: errorMessage
+                });
+            }
+        });
+
+        $(document).on('click', '.toggle-node', function () {
+            var target = $(this).data('target');
+            var icon = $(this).find('i');
+
+            $(target).toggle();
+
+            if ($(target).is(':visible')) {
+                icon.removeClass('fa-chevron-right');
+                icon.addClass('fa-chevron-down');
+            } else {
+                icon.removeClass('fa-chevron-down');
+                icon.addClass('fa-chevron-right');
+            }
+        });
+    </script>
+}

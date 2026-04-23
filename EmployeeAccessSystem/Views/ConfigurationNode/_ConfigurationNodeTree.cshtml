@@ -1,0 +1,108 @@
+﻿@model Tuple<EmployeeAccessSystem.Models.ConfigurationNode, int>
+
+@{
+    var node = Model.Item1;
+    var level = Model.Item2;
+
+    string childContainerId = "node_" + node.NodeId;
+    bool hasChildren = node.Children != null && node.Children.Count > 0;
+
+    int marginLeft = level * 22;
+
+    string details = "";
+
+    details += "Type : " + node.NodeType;
+
+    if (!string.IsNullOrWhiteSpace(node.InputType))
+    {
+        details += " | Input : " + node.InputType;
+    }
+
+    if (node.IsActive)
+    {
+        details += " | Status : Active";
+    }
+    else
+    {
+        details += " | Status : Inactive";
+    }
+}
+
+<div class="border rounded bg-white mb-2" style="margin-left:@(marginLeft)px;">
+
+    <div class="d-flex justify-content-between align-items-center px-2 py-1">
+
+        <div class="d-flex align-items-center">
+
+            @if (hasChildren)
+            {
+                <a href="javascript:void(0)"
+                   class="text-dark mr-2 toggle-node"
+                   data-target="#@childContainerId"
+                   style="font-size:13px;">
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            }
+            else
+            {
+                <span style="width:18px;" class="mr-2"></span>
+            }
+
+            <span class="font-weight-bold text-dark" style="font-size:15px;">
+                @node.NodeName
+            </span>
+
+        </div>
+
+        <div class="text-right">
+
+            <button type="button"
+                    class="btn btn-light border btn-sm p-0"
+                    style="width:28px;height:28px;"
+                    onclick="openEditModal(@node.NodeId)"
+                    data-toggle="tooltip"
+                    title="Edit">
+                <i class="fas fa-pen text-secondary" style="font-size:12px;"></i>
+            </button>
+
+            <button type="button"
+                    class="btn btn-light border btn-sm p-0 ml-1"
+                    style="width:28px;height:28px;"
+                    onclick="openCreateModal(@node.ProductId,@node.NodeId)"
+                    data-toggle="tooltip"
+                    title="Add Child">
+                <i class="fas fa-plus text-success" style="font-size:12px;"></i>
+            </button>
+
+            <button type="button"
+                    class="btn btn-light border btn-sm p-0 ml-1"
+                    style="width:28px;height:28px;"
+                    onclick="openDeleteModal(@node.NodeId)"
+                    data-toggle="tooltip"
+                    title="Delete">
+                <i class="far fa-trash-alt text-danger" style="font-size:12px;"></i>
+            </button>
+
+            <button type="button"
+                    class="btn btn-light border btn-sm p-0 ml-1"
+                    style="width:28px;height:28px;"
+                    data-toggle="tooltip"
+                    title="@details">
+                <i class="fas fa-info-circle text-info" style="font-size:12px;"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+    @if (hasChildren)
+    {
+        <div id="@childContainerId" class="pb-1 px-1">
+            @foreach (var child in node.Children)
+            {
+                @Html.Partial("_ConfigurationNodeTree", Tuple.Create(child, level + 1))
+            }
+        </div>
+    }
+
+</div>

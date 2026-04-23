@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace EmployeeAccessSystem.Repositories
 {
-    public class ConfigurationRepository : IConfigurationRepository
+    public class ConfigurationNodeRepositories : IConfigurationNodeRepositories
     {
         private readonly string _connectionString;
 
-        public ConfigurationRepository(IConfiguration configuration)
+        public ConfigurationNodeRepositories(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
@@ -22,59 +22,59 @@ namespace EmployeeAccessSystem.Repositories
             return new SqlConnection(_connectionString);
         }
 
-        public async Task<IEnumerable<Configuration>> GetAllAsync()
+        public async Task<IEnumerable<ConfigurationNode>> GetAllAsync()
         {
             using var conn = GetConnection();
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "GETALL");
 
-            return await conn.QueryAsync<Configuration>(
-                "dbo.sp_Configuration_Manage",
+            return await conn.QueryAsync<ConfigurationNode>(
+                "dbo.sp_ConfigurationNode_Manage",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<IEnumerable<Configuration>> GetByProductIdAsync(int productId)
+        public async Task<IEnumerable<ConfigurationNode>> GetByProductIdAsync(int productId)
         {
             using var conn = GetConnection();
 
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("Flag", "GETBYPRODUCTID");
+            parameters.Add("Flag", "GETALLBYPRODUCT");
             parameters.Add("ProductId", productId);
 
-            return await conn.QueryAsync<Configuration>(
-                "dbo.sp_Configuration_Manage",
+            return await conn.QueryAsync<ConfigurationNode>(
+                "dbo.sp_ConfigurationNode_Manage",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<Configuration> GetByIdAsync(int id)
+        public async Task<ConfigurationNode> GetByIdAsync(int id)
         {
             using var conn = GetConnection();
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "GETBYID");
-            parameters.Add("ConfigurationId", id);
+            parameters.Add("NodeId", id);
 
-            return await conn.QueryFirstOrDefaultAsync<Configuration>(
-                "dbo.sp_Configuration_Manage",
+            return await conn.QueryFirstOrDefaultAsync<ConfigurationNode>(
+                "dbo.sp_ConfigurationNode_Manage",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<int> AddAsync(Configuration model)
+        public async Task<int> AddAsync(ConfigurationNode model)
         {
             using var conn = GetConnection();
 
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("Flag", "INSERT");
+            parameters.Add("Flag", "ADD");
             parameters.Add("ProductId", model.ProductId);
-            parameters.Add("ParentConfigurationId", model.ParentConfigurationId);
-            parameters.Add("ConfigurationName", model.ConfigurationName);
+            parameters.Add("ParentNodeId", model.ParentNodeId);
+            parameters.Add("NodeName", model.NodeName);
             parameters.Add("NodeType", model.NodeType);
             parameters.Add("InputType", model.InputType);
             parameters.Add("SortOrder", model.SortOrder);
@@ -82,30 +82,29 @@ namespace EmployeeAccessSystem.Repositories
             parameters.Add("CreatedBy", model.CreatedBy);
 
             return await conn.ExecuteScalarAsync<int>(
-                "dbo.sp_Configuration_Manage",
+                "dbo.sp_ConfigurationNode_Manage",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
-        public async Task<int> UpdateAsync(Configuration model)
+        public async Task<int> UpdateAsync(ConfigurationNode model)
         {
             using var conn = GetConnection();
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "UPDATE");
-            parameters.Add("ConfigurationId", model.ConfigurationId);
+            parameters.Add("NodeId", model.NodeId);
             parameters.Add("ProductId", model.ProductId);
-            parameters.Add("ParentConfigurationId", model.ParentConfigurationId);
-            parameters.Add("ConfigurationName", model.ConfigurationName);
+            parameters.Add("ParentNodeId", model.ParentNodeId);
+            parameters.Add("NodeName", model.NodeName);
             parameters.Add("NodeType", model.NodeType);
             parameters.Add("InputType", model.InputType);
-            parameters.Add("SortOrder", model.SortOrder);
             parameters.Add("IsActive", model.IsActive);
             parameters.Add("ModifiedBy", model.ModifiedBy);
 
             return await conn.ExecuteScalarAsync<int>(
-                "dbo.sp_Configuration_Manage",
+                "dbo.sp_ConfigurationNode_Manage",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
@@ -117,25 +116,10 @@ namespace EmployeeAccessSystem.Repositories
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "DELETE");
-            parameters.Add("ConfigurationId", id);
+            parameters.Add("NodeId", id);
 
             return await conn.ExecuteScalarAsync<int>(
-                "dbo.sp_Configuration_Manage",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
-        }
-
-        public async Task<int> ToggleAsync(int id)
-        {
-            using var conn = GetConnection();
-
-            DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("Flag", "TOGGLE");
-            parameters.Add("ConfigurationId", id);
-
-            return await conn.ExecuteScalarAsync<int>(
-                "dbo.sp_Configuration_Manage",
+                "dbo.sp_ConfigurationNode_Manage",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );

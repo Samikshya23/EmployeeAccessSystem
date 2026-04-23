@@ -17,7 +17,6 @@
                 data-widget="treeview"
                 role="menu"
                 data-accordion="false">
-
                 <li class="nav-item">
                     <a asp-controller="Home"
                        asp-action="Index"
@@ -26,7 +25,6 @@
                         <p>Home</p>
                     </a>
                 </li>
-
                 @if (isLoggedIn)
                 {
                     <li class="nav-item">
@@ -55,10 +53,9 @@
                             <p>Sub Category</p>
                         </a>
                     </li>
-
                     <li class="nav-item has-treeview @(
                         currentController == "ProductSetup" ||
-                        currentController == "Configuration" ||
+                        currentController == "ConfigurationNode" ||
                         currentController == "SMCProduct" ||
                         currentController == "SMCProductItem" ||
                         currentController == "SMCConfig" ||
@@ -73,7 +70,7 @@
                         <a href="#"
                            class="nav-link @(
                                currentController == "ProductSetup" ||
-                               currentController == "Configuration" ||
+                               currentController == "ConfigurationNode" ||
                                currentController == "SMCProduct" ||
                                currentController == "SMCProductItem" ||
                                currentController == "SMCConfig" ||
@@ -104,11 +101,11 @@
                             </li>
 
                             <li class="nav-item">
-                                <a asp-controller="Configuration"
+                                <a asp-controller="ConfigurationNode"
                                    asp-action="Index"
-                                   class="nav-link @(currentController == "Configuration" ? "active" : "")">
+                                   class="nav-link @(currentController == "ConfigurationNode" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Configuration</p>
+                                    <p>ConfigurationNode</p>
                                 </a>
                             </li>
 
