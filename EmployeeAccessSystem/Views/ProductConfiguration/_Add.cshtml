@@ -1,0 +1,169 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="modal-header bg-primary">
+    <h5 class="modal-title">Add Product Configuration</h5>
+
+    <button type="button"
+            class="close text-white"
+            data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+
+    <div class="form-group">
+        <label>Product</label>
+
+        <select class="form-control" id="ProductId">
+            <option value="">Select Product</option>
+
+            @foreach (var item in ViewBag.ProductList)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+    </div>
+
+    <hr />
+
+    <div id="nodeArea">
+    </div>
+
+    <button type="button"
+            class="btn btn-info btn-sm"
+            id="btnAddRootNode">
+        <i class="fas fa-plus"></i> Add Root Node
+    </button>
+
+</div>
+
+<div class="modal-footer">
+    <button type="button"
+            class="btn btn-secondary btn-sm"
+            data-dismiss="modal">
+        Close
+    </button>
+
+    <button type="button"
+            class="btn btn-success btn-sm"
+            id="btnSaveStructure">
+        Save Structure
+    </button>
+</div>
+
+<script>
+    var nodeIndex = 0;
+
+    $("#btnAddRootNode").click(function () {
+
+        addNodeRow($("#nodeArea"), "");
+
+    });
+
+    function addNodeRow(target, parentPath) {
+
+        nodeIndex++;
+
+        var path = parentPath + nodeIndex + "-";
+
+        var html = '';
+
+        html += '<div class="border rounded p-2 mb-2 node-row" data-path="' + path + '">';
+
+        html += '<div class="form-row">';
+
+        html += '<div class="col-md-5">';
+        html += '<input type="text" class="form-control node-name" placeholder="Node Name">';
+        html += '</div>';
+
+        html += '<div class="col-md-4">';
+        html += '<select class="form-control input-type">';
+        html += '<option value="">None</option>';
+        html += '<option>Tick/Cross</option>';
+        html += '<option>Yes/No</option>';
+        html += '<option>UP/DOWN</option>';
+        html += '<option>Percentage</option>';
+        html += '<option>Number</option>';
+        html += '<option>Text Box</option>';
+        html += '<option>Date</option>';
+        html += '</select>';
+        html += '</div>';
+
+        html += '<div class="col-md-3 text-right">';
+        html += '<button type="button" class="btn btn-success btn-sm btn-child">+</button> ';
+        html += '<button type="button" class="btn btn-danger btn-sm btn-remove">x</button>';
+        html += '</div>';
+
+        html += '</div>';
+
+        html += '<div class="children mt-2 ml-4"></div>';
+
+        html += '</div>';
+
+        target.append(html);
+    }
+
+    $(document).on("click", ".btn-child", function () {
+
+        var childArea = $(this).closest(".node-row").find("> .children");
+
+        addNodeRow(childArea, "");
+
+    });
+
+    $(document).on("click", ".btn-remove", function () {
+
+        $(this).closest(".node-row").remove();
+
+    });
+
+    $("#btnSaveStructure").click(function () {
+
+        var request = {
+            productId: $("#ProductId").val(),
+            nodes: buildNodes($("#nodeArea").children(".node-row"))
+        };
+
+        $.ajax({
+            url: '/ProductConfiguration/SaveStructure',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(request),
+            success: function (response) {
+
+                if (response.success) {
+                    location.reload();
+                }
+                else {
+                    alert(response.message);
+                }
+
+            }
+        });
+
+    });
+
+    function buildNodes(rows) {
+
+        var list = [];
+
+        rows.each(function () {
+
+            var row = $(this);
+
+            var item = {
+                nodeName: row.find("> .form-row .node-name").val(),
+                inputType: row.find("> .form-row .input-type").val(),
+                children: buildNodes(row.find("> .children > .node-row"))
+            };
+
+            list.push(item);
+
+        });
+
+        return list;
+    }
+</script>

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<EmployeeAccessSystem.Models.ProductConfiguration>
+
+@{
+    ViewData["Title"] = "Product Configuration";
+}
+
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Product Configuration</h3>
+
+        <div class="card-tools">
+            <button type="button"
+                    class="btn btn-success btn-sm"
+                    id="btnAddConfiguration">
+                <i class="fas fa-plus"></i> Add
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th style="width:80px;">SN</th>
+                    <th>Product</th>
+                    <th>Node Name</th>
+                    <th>Parent</th>
+                    <th>Value Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int sn = 1;
+                }
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@sn</td>
+                        <td>@item.ProductName</td>
+                        <td>@item.NodeName</td>
+                        <td>@item.ParentNodeName</td>
+                        <td>@item.InputType</td>
+                    </tr>
+
+                    sn++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="configurationModal"
+     tabindex="-1"
+     role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content" id="configurationModalContent">
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $("#btnAddConfiguration").click(function () {
+
+            $.get('/ProductConfiguration/Add', function (html) {
+
+                $("#configurationModalContent").html(html);
+                $("#configurationModal").modal('show');
+
+            });
+
+        });
+    </script>
+}

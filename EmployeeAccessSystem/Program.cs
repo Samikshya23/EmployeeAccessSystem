@@ -30,8 +30,8 @@ builder.Services.AddScoped<IFortigateCategoryService, FortigateCategoryService>(
 builder.Services.AddScoped<IPingConfigRepository, PingConfigRepository>();
 builder.Services.AddScoped<IFortigateItemRepositories, FortigateItemRepositories>();
 builder.Services.AddScoped<IFortigateConfigRepositories, FortigateConfigRepositories>();
-builder.Services.AddScoped<IConfigurationNodeRepositories, ConfigurationNodeRepositories>();
-builder.Services.AddScoped<IConfigurationNodeService, ConfigurationNodeService>();
+builder.Services.AddScoped<IProductConfigurationRepository, ProductConfigurationRepository>();
+builder.Services.AddScoped<IProductConfigurationService, ProductConfigurationService>();
 
 builder.Services.AddScoped<IFortigateConfigService, FortigateConfigService>();
 builder.Services.AddScoped<IFortigateItemService, FortigateItemService>();

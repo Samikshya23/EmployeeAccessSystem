@@ -55,7 +55,7 @@
                     </li>
                     <li class="nav-item has-treeview @(
                         currentController == "ProductSetup" ||
-                        currentController == "ConfigurationNode" ||
+                        currentController == "ProductConfiguration" ||
                         currentController == "SMCProduct" ||
                         currentController == "SMCProductItem" ||
                         currentController == "SMCConfig" ||
@@ -70,7 +70,7 @@
                         <a href="#"
                            class="nav-link @(
                                currentController == "ProductSetup" ||
-                               currentController == "ConfigurationNode" ||
+                               currentController == "ProductConfiguration" ||
                                currentController == "SMCProduct" ||
                                currentController == "SMCProductItem" ||
                                currentController == "SMCConfig" ||
@@ -101,11 +101,11 @@
                             </li>
 
                             <li class="nav-item">
-                                <a asp-controller="ConfigurationNode"
+                                <a asp-controller="ProductConfiguration"
                                    asp-action="Index"
-                                   class="nav-link @(currentController == "ConfigurationNode" ? "active" : "")">
+                                   class="nav-link @(currentController == "ProductConfiguration" ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>ConfigurationNode</p>
+                                    <p>ProductConfiguration</p>
                                 </a>
                             </li>
 

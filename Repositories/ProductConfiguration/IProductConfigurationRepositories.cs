@@ -1,0 +1,14 @@
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EmployeeAccessSystem.Models;
+
+namespace EmployeeAccessSystem.Repositories
+{
+    public interface IProductConfigurationRepository
+    {
+        Task<IEnumerable<ProductConfiguration>> GetAllAsync();
+        Task<IEnumerable<ProductConfiguration>> GetByProductIdAsync(int productId);
+        Task<int> AddAsync(ProductConfiguration model);
+        Task<int> DeleteByProductAsync(int productId);
+    }
+}
