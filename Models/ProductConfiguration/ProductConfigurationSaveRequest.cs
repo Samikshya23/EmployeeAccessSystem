@@ -16,7 +16,9 @@ namespace EmployeeAccessSystem.Models
     public class ProductConfigurationNodeRequest
     {
         public string NodeName { get; set; }
+        public string NodeType { get; set; }
         public string InputType { get; set; }
+
         public List<ProductConfigurationNodeRequest> Children { get; set; }
 
         public ProductConfigurationNodeRequest()

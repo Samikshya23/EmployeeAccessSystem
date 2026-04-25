@@ -60,6 +60,7 @@ namespace EmployeeAccessSystem.Repositories
             parameters.Add("ProductId", model.ProductId);
             parameters.Add("ParentNodeId", model.ParentNodeId);
             parameters.Add("NodeName", model.NodeName);
+            parameters.Add("NodeType", model.NodeType);
             parameters.Add("InputType", model.InputType);
             parameters.Add("SortOrder", model.SortOrder);
             parameters.Add("IsActive", model.IsActive);
@@ -72,13 +73,14 @@ namespace EmployeeAccessSystem.Repositories
             );
         }
 
-        public async Task<int> DeleteByProductAsync(int productId)
+        public async Task<int> DeleteByProductAsync(int productId, string deletedBy)
         {
             using var conn = GetConnection();
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "DELETEBYPRODUCT");
             parameters.Add("ProductId", productId);
+            parameters.Add("DeletedBy", deletedBy);
 
             return await conn.ExecuteScalarAsync<int>(
                 "dbo.sp_ProductConfiguration_Manage",

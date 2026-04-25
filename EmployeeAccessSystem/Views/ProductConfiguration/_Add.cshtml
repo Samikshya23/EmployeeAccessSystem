@@ -1,169 +1,378 @@
 ﻿@{
     Layout = null;
+    int selectedProductId = ViewBag.SelectedProductId;
+    string existingJson = ViewBag.ExistingJson;
 }
 
 <div class="modal-header bg-primary">
-    <h5 class="modal-title">Add Product Configuration</h5>
-
-    <button type="button"
-            class="close text-white"
-            data-dismiss="modal">
+    <h5 class="modal-title">
+        <i class="fas fa-project-diagram"></i> Add Product Configuration
+    </h5>
+    <button type="button" class="close text-white" data-dismiss="modal">
         <span>&times;</span>
     </button>
 </div>
 
 <div class="modal-body">
 
-    <div class="form-group">
-        <label>Product</label>
+    <div id="configErrorArea"></div>
 
-        <select class="form-control" id="ProductId">
-            <option value="">Select Product</option>
+    <div class="card card-outline card-primary mb-2">
+        <div class="card-body p-2">
+            <div class="row align-items-end">
+                <div class="col-md-8">
+                    <div class="form-group mb-0">
+                        <label class="mb-1">Product</label>
+                        <select id="ProductId" class="form-control form-control-sm" asp-items="ViewBag.ProductList">
+                            <option value="">Select Product</option>
+                        </select>
+                    </div>
+                </div>
 
-            @foreach (var item in ViewBag.ProductList)
-            {
-                <option value="@item.Value">@item.Text</option>
-            }
-        </select>
+                <div class="col-md-4 text-right">
+                    <button type="button" class="btn btn-primary btn-sm" id="btnAddMainBlock">
+                        <i class="fas fa-plus"></i> Block
+                    </button>
+
+                    <button type="button" class="btn btn-success btn-sm" id="btnAddMainField">
+                        <i class="fas fa-plus"></i> Field
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <hr />
+    <div class="card card-outline card-secondary mb-0">
+        <div class="card-header py-2">
+            <h3 class="card-title">
+                Structure Builder
+            </h3>
+        </div>
 
-    <div id="nodeArea">
+        <div class="card-body p-2" id="nodeContainer">
+            <div class="text-muted text-center py-3" id="emptyMessage">
+                Select product and add block or field.
+            </div>
+        </div>
     </div>
-
-    <button type="button"
-            class="btn btn-info btn-sm"
-            id="btnAddRootNode">
-        <i class="fas fa-plus"></i> Add Root Node
-    </button>
 
 </div>
 
 <div class="modal-footer">
-    <button type="button"
-            class="btn btn-secondary btn-sm"
-            data-dismiss="modal">
+    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
         Close
     </button>
 
-    <button type="button"
-            class="btn btn-success btn-sm"
-            id="btnSaveStructure">
-        Save Structure
+    <button type="button" class="btn btn-primary btn-sm" id="btnSaveStructure">
+        <i class="fas fa-save"></i> Save Structure
     </button>
 </div>
 
 <script>
-    var nodeIndex = 0;
+    $(document).ready(function () {
 
-    $("#btnAddRootNode").click(function () {
+        var selectedProductId = @selectedProductId;
+        var existingNodes = @Html.Raw(existingJson);
 
-        addNodeRow($("#nodeArea"), "");
+        if (selectedProductId > 0) {
+            $("#ProductId").val(selectedProductId);
+            $("#ProductId").prop("disabled", true);
+        }
+
+        if (existingNodes != null && existingNodes.length > 0) {
+            $("#emptyMessage").remove();
+
+            for (var i = 0; i < existingNodes.length; i++) {
+                renderExistingNode($("#nodeContainer"), existingNodes[i]);
+            }
+        }
+
+        $("#btnAddMainBlock").click(function () {
+            addNode($("#nodeContainer"), "Block");
+        });
+
+        $("#btnAddMainField").click(function () {
+            addNode($("#nodeContainer"), "Field");
+        });
+
+        $("#btnSaveStructure").click(function () {
+            saveStructure();
+        });
+
+        $("#ProductId").change(function () {
+            $("#nodeContainer").html(`
+                <div class="text-muted text-center py-3" id="emptyMessage">
+                    Select product and add block or field.
+                </div>
+            `);
+        });
 
     });
 
-    function addNodeRow(target, parentPath) {
+    function getInputTypeOptions(selectedValue) {
+        var options = [
+            "None",
+            "Checkbox",
+            "Text",
+            "Value",
+            "Percentage",
+            "Number",
+            "Yes/No",
+            "Up/Down",
+            "Date"
+        ];
 
-        nodeIndex++;
+        var html = "";
 
-        var path = parentPath + nodeIndex + "-";
+        for (var i = 0; i < options.length; i++) {
+            var value = options[i];
 
-        var html = '';
+            if (value === selectedValue) {
+                html += `<option value="${value}" selected>${value}</option>`;
+            }
+            else {
+                html += `<option value="${value}">${value}</option>`;
+            }
+        }
 
-        html += '<div class="border rounded p-2 mb-2 node-row" data-path="' + path + '">';
-
-        html += '<div class="form-row">';
-
-        html += '<div class="col-md-5">';
-        html += '<input type="text" class="form-control node-name" placeholder="Node Name">';
-        html += '</div>';
-
-        html += '<div class="col-md-4">';
-        html += '<select class="form-control input-type">';
-        html += '<option value="">None</option>';
-        html += '<option>Tick/Cross</option>';
-        html += '<option>Yes/No</option>';
-        html += '<option>UP/DOWN</option>';
-        html += '<option>Percentage</option>';
-        html += '<option>Number</option>';
-        html += '<option>Text Box</option>';
-        html += '<option>Date</option>';
-        html += '</select>';
-        html += '</div>';
-
-        html += '<div class="col-md-3 text-right">';
-        html += '<button type="button" class="btn btn-success btn-sm btn-child">+</button> ';
-        html += '<button type="button" class="btn btn-danger btn-sm btn-remove">x</button>';
-        html += '</div>';
-
-        html += '</div>';
-
-        html += '<div class="children mt-2 ml-4"></div>';
-
-        html += '</div>';
-
-        target.append(html);
+        return html;
     }
 
-    $(document).on("click", ".btn-child", function () {
+    function addNode(container, nodeType) {
+        $("#emptyMessage").remove();
 
-        var childArea = $(this).closest(".node-row").find("> .children");
+        var inputType = "None";
 
-        addNodeRow(childArea, "");
+        if (nodeType === "Field") {
+            inputType = "Checkbox";
+        }
 
-    });
+        var nodeHtml = `
+            <div class="card card-outline card-light mb-1 node-row" data-node-type="${nodeType}">
+                <div class="card-body p-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control form-control-sm node-name" placeholder="${nodeType} Name" />
+                        </div>
 
-    $(document).on("click", ".btn-remove", function () {
+                        <div class="col-md-2">
+                            <span class="badge ${nodeType === "Block" ? "badge-secondary" : "badge-info"} node-type">${nodeType}</span>
+                        </div>
 
-        $(this).closest(".node-row").remove();
+                        <div class="col-md-3">
+                            <select class="form-control form-control-sm input-type" ${nodeType === "Block" ? "disabled" : ""}>
+                                ${getInputTypeOptions(inputType)}
+                            </select>
+                        </div>
 
-    });
+                        <div class="col-md-2 text-right action-area">
+                            ${nodeType === "Block"
+                                ? `<button type="button" class="btn btn-primary btn-sm btn-add-block" title="Add child block">
+                                        <i class="fas fa-plus"></i>
+                                   </button>
+                                   <button type="button" class="btn btn-success btn-sm btn-add-field" title="Add field">
+                                        <i class="fas fa-plus"></i>
+                                   </button>`
+                                : ""
+                            }
 
-    $("#btnSaveStructure").click(function () {
+                            <button type="button" class="btn btn-danger btn-sm btn-remove-node" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
 
-        var request = {
-            productId: $("#ProductId").val(),
-            nodes: buildNodes($("#nodeArea").children(".node-row"))
-        };
+                    <div class="child-container ml-4 mt-2"></div>
+                </div>
+            </div>
+        `;
 
-        $.ajax({
-            url: '/ProductConfiguration/SaveStructure',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(request),
-            success: function (response) {
+        container.append(nodeHtml);
 
-                if (response.success) {
-                    location.reload();
-                }
-                else {
-                    alert(response.message);
-                }
+        var newNode = container.children(".node-row").last();
+        bindNodeButtons(newNode);
+    }
 
+    function renderExistingNode(container, node) {
+        var nodeType = node.nodeType;
+
+        if (nodeType == null || nodeType === "") {
+            nodeType = "Block";
+        }
+
+        var inputType = node.inputType;
+
+        if (inputType == null || inputType === "") {
+            inputType = "None";
+        }
+
+        var nodeHtml = `
+            <div class="card card-outline card-light mb-1 node-row" data-node-type="${nodeType}">
+                <div class="card-body p-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control form-control-sm node-name" placeholder="${nodeType} Name" value="${escapeHtml(node.nodeName)}" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <span class="badge ${nodeType === "Block" ? "badge-secondary" : "badge-info"} node-type">${nodeType}</span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <select class="form-control form-control-sm input-type" ${nodeType === "Block" ? "disabled" : ""}>
+                                ${getInputTypeOptions(inputType)}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 text-right action-area">
+                            ${nodeType === "Block"
+                                ? `<button type="button" class="btn btn-primary btn-sm btn-add-block" title="Add child block">
+                                        <i class="fas fa-plus"></i>
+                                   </button>
+                                   <button type="button" class="btn btn-success btn-sm btn-add-field" title="Add field">
+                                        <i class="fas fa-plus"></i>
+                                   </button>`
+                                : ""
+                            }
+
+                            <button type="button" class="btn btn-danger btn-sm btn-remove-node" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="child-container ml-4 mt-2"></div>
+                </div>
+            </div>
+        `;
+
+        container.append(nodeHtml);
+
+        var newNode = container.children(".node-row").last();
+        bindNodeButtons(newNode);
+
+        if (node.children != null && node.children.length > 0) {
+            var childContainer = newNode.find(">.card-body>.child-container");
+
+            for (var i = 0; i < node.children.length; i++) {
+                renderExistingNode(childContainer, node.children[i]);
+            }
+        }
+    }
+
+    function bindNodeButtons(node) {
+        node.find(">.card-body>.row .btn-add-block").click(function () {
+            var childContainer = $(this).closest(".node-row").find(">.card-body>.child-container");
+            addNode(childContainer, "Block");
+        });
+
+        node.find(">.card-body>.row .btn-add-field").click(function () {
+            var childContainer = $(this).closest(".node-row").find(">.card-body>.child-container");
+            addNode(childContainer, "Field");
+        });
+
+        node.find(">.card-body>.row .btn-remove-node").click(function () {
+            $(this).closest(".node-row").remove();
+
+            if ($("#nodeContainer").children(".node-row").length === 0) {
+                $("#nodeContainer").html(`
+                    <div class="text-muted text-center py-3" id="emptyMessage">
+                        Select product and add block or field.
+                    </div>
+                `);
+            }
+        });
+    }
+
+    function collectNodes(container) {
+        var nodes = [];
+
+        container.children(".node-row").each(function () {
+            var nodeType = $(this).data("node-type");
+            var nodeName = $(this).find(">.card-body>.row .node-name").val();
+            var inputType = $(this).find(">.card-body>.row .input-type").val();
+
+            if (nodeType === "Block") {
+                inputType = "None";
+            }
+
+            var childContainer = $(this).find(">.card-body>.child-container");
+            var children = collectNodes(childContainer);
+
+            if (nodeName != null && nodeName.trim() !== "") {
+                nodes.push({
+                    nodeName: nodeName.trim(),
+                    nodeType: nodeType,
+                    inputType: inputType,
+                    children: children
+                });
             }
         });
 
-    });
+        return nodes;
+    }
 
-    function buildNodes(rows) {
+    function saveStructure() {
+        var productId = $("#ProductId").val();
 
-        var list = [];
+        if (productId == null || productId === "") {
+            showConfigError("Please select product.");
+            return;
+        }
 
-        rows.each(function () {
+        var nodes = collectNodes($("#nodeContainer"));
 
-            var row = $(this);
+        if (nodes.length === 0) {
+            showConfigError("Please add at least one block or field.");
+            return;
+        }
 
-            var item = {
-                nodeName: row.find("> .form-row .node-name").val(),
-                inputType: row.find("> .form-row .input-type").val(),
-                children: buildNodes(row.find("> .children > .node-row"))
-            };
+        var request = {
+            productId: parseInt(productId),
+            nodes: nodes
+        };
 
-            list.push(item);
-
+        $.ajax({
+            url: "/ProductConfiguration/SaveStructure",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(request),
+            success: function (response) {
+                if (response.success) {
+                    $("#configurationModal").modal("hide");
+                    location.reload();
+                }
+                else {
+                    showConfigError(response.message);
+                }
+            },
+            error: function () {
+                showConfigError("Something went wrong while saving configuration.");
+            }
         });
+    }
 
-        return list;
+    function showConfigError(message) {
+        $("#configErrorArea").html(`
+            <div class="alert alert-danger alert-dismissible fade show">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        `);
+    }
+
+    function escapeHtml(value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 </script>

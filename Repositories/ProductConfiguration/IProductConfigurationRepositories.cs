@@ -9,6 +9,6 @@ namespace EmployeeAccessSystem.Repositories
         Task<IEnumerable<ProductConfiguration>> GetAllAsync();
         Task<IEnumerable<ProductConfiguration>> GetByProductIdAsync(int productId);
         Task<int> AddAsync(ProductConfiguration model);
-        Task<int> DeleteByProductAsync(int productId);
+        Task<int> DeleteByProductAsync(int productId, string deletedBy);
     }
 }
