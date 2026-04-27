@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
@@ -28,18 +27,38 @@ namespace EmployeeAccessSystem.Services
 
             List<ProductConfigurationIndexItem> result = new List<ProductConfigurationIndexItem>();
 
-            var productGroups = flatList
-                .GroupBy(x => new { x.ProductId, x.ProductName })
-                .OrderBy(x => x.Key.ProductName);
-
-            foreach (var group in productGroups)
+            foreach (ProductConfiguration item in flatList)
             {
-                ProductConfigurationIndexItem indexItem = new ProductConfigurationIndexItem();
-                indexItem.ProductId = group.Key.ProductId;
-                indexItem.ProductName = group.Key.ProductName;
-                indexItem.Nodes = BuildTree(group.ToList());
+                bool productExists = false;
 
-                result.Add(indexItem);
+                foreach (ProductConfigurationIndexItem existing in result)
+                {
+                    if (existing.ProductId == item.ProductId)
+                    {
+                        productExists = true;
+                    }
+                }
+
+                if (!productExists)
+                {
+                    ProductConfigurationIndexItem indexItem = new ProductConfigurationIndexItem();
+                    indexItem.ProductId = item.ProductId;
+                    indexItem.ProductName = item.ProductName;
+                    indexItem.Nodes = new List<ProductConfiguration>();
+
+                    List<ProductConfiguration> productNodes = new List<ProductConfiguration>();
+
+                    foreach (ProductConfiguration node in flatList)
+                    {
+                        if (node.ProductId == item.ProductId)
+                        {
+                            productNodes.Add(node);
+                        }
+                    }
+
+                    indexItem.Nodes = BuildTree(productNodes);
+                    result.Add(indexItem);
+                }
             }
 
             return result;
@@ -57,6 +76,16 @@ namespace EmployeeAccessSystem.Services
             }
 
             return BuildTree(flatList);
+        }
+
+        public async Task<ProductConfiguration> GetNodeByIdAsync(int nodeId)
+        {
+            if (nodeId <= 0)
+            {
+                return null;
+            }
+
+            return await _repository.GetNodeByIdAsync(nodeId);
         }
 
         public async Task<(bool Success, string Message)> SaveStructureAsync(ProductConfigurationSaveRequest request, string createdBy)
@@ -101,6 +130,23 @@ namespace EmployeeAccessSystem.Services
             return (true, "Product configuration deleted successfully.");
         }
 
+        public async Task<(bool Success, string Message)> DeleteNodeAsync(int nodeId, string deletedBy)
+        {
+            if (nodeId <= 0)
+            {
+                return (false, "Invalid node.");
+            }
+
+            int result = await _repository.DeleteNodeAsync(nodeId, deletedBy);
+
+            if (result > 0)
+            {
+                return (true, "Node deleted successfully.");
+            }
+
+            return (false, "Node delete failed.");
+        }
+
         private async Task SaveNodeRecursive(
             int productId,
             int? parentNodeId,
@@ -125,12 +171,19 @@ namespace EmployeeAccessSystem.Services
                 nodeType = "Block";
             }
 
+            string inputType = requestNode.InputType;
+
+            if (string.IsNullOrWhiteSpace(inputType))
+            {
+                inputType = "None";
+            }
+
             ProductConfiguration model = new ProductConfiguration();
             model.ProductId = productId;
             model.ParentNodeId = parentNodeId;
             model.NodeName = requestNode.NodeName.Trim();
             model.NodeType = nodeType;
-            model.InputType = requestNode.InputType;
+            model.InputType = inputType;
             model.SortOrder = sortOrder;
             model.IsActive = true;
             model.CreatedBy = createdBy;
@@ -166,7 +219,15 @@ namespace EmployeeAccessSystem.Services
                 }
                 else
                 {
-                    ProductConfiguration parent = flatList.FirstOrDefault(x => x.NodeId == item.ParentNodeId.Value);
+                    ProductConfiguration parent = null;
+
+                    foreach (ProductConfiguration possibleParent in flatList)
+                    {
+                        if (possibleParent.NodeId == item.ParentNodeId.Value)
+                        {
+                            parent = possibleParent;
+                        }
+                    }
 
                     if (parent != null)
                     {
@@ -175,7 +236,25 @@ namespace EmployeeAccessSystem.Services
                 }
             }
 
-            return roots.OrderBy(x => x.SortOrder).ToList();
+            SortNodes(roots);
+
+            return roots;
+        }
+
+        private void SortNodes(List<ProductConfiguration> nodes)
+        {
+            nodes.Sort(delegate (ProductConfiguration first, ProductConfiguration second)
+            {
+                return first.SortOrder.CompareTo(second.SortOrder);
+            });
+
+            foreach (ProductConfiguration node in nodes)
+            {
+                if (node.Children != null && node.Children.Count > 0)
+                {
+                    SortNodes(node.Children);
+                }
+            }
         }
     }
 }

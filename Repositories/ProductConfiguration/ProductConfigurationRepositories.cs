@@ -51,6 +51,21 @@ namespace EmployeeAccessSystem.Repositories
             );
         }
 
+        public async Task<ProductConfiguration> GetNodeByIdAsync(int nodeId)
+        {
+            using var conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "GETNODEBYID");
+            parameters.Add("NodeId", nodeId);
+
+            return await conn.QueryFirstOrDefaultAsync<ProductConfiguration>(
+                "dbo.sp_ProductConfiguration_Manage",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
         public async Task<int> AddAsync(ProductConfiguration model)
         {
             using var conn = GetConnection();
@@ -80,6 +95,22 @@ namespace EmployeeAccessSystem.Repositories
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Flag", "DELETEBYPRODUCT");
             parameters.Add("ProductId", productId);
+            parameters.Add("DeletedBy", deletedBy);
+
+            return await conn.ExecuteScalarAsync<int>(
+                "dbo.sp_ProductConfiguration_Manage",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<int> DeleteNodeAsync(int nodeId, string deletedBy)
+        {
+            using var conn = GetConnection();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Flag", "DELETENODE");
+            parameters.Add("NodeId", nodeId);
             parameters.Add("DeletedBy", deletedBy);
 
             return await conn.ExecuteScalarAsync<int>(

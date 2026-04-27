@@ -2,17 +2,18 @@
 
 @{
     ViewData["Title"] = "Product Configuration";
+    int selectedProductId = ViewBag.SelectedProductId;
 }
 
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2 align-items-center">
             <div class="col-sm-6">
-                <h4 class="m-0">
-                    <i class="fas fa-project-diagram text-primary"></i>
+                <h4 class="m-0 font-weight-bold">
                     Product Configuration
                 </h4>
             </div>
+
             <div class="col-sm-6 text-right">
                 <button type="button" class="btn btn-primary btn-sm" id="btnAddConfiguration">
                     <i class="fas fa-plus"></i> Add Product Configuration
@@ -45,81 +46,68 @@
             </div>
         }
 
-        <div class="card card-outline card-primary">
-            <div class="card-header">
-                <h3 class="card-title">Saved Configuration Structure</h3>
-            </div>
+        @if (Model != null && Model.Count > 0)
+        {
+            for (int i = 0; i < Model.Count; i++)
+            {
+                var item = Model[i];
 
-            <div class="card-body p-0">
-                <table class="table table-bordered table-hover table-sm mb-0">
-                    <thead>
-                        <tr>
-                            <th style="width:70px;">SN</th>
-                            <th style="width:220px;">Product</th>
-                            <th>Structure</th>
-                            <th style="width:150px;" class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            int sn = 1;
-                        }
+                <div class="card card-outline card-primary mb-3">
+                    <div class="card-header py-2">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h3 class="card-title font-weight-bold mb-0">
+                                    @item.ProductName
+                                </h3>
+                            </div>
 
-                        @if (Model != null && Model.Count > 0)
+                            <div class="col-md-4 text-right">
+                                <button type="button"
+                                        class="btn btn-info btn-sm btnEditConfiguration"
+                                        data-product-id="@item.ProductId"
+                                        title="Edit Structure">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <form asp-action="Delete" method="post" class="d-inline deleteForm">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            title="Delete Structure">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-2">
+                        @if (item.Nodes != null && item.Nodes.Count > 0)
                         {
-                            foreach (var item in Model)
+                            for (int j = 0; j < item.Nodes.Count; j++)
                             {
-                                <tr>
-                                    <td>@sn</td>
-                                    <td>
-                                        <span class="badge badge-primary">@item.ProductName</span>
-                                    </td>
-                                    <td>
-                                        @if (item.Nodes != null && item.Nodes.Count > 0)
-                                        {
-                                            <ul class="mb-0 pl-3">
-                                                @foreach (var node in item.Nodes)
-                                                {
-                                                    @await Html.PartialAsync("_TreeNode", node)
-                                                }
-                                            </ul>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">No structure added.</span>
-                                        }
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button"
-                                                class="btn btn-info btn-sm btnEditConfiguration"
-                                                data-product-id="@item.ProductId">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-
-                                        <form asp-action="Delete" method="post" class="d-inline deleteForm">
-                                            <input type="hidden" name="productId" value="@item.ProductId" />
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-
-                                sn++;
+                                @await Html.PartialAsync("_TreeNode", item.Nodes[j])
                             }
                         }
                         else
                         {
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">
-                                    No product configuration found.
-                                </td>
-                            </tr>
+                            <div class="text-muted text-center py-3">
+                                No structure added for this product.
+                            </div>
                         }
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body text-center text-muted py-4">
+                    Click <strong>Add Product Configuration</strong> to create or edit a product structure.
+                </div>
             </div>
-        </div>
+        }
 
     </div>
 </section>
@@ -142,10 +130,19 @@
                 });
             });
 
-            $(".btnEditConfiguration").click(function () {
-                var productId = $(this).data("product-id");
+            $(document).on("click", ".btnEditConfiguration", function () {
+                var productId = $(this).attr("data-product-id");
 
-                $.get("/ProductConfiguration/Add", { productId: productId }, function (data) {
+                $.get("/ProductConfiguration/Add?productId=" + productId, function (data) {
+                    $("#configurationModalContent").html(data);
+                    $("#configurationModal").modal("show");
+                });
+            });
+
+            $(document).on("click", ".btnDeleteNode", function () {
+                var nodeId = $(this).attr("data-node-id");
+
+                $.get("/ProductConfiguration/DeleteNode?nodeId=" + nodeId, function (data) {
                     $("#configurationModalContent").html(data);
                     $("#configurationModal").modal("show");
                 });

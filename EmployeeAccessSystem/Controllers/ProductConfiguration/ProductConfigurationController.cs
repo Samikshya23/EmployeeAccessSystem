@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using EmployeeAccessSystem.Models;
 using EmployeeAccessSystem.Repositories;
@@ -21,18 +23,55 @@ namespace EmployeeAccessSystem.Controllers
             _productRepo = productRepo;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? selectedProductId)
         {
+            var products = await _productRepo.GetActiveAsync();
+
+            ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName", selectedProductId);
+
+            if (selectedProductId.HasValue)
+            {
+                ViewBag.SelectedProductId = selectedProductId.Value;
+            }
+            else
+            {
+                ViewBag.SelectedProductId = 0;
+            }
+
+            if (!selectedProductId.HasValue || selectedProductId.Value <= 0)
+            {
+                return View(new List<ProductConfigurationIndexItem>());
+            }
+
             var data = await _service.GetIndexAsync();
-            return View(data);
+
+            List<ProductConfigurationIndexItem> result = new List<ProductConfigurationIndexItem>();
+
+            foreach (ProductConfigurationIndexItem item in data)
+            {
+                if (item.ProductId == selectedProductId.Value)
+                {
+                    result.Add(item);
+                }
+            }
+
+            return View(result);
         }
 
         public async Task<IActionResult> Add(int? productId)
         {
             var products = await _productRepo.GetActiveAsync();
+
             ViewBag.ProductList = new SelectList(products, "ProductId", "ProductName", productId);
 
-            ViewBag.SelectedProductId = productId.HasValue ? productId.Value : 0;
+            if (productId.HasValue)
+            {
+                ViewBag.SelectedProductId = productId.Value;
+            }
+            else
+            {
+                ViewBag.SelectedProductId = 0;
+            }
 
             if (productId.HasValue && productId.Value > 0)
             {
@@ -54,20 +93,80 @@ namespace EmployeeAccessSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveStructure([FromBody] ProductConfigurationSaveRequest request)
         {
-            string userName = "System";
-
-            if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+            try
             {
-                userName = User.Identity.Name;
+                string userName = "System";
+
+                if (User != null)
+                {
+                    if (User.Identity != null)
+                    {
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            userName = User.Identity.Name;
+                        }
+                    }
+                }
+
+                var result = await _service.SaveStructureAsync(request, userName);
+
+                return Json(new
+                {
+                    success = result.Success,
+                    message = result.Message,
+                    productId = request.ProductId
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+        public async Task<IActionResult> DeleteNode(int nodeId)
+        {
+            ProductConfiguration node = await _service.GetNodeByIdAsync(nodeId);
+
+            if (node == null)
+            {
+                node = new ProductConfiguration();
             }
 
-            var result = await _service.SaveStructureAsync(request, userName);
+            return PartialView("_DeleteNode", node);
+        }
 
-            return Json(new
+        [HttpPost]
+        public async Task<IActionResult> DeleteNodeConfirmed(int nodeId, int productId)
+        {
+            string userName = "System";
+
+            if (User != null)
             {
-                success = result.Success,
-                message = result.Message
-            });
+                if (User.Identity != null)
+                {
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        userName = User.Identity.Name;
+                    }
+                }
+            }
+
+            var result = await _service.DeleteNodeAsync(nodeId, userName);
+
+            if (result.Success)
+            {
+                TempData["Success"] = result.Message;
+            }
+            else
+            {
+                TempData["Error"] = result.Message;
+            }
+
+            return RedirectToAction("Index", new { selectedProductId = productId });
         }
 
         [HttpPost]
@@ -75,14 +174,27 @@ namespace EmployeeAccessSystem.Controllers
         {
             string userName = "System";
 
-            if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+            if (User != null)
             {
-                userName = User.Identity.Name;
+                if (User.Identity != null)
+                {
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        userName = User.Identity.Name;
+                    }
+                }
             }
 
             var result = await _service.DeleteByProductAsync(productId, userName);
 
-            TempData[result.Success ? "Success" : "Error"] = result.Message;
+            if (result.Success)
+            {
+                TempData["Success"] = result.Message;
+            }
+            else
+            {
+                TempData["Error"] = result.Message;
+            }
 
             return RedirectToAction("Index");
         }
