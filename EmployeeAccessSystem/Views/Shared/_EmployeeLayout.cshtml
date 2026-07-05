@@ -1,4 +1,4 @@
-﻿@{
+@{
     var isLoggedIn = User.Identity != null && User.Identity.IsAuthenticated;
 }
 <!DOCTYPE html>
@@ -120,5 +120,27 @@
     <script src="~/adminlte/dist/js/adminlte.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <script>
+            (function () {
+                var idleTime = 0;
+                var idleInterval = setInterval(timerIncrement, 60000); // Check every 1 minute
+
+                // Zero the idle timer on user activity
+                $(document).on('mousemove keypress click scroll', function () {
+                    idleTime = 0;
+                });
+
+                function timerIncrement() {
+                    idleTime = idleTime + 1;
+                    if (idleTime >= 15) { // 15 minutes of inactivity
+                        window.location.href = '/Account/Logout';
+                    }
+                }
+            })();
+        </script>
+    }
 </body>
 </html>

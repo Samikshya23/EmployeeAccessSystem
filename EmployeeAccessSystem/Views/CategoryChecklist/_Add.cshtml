@@ -1,4 +1,4 @@
-﻿<div class="modal fade" id="categoryChecklistModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="categoryChecklistModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
         <div class="modal-content rounded-0">
 
@@ -578,6 +578,10 @@
             return createTickCrossDropdown(index, oldValue);
         }
 
+        if (typeId === 12) {
+            return createYesNoDropdown(index, oldValue);
+        }
+
         if (typeId === 5) {
             return createUpDownDropdown(index, oldValue);
         }
@@ -658,6 +662,51 @@
 
         if (value === '9') {
             $('#tickCrossButton_' + index).html('<i class="fas fa-times text-danger"></i>');
+        }
+    }
+
+    function createYesNoDropdown(index, oldValue) {
+        var selectedText = 'Select';
+        var selectedValue = oldValue;
+
+        if (oldValue === 'Yes') {
+            selectedValue = '13';
+        }
+
+        if (oldValue === 'No') {
+            selectedValue = '14';
+        }
+
+        if (selectedValue === '13') {
+            selectedText = '<span class="text-success font-weight-bold">Yes</span>';
+        }
+
+        if (selectedValue === '14') {
+            selectedText = '<span class="text-danger font-weight-bold">No</span>';
+        }
+
+        return '' +
+            '<input type="hidden" class="required-entry-value" id="yesNo_' + index + '" name="Items[' + index + '].ResultValue" value="' + escapeAttribute(selectedValue) + '" />' +
+            '<div class="dropdown" style="width:100px;">' +
+            '<button type="button" class="btn btn-light border btn-sm dropdown-toggle" data-toggle="dropdown" id="yesNoButton_' + index + '" style="width:100px;">' +
+            selectedText +
+            '</button>' +
+            '<div class="dropdown-menu p-0 text-center" style="min-width:100px;">' +
+            '<button type="button" class="dropdown-item" onclick="selectYesNo(' + index + ', \'13\')"><span class="text-success font-weight-bold">Yes</span></button>' +
+            '<button type="button" class="dropdown-item" onclick="selectYesNo(' + index + ', \'14\')"><span class="text-danger font-weight-bold">No</span></button>' +
+            '</div>' +
+            '</div>';
+    }
+
+    function selectYesNo(index, value) {
+        $('#yesNo_' + index).val(value);
+
+        if (value === '13') {
+            $('#yesNoButton_' + index).html('<span class="text-success font-weight-bold">Yes</span>');
+        }
+
+        if (value === '14') {
+            $('#yesNoButton_' + index).html('<span class="text-danger font-weight-bold">No</span>');
         }
     }
 
@@ -783,6 +832,12 @@
 
         if (parseInt(valueTypeId) === 4) {
             if (foundValue !== 'Tick' && foundValue !== 'Cross' && foundValue !== '8' && foundValue !== '9') {
+                return '';
+            }
+        }
+
+        if (parseInt(valueTypeId) === 12) {
+            if (foundValue !== 'Yes' && foundValue !== 'No' && foundValue !== '13' && foundValue !== '14') {
                 return '';
             }
         }

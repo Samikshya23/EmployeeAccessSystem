@@ -88,7 +88,7 @@ namespace EmployeeAccessSystem.Controllers
 
             AuthenticationProperties authProperties = new AuthenticationProperties();
             authProperties.IsPersistent = false;
-            authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8);
+            authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(15);
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
@@ -108,19 +108,27 @@ namespace EmployeeAccessSystem.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // Logout submit
-        // Navbar logout form uses POST, so this action must also be POST
+        // Logout GET action for client-side redirection
         [AllowAnonymous]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
-
-            _logger.LogInformation("Logout clicked. Email: {Email}", email);
-
+            _logger.LogInformation("Logout GET clicked. Email: {Email}", email);
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
 
+        // Logout POST action for navbar form
+        [AllowAnonymous]
+        [HttpPost]
+        [ActionName("Logout")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogoutPost()
+        {
+            string email = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+            _logger.LogInformation("Logout POST clicked. Email: {Email}", email);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
 

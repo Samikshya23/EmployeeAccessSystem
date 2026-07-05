@@ -302,7 +302,7 @@ namespace EmployeeAccessSystem.Controllers
                 }
                 else if (string.Equals(type, "checklist", StringComparison.OrdinalIgnoreCase))
                 {
-                    alertsList = alertsList.Where(a => a.ValueTypeId == 4).ToList();
+                    alertsList = alertsList.Where(a => a.ValueTypeId == 4 || a.ValueTypeId == 12).ToList();
                 }
                 else if (string.Equals(type, "service", StringComparison.OrdinalIgnoreCase))
                 {
@@ -350,6 +350,17 @@ namespace EmployeeAccessSystem.Controllers
                 }
                 formattedValue = "✗";
                 reason = "Checklist status marked as Fail (✗)";
+                return true;
+            }
+            else if (valueTypeId == 12) // Yes/No
+            {
+                if (val == "13" || val == "Yes")
+                {
+                    formattedValue = "Yes";
+                    return false;
+                }
+                formattedValue = "No";
+                reason = "Status marked as No";
                 return true;
             }
             else if (valueTypeId == 5) // Up/Down Status
@@ -709,6 +720,16 @@ namespace EmployeeAccessSystem.Controllers
                 return "Down";
             }
 
+            if (valueTypeId == 12)
+            {
+                if (value == "13" || value == "Yes")
+                {
+                    return "Yes";
+                }
+
+                return "No";
+            }
+
             return value;
         }
 
@@ -768,6 +789,14 @@ namespace EmployeeAccessSystem.Controllers
                         {
                             isAlert = true;
                             reason = "Service status is Down";
+                        }
+                    }
+                    else if (item.ValueTypeId == 12) // Yes/No
+                    {
+                        if (cleanVal != "13" && cleanVal != "Yes")
+                        {
+                            isAlert = true;
+                            reason = "Status marked as No";
                         }
                     }
 

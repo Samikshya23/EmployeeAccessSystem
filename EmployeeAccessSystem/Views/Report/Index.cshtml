@@ -384,6 +384,14 @@
                                                     {
                                                         <span class="text-danger font-weight-bold">Down</span>
                                                     }
+                                                    else if (value == "Yes")
+                                                    {
+                                                        <span class="text-success font-weight-bold">Yes</span>
+                                                    }
+                                                    else if (value == "No")
+                                                    {
+                                                        <span class="text-danger font-weight-bold">No</span>
+                                                    }
                                                     else
                                                     {
                                                         <span>@value</span>
@@ -410,6 +418,14 @@
                                                     else if (value == "Down")
                                                     {
                                                         <span class="text-danger font-weight-bold">Down</span>
+                                                    }
+                                                    else if (value == "Yes")
+                                                    {
+                                                        <span class="text-success font-weight-bold">Yes</span>
+                                                    }
+                                                    else if (value == "No")
+                                                    {
+                                                        <span class="text-danger font-weight-bold">No</span>
                                                     }
                                                     else
                                                     {
@@ -733,6 +749,21 @@
             return "CROSS_ICON";
         }
 
+        if (valueTypeId == 12)
+        {
+            if (value == "1" ||
+                value == "true" ||
+                value == "True" ||
+                value == "yes" ||
+                value == "Yes" ||
+                value == "13")
+            {
+                return "Yes";
+            }
+
+            return "No";
+        }
+
         if (valueTypeId == 5)
         {
             if (value == "1" ||
@@ -785,6 +816,16 @@
             }
 
             return "Down";
+        }
+
+        if (type == "yes/no")
+        {
+            if (value == "13" || value == "Yes")
+            {
+                return "Yes";
+            }
+
+            return "No";
         }
 
         return value;

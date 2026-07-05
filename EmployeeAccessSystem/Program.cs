@@ -116,4 +116,6 @@ static void ConfigureCookieOptions(CookieAuthenticationOptions options)
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+    options.SlidingExpiration = true;
 }

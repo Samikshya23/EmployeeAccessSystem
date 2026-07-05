@@ -405,6 +405,16 @@ namespace EmployeeAccessSystem.Controllers
                 return "Down";
             }
 
+            if (valueTypeId == 12)
+            {
+                if (value == "13" || value == "Yes")
+                {
+                    return "Yes";
+                }
+
+                return "No";
+            }
+
             return value;
         }
     }

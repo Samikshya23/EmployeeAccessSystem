@@ -11,7 +11,7 @@
     // Compute metrics
     int totalAlerts = Model?.Count() ?? 0;
     int percentageAlerts = Model?.Count(a => a.ValueTypeId == 3) ?? 0;
-    int crossAlerts = Model?.Count(a => a.ValueTypeId == 4) ?? 0;
+    int crossAlerts = Model?.Count(a => a.ValueTypeId == 4 || a.ValueTypeId == 12) ?? 0;
     int downAlerts = Model?.Count(a => a.ValueTypeId == 5) ?? 0;
 
     // Parse headings
@@ -247,6 +247,17 @@
                                                 else
                                                 {
                                                     <i class="fas fa-times text-danger"></i>
+                                                }
+                                            }
+                                            else if (alert.ValueTypeId == 12)
+                                            {
+                                                @if (alert.DisplayValue == "Yes" || alert.DisplayValue == "13")
+                                                {
+                                                    <span class="text-success font-weight-bold">Yes</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-danger font-weight-bold">No</span>
                                                 }
                                             }
                                             else if (alert.ValueTypeId == 5)
@@ -497,14 +508,14 @@
                                     if (item.isAlert) {
                                         if (item.valueTypeId === 3) {
                                             valBadge = '<span class="badge badge-warning text-white" style="font-size:12px; background-color: #fd7e14 !important;">' + item.displayValue + '</span>';
-                                        } else if (item.valueTypeId === 4) {
+                                        } else if (item.valueTypeId === 4 || item.valueTypeId === 12) {
                                             valBadge = '<span class="badge badge-danger" style="font-size:12px;">' + item.displayValue + '</span>';
                                         } else if (item.valueTypeId === 5) {
                                             valBadge = '<span class="badge badge-purple text-white" style="font-size:12px; background-color: #6f42c1 !important;">' + item.displayValue + '</span>';
                                         }
                                     } else {
                                         // Standard display values
-                                        if (item.displayValue === '✓' || item.displayValue === 'Up') {
+                                        if (item.displayValue === '✓' || item.displayValue === 'Up' || item.displayValue === 'Yes') {
                                             valBadge = '<span class="badge badge-success text-xs" style="font-size:11px;">' + item.displayValue + '</span>';
                                         } else {
                                             valBadge = '<span class="text-dark">' + item.displayValue + '</span>';

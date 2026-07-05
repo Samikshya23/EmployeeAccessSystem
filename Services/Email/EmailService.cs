@@ -72,7 +72,8 @@ namespace EmployeeAccessSystem.Services
 
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-                using SmtpClient smtpClient = new SmtpClient(settings.SmtpHost);
+                string finalHost = ForceIPv4IfPossible(settings.SmtpHost);
+                using SmtpClient smtpClient = new SmtpClient(finalHost);
 
                 smtpClient.Port = settings.SmtpPort;
                 smtpClient.EnableSsl = settings.EnableSsl;
@@ -136,7 +137,8 @@ namespace EmployeeAccessSystem.Services
 
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-                using SmtpClient smtpClient = new SmtpClient(settings.SmtpHost);
+                string finalHost = ForceIPv4IfPossible(settings.SmtpHost);
+                using SmtpClient smtpClient = new SmtpClient(finalHost);
 
                 smtpClient.Port = settings.SmtpPort;
                 smtpClient.EnableSsl = settings.EnableSsl;
@@ -251,7 +253,8 @@ namespace EmployeeAccessSystem.Services
 
                     System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-                    using SmtpClient smtpClient = new SmtpClient(activeSmtpHost);
+                    string finalHost = ForceIPv4IfPossible(activeSmtpHost);
+                    using SmtpClient smtpClient = new SmtpClient(finalHost);
 
                     smtpClient.Port = activeSmtpPort;
                     smtpClient.EnableSsl = activeEnableSsl;
@@ -422,6 +425,37 @@ namespace EmployeeAccessSystem.Services
             {
                 return false;
             }
+        }
+
+        private string ForceIPv4IfPossible(string host)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(host))
+                {
+                    return host;
+                }
+
+                if (System.Net.IPAddress.TryParse(host, out _))
+                {
+                    return host;
+                }
+
+                var ips = System.Net.Dns.GetHostAddresses(host);
+                var ipv4 = ips.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+                if (ipv4 != null)
+                {
+                    System.Net.ServicePointManager.ServerCertificateValidationCallback = 
+                        (sender, certificate, chain, sslPolicyErrors) => true;
+
+                    return ipv4.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to resolve SMTP host '{Host}' to IPv4.", host);
+            }
+            return host;
         }
     }
 }

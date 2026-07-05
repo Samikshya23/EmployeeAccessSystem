@@ -105,6 +105,12 @@
                                                     <i class="fas fa-times-circle mr-1"></i>@alert.DisplayValue
                                                 </span>
                                             }
+                                            else if (alert.ValueTypeId == 12)
+                                            {
+                                                <span class="badge badge-danger" style="font-size:12px;">
+                                                    <i class="fas fa-times-circle mr-1"></i>@alert.DisplayValue
+                                                </span>
+                                            }
                                             else if (alert.ValueTypeId == 5)
                                             {
                                                 <span class="badge badge-purple text-white" style="font-size:12px; background-color: #6f42c1 !important;">
@@ -237,14 +243,14 @@
                                     if (item.isAlert) {
                                         if (item.valueTypeId === 3) {
                                             valBadge = '<span class="badge badge-warning text-white" style="font-size:12px; background-color: #fd7e14 !important;"><i class="fas fa-exclamation-triangle mr-1"></i>' + item.displayValue + '</span>';
-                                        } else if (item.valueTypeId === 4) {
+                                        } else if (item.valueTypeId === 4 || item.valueTypeId === 12) {
                                             valBadge = '<span class="badge badge-danger" style="font-size:12px;"><i class="fas fa-times-circle mr-1"></i>' + item.displayValue + '</span>';
                                         } else if (item.valueTypeId === 5) {
                                             valBadge = '<span class="badge badge-purple text-white" style="font-size:12px; background-color: #6f42c1 !important;"><i class="fas fa-arrow-down mr-1"></i>' + item.displayValue + '</span>';
                                         }
                                     } else {
                                         // Standard display values
-                                        if (item.displayValue === '✓' || item.displayValue === 'Up') {
+                                        if (item.displayValue === '✓' || item.displayValue === 'Up' || item.displayValue === 'Yes') {
                                             valBadge = '<span class="badge badge-success text-xs" style="font-size:11px;"><i class="fas fa-check-circle mr-1"></i>' + item.displayValue + '</span>';
                                         } else {
                                             valBadge = '<span class="text-dark">' + item.displayValue + '</span>';

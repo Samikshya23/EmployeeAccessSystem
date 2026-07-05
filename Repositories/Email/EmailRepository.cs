@@ -14,7 +14,6 @@ namespace EmployeeAccessSystem.Repositories
         {
             _configuration = configuration;
         }
-
         public Task<EmailSettings> GetEmailSettingsAsync()
         {
             var emailSettings = new EmailSettings
@@ -29,7 +28,6 @@ namespace EmployeeAccessSystem.Repositories
 
             return Task.FromResult(emailSettings);
         }
-
         private async Task<string> LoadTemplateFileAsync(string fileName)
         {
             try
@@ -37,19 +35,16 @@ namespace EmployeeAccessSystem.Repositories
                 string path = Path.Combine(Directory.GetCurrentDirectory(), "Views", "Email", fileName);
                 if (!File.Exists(path))
                 {
-                    // Fallback to checking the Web project subdirectory context if run from solution root
                     string fallbackPath = Path.Combine(Directory.GetCurrentDirectory(), "EmployeeAccessSystem", "Views", "Email", fileName);
                     if (File.Exists(fallbackPath))
                     {
                         path = fallbackPath;
                     }
                 }
-
                 if (File.Exists(path))
                 {
                     return await File.ReadAllTextAsync(path);
                 }
-
                 throw new FileNotFoundException($"Email template file '{fileName}' not found at '{path}'.");
             }
             catch (Exception ex)
@@ -57,17 +52,14 @@ namespace EmployeeAccessSystem.Repositories
                 throw new Exception($"Failed to load email template '{fileName}': {ex.Message}", ex);
             }
         }
-
         public async Task<string> GetUserPasswordEmailTemplateAsync()
         {
             return await LoadTemplateFileAsync("UserPasswordEmail.cshtml");
         }
-
         public async Task<string> GetForgotPasswordEmailTemplateAsync()
         {
             return await LoadTemplateFileAsync("ForgotPasswordEmail.cshtml");
         }
-
         public async Task<string> GetReportAttachmentEmailTemplateAsync()
         {
             return await LoadTemplateFileAsync("ReportAttachmentEmail.cshtml");
