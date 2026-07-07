@@ -503,6 +503,50 @@
 
         var html = '';
 
+        var hasUpDown = false;
+        var hasTickCross = false;
+        var hasYesNo = false;
+
+        for (var r = 0; r < rows.length; r++) {
+            var typeId = parseInt(rows[r].item.valueTypeId);
+            if (typeId === 5) hasUpDown = true;
+            if (typeId === 4) hasTickCross = true;
+            if (typeId === 12) hasYesNo = true;
+        }
+
+        if (hasUpDown || hasTickCross || hasYesNo) {
+            html += '<div class="mb-2 p-2 bg-light border rounded-0">';
+            html += '  <div class="font-weight-bold text-secondary mb-1" style="font-size:12px;">Quick Actions</div>';
+            html += '  <div class="d-flex flex-wrap align-items-center" style="gap: 8px;">';
+
+            if (hasUpDown) {
+                html += '    <div class="mr-3 d-inline-block" style="white-space:nowrap; margin-right:16px;">';
+                html += '      <span class="small font-weight-bold text-muted mr-1">Status:</span>';
+                html += '      <button type="button" class="btn btn-outline-success mr-1" style="font-size:11px; padding: 2px 8px; font-weight: 600;" onclick="window.setTypeValues(5, \'10\')">Set all Up</button>';
+                html += '      <button type="button" class="btn btn-outline-danger" style="font-size:11px; padding: 2px 8px; font-weight: 600;" onclick="window.setTypeValues(5, \'11\')">Set all Down</button>';
+                html += '    </div>';
+            }
+
+            if (hasTickCross) {
+                html += '    <div class="mr-3 d-inline-block" style="white-space:nowrap; margin-right:16px;">';
+                html += '      <span class="small font-weight-bold text-muted mr-1">Checklist:</span>';
+                html += '      <button type="button" class="btn btn-outline-success mr-1" style="font-size:11px; padding: 2px 8px; font-weight: 600;" onclick="window.setTypeValues(4, \'8\')">Set all Tick</button>';
+                html += '      <button type="button" class="btn btn-outline-danger" style="font-size:11px; padding: 2px 8px; font-weight: 600;" onclick="window.setTypeValues(4, \'9\')">Set all Cross</button>';
+                html += '    </div>';
+            }
+
+            if (hasYesNo) {
+                html += '    <div class="d-inline-block" style="white-space:nowrap;">';
+                html += '      <span class="small font-weight-bold text-muted mr-1">Yes/No:</span>';
+                html += '      <button type="button" class="btn btn-outline-success mr-1" style="font-size:11px; padding: 2px 8px; font-weight: 600;" onclick="window.setTypeValues(12, \'13\')">Set all Yes</button>';
+                html += '      <button type="button" class="btn btn-outline-danger" style="font-size:11px; padding: 2px 8px; font-weight: 600;" onclick="window.setTypeValues(12, \'14\')">Set all No</button>';
+                html += '    </div>';
+            }
+
+            html += '  </div>';
+            html += '</div>';
+        }
+
         html += '<div class="table-responsive">';
         html += '<table class="table table-bordered table-sm mb-0 w-100" style="table-layout:fixed;">';
         html += '<tbody>';
@@ -563,6 +607,24 @@
         html += '</div>';
 
         $('#dynamicChecklistArea').html(html);
+
+        window.setTypeValues = function(valueTypeId, targetValue) {
+            for (var i = 0; i < rows.length; i++) {
+                var valueTypeIdInput = $('input[name="Items[' + i + '].ValueTypeId"]');
+                if (valueTypeIdInput.length > 0) {
+                    var rowTypeId = parseInt(valueTypeIdInput.val());
+                    if (rowTypeId === valueTypeId) {
+                        if (valueTypeId === 4) {
+                            selectTickCross(i, targetValue);
+                        } else if (valueTypeId === 5) {
+                            selectUpDown(i, targetValue);
+                        } else if (valueTypeId === 12) {
+                            selectYesNo(i, targetValue);
+                        }
+                    }
+                }
+            }
+        };
     }
 
     function createValueInput(index, oldValue, valueTypeId) {

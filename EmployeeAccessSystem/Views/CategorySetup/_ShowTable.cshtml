@@ -1,4 +1,4 @@
-﻿@model List<EmployeeAccessSystem.Models.CategorySetup>
+@model List<EmployeeAccessSystem.Models.CategorySetup>
 @using System.Collections.Generic
 
 @functions {
@@ -286,6 +286,16 @@ else
                                             style="width:24px;height:24px;line-height:22px;">
 
                                         <i class="fas fa-pen" style="font-size:10px;"></i>
+
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-light border btn-sm p-0 btnDeleteRoot"
+                                            data-root-index="@rootIndex"
+                                            title="Delete"
+                                            style="width:24px;height:24px;line-height:22px;margin-left:4px;">
+
+                                        <i class="fas fa-trash text-danger" style="font-size:10px;"></i>
 
                                     </button>
 

@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
 
     loadToastMessages();
 
@@ -101,6 +101,20 @@
 
         });
 
+    });
+
+    $(document).off("click", ".btnDeleteRoot");
+
+    $(document).on("click", ".btnDeleteRoot", function () {
+        var categoryId = $("#showCategoryId").val();
+        var rootIndex = $(this).data("root-index");
+        var categoryName = $("#showCategoryId option:selected").text().trim();
+
+        $("#deleteCategoryId").val(categoryId);
+        $("#deleteRootIndex").val(rootIndex);
+        $("#deleteRecordName").text('"' + categoryName + '"');
+
+        $("#deleteConfirmModal").modal("show");
     });
 
     function loadSetupTable(categoryId) {
