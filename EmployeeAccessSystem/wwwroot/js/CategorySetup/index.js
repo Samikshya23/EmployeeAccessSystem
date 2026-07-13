@@ -108,11 +108,13 @@ $(document).ready(function () {
     $(document).on("click", ".btnDeleteRoot", function () {
         var categoryId = $("#showCategoryId").val();
         var rootIndex = $(this).data("root-index");
-        var categoryName = $("#showCategoryId option:selected").text().trim();
+        var nodeId = $(this).data("node-id");
+        var recordName = $(this).data("record-name");
 
         $("#deleteCategoryId").val(categoryId);
         $("#deleteRootIndex").val(rootIndex);
-        $("#deleteRecordName").text('"' + categoryName + '"');
+        $("#deleteNodeId").val(nodeId);
+        $("#deleteRecordName").text('"' + recordName + '"');
 
         $("#deleteConfirmModal").modal("show");
     });

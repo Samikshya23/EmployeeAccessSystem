@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace EmployeeAccessSystem.Models
 {
     public class CategorySetup
     {
         public int NodeId { get; set; }
+
+        public string Id { get; set; }
 
         public int CategoryId { get; set; }
 
@@ -36,6 +38,7 @@ namespace EmployeeAccessSystem.Models
 
         public CategorySetup()
         {
+            Id = string.Empty;
             Name = string.Empty;
             SetupJson = string.Empty;
             CreatedBy = string.Empty;

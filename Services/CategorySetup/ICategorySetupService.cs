@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EmployeeAccessSystem.Models;
 
@@ -35,5 +35,8 @@ namespace EmployeeAccessSystem.Services
 
         // Delete selected root group
         Task<(bool Success, string Message)> DeleteRootAsync(int categoryId, int rootIndex, string deletedBy);
+
+        // Delete selected node by ID
+        Task<(bool Success, string Message)> DeleteNodeByIdAsync(int categoryId, string nodeId, string deletedBy);
     }
 }

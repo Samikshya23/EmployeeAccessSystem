@@ -1,10 +1,12 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
 
     initializeDataTable();
 
     bindAddButton();
 
     bindEditButton();
+
+    bindDeleteButton();
 
     showTempMessage();
 
@@ -84,6 +86,26 @@ function bindEditButton() {
             var categoryId = $(this).attr("data-category-id");
 
             loadConfigurationModal("/FormConfiguration/Add?categoryId=" + categoryId);
+
+        });
+}
+
+// Delete configuration
+function bindDeleteButton() {
+
+    $(document)
+        .off("click", ".btnDeleteConfiguration");
+
+    $(document)
+        .on("click", ".btnDeleteConfiguration", function () {
+
+            var categoryId = $(this).attr("data-category-id");
+            var categoryName = $(this).attr("data-category-name");
+
+            $("#deleteCategoryId").val(categoryId);
+            $("#deleteRecordName").text('"' + categoryName + '"');
+
+            $("#deleteConfirmModal").modal("show");
 
         });
 }

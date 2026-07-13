@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EmployeeAccessSystem.Models;
@@ -163,14 +163,26 @@ namespace EmployeeAccessSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int categoryId, int rootIndex)
+        public async Task<IActionResult> Delete(int categoryId, int rootIndex, string nodeId)
         {
-            var result =
-                await _setupService.DeleteRootAsync(
+            (bool Success, string Message) result;
+
+            if (!string.IsNullOrWhiteSpace(nodeId))
+            {
+                result = await _setupService.DeleteNodeByIdAsync(
+                    categoryId,
+                    nodeId,
+                    GetCurrentUser()
+                );
+            }
+            else
+            {
+                result = await _setupService.DeleteRootAsync(
                     categoryId,
                     rootIndex,
                     GetCurrentUser()
                 );
+            }
 
             if (result.Success)
             {

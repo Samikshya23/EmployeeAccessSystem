@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using EmployeeAccessSystem.Models;
@@ -373,6 +373,84 @@ namespace EmployeeAccessSystem.Services
             return (false, "Delete failed.");
         }
 
+        // Delete selected node by its string ID
+        public async Task<(bool Success, string Message)> DeleteNodeByIdAsync(int categoryId, string nodeId, string deletedBy)
+        {
+            if (categoryId <= 0)
+            {
+                return (false, "Invalid setup configuration.");
+            }
+
+            if (string.IsNullOrWhiteSpace(nodeId))
+            {
+                return (false, "Invalid setup item.");
+            }
+
+            List<CategorySetupNodeRequest> existingNodes = await GetSetupNodesFromJsonAsync(categoryId);
+
+            if (existingNodes == null || existingNodes.Count == 0)
+            {
+                return (false, "No setup data found.");
+            }
+
+            bool deleted = RemoveNodeById(existingNodes, nodeId);
+
+            if (!deleted)
+            {
+                return (false, "Setup item not found.");
+            }
+
+            if (existingNodes.Count == 0)
+            {
+                int deleteResult = await _setupRepository.DeleteJsonByCategoryAsync(categoryId, deletedBy);
+
+                if (deleteResult >= 0)
+                {
+                    return (true, "Deleted successfully.");
+                }
+
+                return (false, "Delete failed.");
+            }
+
+            string json = SerializeSetupNodes(existingNodes);
+
+            int result = await _setupRepository.SaveOrUpdateJsonAsync(categoryId, json, deletedBy, deletedBy);
+
+            if (result >= 0)
+            {
+                return (true, "Deleted successfully.");
+            }
+
+            return (false, "Delete failed.");
+        }
+
+        private bool RemoveNodeById(List<CategorySetupNodeRequest> nodes, string nodeId)
+        {
+            if (nodes == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i].Id == nodeId)
+                {
+                    nodes.RemoveAt(i);
+                    return true;
+                }
+
+                if (nodes[i].Children != null && nodes[i].Children.Count > 0)
+                {
+                    if (RemoveNodeById(nodes[i].Children, nodeId))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Json Methods
@@ -651,6 +729,7 @@ namespace EmployeeAccessSystem.Services
             CategorySetup node = new CategorySetup();
 
             node.NodeId = nodeCounter;
+            node.Id = requestNode.Id;
             node.CategoryId = categoryId;
             node.ConfigurationNodeId = requestNode.ConfigurationNodeId;
             node.ConfigurationNodeName = requestNode.Label;

@@ -247,6 +247,7 @@ else
 
                     for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
                     {
+                        var leafNode = rows[rowIndex][rows[rowIndex].Count - 1];
                         <tr>
                             @if (rowIndex == 0)
                             {
@@ -273,34 +274,32 @@ else
                                 }
                             }
 
-                            @if (rowIndex == 0)
-                            {
-                                <td class="text-center align-middle px-2 py-1"
-                                    rowspan="@rows.Count"
-                                    style="height:38px;">
+                            <td class="text-center align-middle px-2 py-1"
+                                style="height:38px;">
 
-                                    <button type="button"
-                                            class="btn btn-light border btn-sm p-0 btnEditRoot"
-                                            data-root-index="@rootIndex"
-                                            title="Edit"
-                                            style="width:24px;height:24px;line-height:22px;">
+                                <button type="button"
+                                        class="btn btn-light border btn-sm p-0 btnEditRoot"
+                                        data-root-index="@rootIndex"
+                                        title="Edit"
+                                        style="width:24px;height:24px;line-height:22px;">
 
-                                        <i class="fas fa-pen" style="font-size:10px;"></i>
+                                    <i class="fas fa-pen" style="font-size:10px;"></i>
 
-                                    </button>
+                                </button>
 
-                                    <button type="button"
-                                            class="btn btn-light border btn-sm p-0 btnDeleteRoot"
-                                            data-root-index="@rootIndex"
-                                            title="Delete"
-                                            style="width:24px;height:24px;line-height:22px;margin-left:4px;">
+                                <button type="button"
+                                        class="btn btn-outline-danger btn-sm p-0 btnDeleteRoot"
+                                        data-root-index="@rootIndex"
+                                        data-node-id="@leafNode.Id"
+                                        data-record-name="@leafNode.NodeValue"
+                                        title="Delete"
+                                        style="width:24px;height:24px;line-height:22px;margin-left:4px;">
 
-                                        <i class="fas fa-trash text-danger" style="font-size:10px;"></i>
+                                    <i class="fas fa-trash-alt" style="font-size:10px;"></i>
 
-                                    </button>
+                                </button>
 
-                                </td>
-                            }
+                            </td>
                         </tr>
                     }
 
