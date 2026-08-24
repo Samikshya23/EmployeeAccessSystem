@@ -37,6 +37,8 @@ namespace EmployeeAccessSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
+
+        //
             _logger.LogInformation("Login submitted. Email: {Email}", model.Email);
 
             if (!ModelState.IsValid)
